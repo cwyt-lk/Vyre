@@ -26,15 +26,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      howler:
-        specifier: ^2.2.4
-        version: 2.2.4
       lucide-react:
         specifier: ^0.563.0
         version: 0.563.0(react@19.2.4)
-      mime:
-        specifier: ^4.1.0
-        version: 4.1.0
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -50,15 +44,9 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.5.0(react@19.2.4)
-      react-use-audio-player:
-        specifier: ^4.0.2
-        version: 4.0.2(react@19.2.4)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      swr:
-        specifier: ^2.3.8
-        version: 2.4.0(react@19.2.4)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -1102,10 +1090,6 @@ packages:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
     engines: {node: '>= 0.8'}
 
-  dequal@2.0.3:
-    resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
-    engines: {node: '>=6'}
-
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
@@ -1331,9 +1315,6 @@ packages:
   hono@4.11.9:
     resolution: {integrity: sha512-Eaw2YTGM6WOxA6CXbckaEvslr2Ne4NFsKrvc0v97JD5awbmeBLO5w9Ho9L9kmKonrwF9RJlW6BxT1PVv/agBHQ==}
     engines: {node: '>=16.9.0'}
-
-  howler@2.2.4:
-    resolution: {integrity: sha512-iARIBPgcQrwtEr+tALF+rapJ8qSc+Set2GJQl7xT1MQzWaVkFebdJhR3alVlSiUf5U7nAANKuj3aWpwerocD5w==}
 
   http-errors@2.0.1:
     resolution: {integrity: sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==}
@@ -1631,11 +1612,6 @@ packages:
     resolution: {integrity: sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A==}
     engines: {node: '>=18'}
 
-  mime@4.1.0:
-    resolution: {integrity: sha512-X5ju04+cAzsojXKes0B/S4tcYtFAJ6tTMuSPBEn9CPGlrWr8Fiw7qYeLT0XyH80HSoAoqWCaz+MWKh22P7G1cw==}
-    engines: {node: '>=16'}
-    hasBin: true
-
   mimic-fn@2.1.0:
     resolution: {integrity: sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==}
     engines: {node: '>=6'}
@@ -1882,11 +1858,6 @@ packages:
     peerDependencies:
       react: '*'
 
-  react-use-audio-player@4.0.2:
-    resolution: {integrity: sha512-qOgcQUAcRJ6skFeAFMPaAv1ZTXQG3zHBHjvHaaTZkGMlAqga9xiVJ826CbtxTXRsqrxexZ61puzeaPhDrJR6SQ==}
-    peerDependencies:
-      react: '>=18.0.0'
-
   react@19.2.4:
     resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
     engines: {node: '>=0.10.0'}
@@ -2078,11 +2049,6 @@ packages:
     resolution: {integrity: sha512-Mhu3KNioxSjymdaHu6hQ/qZKzu/v1AzIEnYOOZ9+ATtSfrQNjqiMg9sivKx1vToKqcDBm3BXjmg8OX65sZW2Pw==}
     engines: {npm: '>=8'}
     hasBin: true
-
-  swr@2.4.0:
-    resolution: {integrity: sha512-sUlC20T8EOt1pHmDiqueUWMmRRX03W7w5YxovWX7VR2KHEPCTMly85x05vpkP5i6Bu4h44ePSMD9Tc+G2MItFw==}
-    peerDependencies:
-      react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   tabbable@6.4.0:
     resolution: {integrity: sha512-05PUHKSNE8ou2dwIxTngl4EzcnsCDZGJ/iCLtDflR/SHB/ny14rXc+qU5P4mG9JkusiV7EivzY9Mhm55AzAvCg==}
@@ -3191,8 +3157,6 @@ snapshots:
 
   depd@2.0.0: {}
 
-  dequal@2.0.3: {}
-
   detect-libc@2.1.2: {}
 
   diff@8.0.3: {}
@@ -3437,8 +3401,6 @@ snapshots:
 
   hono@4.11.9: {}
 
-  howler@2.2.4: {}
-
   http-errors@2.0.1:
     dependencies:
       depd: 2.0.0
@@ -3645,8 +3607,6 @@ snapshots:
   mime-types@3.0.2:
     dependencies:
       mime-db: 1.54.0
-
-  mime@4.1.0: {}
 
   mimic-fn@2.1.0: {}
 
@@ -3885,11 +3845,6 @@ snapshots:
 
   react-icons@5.5.0(react@19.2.4):
     dependencies:
-      react: 19.2.4
-
-  react-use-audio-player@4.0.2(react@19.2.4):
-    dependencies:
-      howler: 2.2.4
       react: 19.2.4
 
   react@19.2.4: {}
@@ -4151,12 +4106,6 @@ snapshots:
       tar: 7.5.7
     transitivePeerDependencies:
       - supports-color
-
-  swr@2.4.0(react@19.2.4):
-    dependencies:
-      dequal: 2.0.3
-      react: 19.2.4
-      use-sync-external-store: 1.6.0(react@19.2.4)
 
   tabbable@6.4.0: {}
 
