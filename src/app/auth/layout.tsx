@@ -1,14 +1,19 @@
 import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
 import { createRepositories } from "@/lib/factories/server";
 
-export default async function RootPage() {
+export default async function AuthLayout({
+	children,
+}: Readonly<{
+	children: ReactNode;
+}>) {
 	const { auth } = await createRepositories();
 
 	const { data: user } = await auth.getCurrentUser();
 
-	if (!user) {
-		redirect("/auth/sign-in");
+	if (user) {
+		redirect("/home");
 	}
 
-	redirect("/home");
+	return children;
 }
