@@ -22,7 +22,7 @@ export interface IAuthRepository {
 		error: Error | null;
 	}>;
 
-	signOut(): Promise<{ data: null; error: Error | null }>;
+	signOut(): Promise<{ error: Error | null }>;
 
 	getCurrentUser(): Promise<{
 		data: User | null;
@@ -101,10 +101,10 @@ export class AuthRepository implements IAuthRepository {
 		const { error } = await this.supabase.auth.signOut();
 
 		if (error) {
-			return { data: null, error };
+			return { error };
 		}
 
-		return { data: null, error: null };
+		return { error: null };
 	}
 
 	async getCurrentUser() {
