@@ -4,33 +4,34 @@ import type { Genre } from "@/types/genre";
 import type { Database } from "@/types/supabase";
 
 export interface IGenreRepository {
-	findAll(): Promise<Genre[] | null>;
+    findAll(): Promise<Genre[] | null>;
 
-	findById(id: string): Promise<Genre>;
+    findById(id: string): Promise<Genre>;
 }
 
 export class GenreRepository implements IGenreRepository {
-	constructor(private supabase: SupabaseClient<Database>) {}
+    constructor(private supabase: SupabaseClient<Database>) {
+    }
 
-	async findAll() {
-		const { data, error } = await this.supabase
-			.from("genres")
-			.select("*");
+    async findAll() {
+        const { data, error } = await this.supabase
+            .from("genres")
+            .select("*");
 
-		if (error) throw error;
+        if (error) throw error;
 
-		return data?.map((genre) => mapGenre(genre));
-	}
+        return data?.map((genre) => mapGenre(genre));
+    }
 
-	async findById(id: string) {
-		const { data, error } = await this.supabase
-			.from("genres")
-			.select("*")
-			.eq("id", id)
-			.single();
+    async findById(id: string) {
+        const { data, error } = await this.supabase
+            .from("genres")
+            .select("*")
+            .eq("id", id)
+            .single();
 
-		if (error) throw error;
+        if (error) throw error;
 
-		return mapGenre(data);
-	}
+        return mapGenre(data);
+    }
 }
