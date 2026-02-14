@@ -4,34 +4,49 @@ import type { Genre } from "@/types/genre";
 import type { Database } from "@/types/supabase";
 
 export interface IGenreRepository {
-    findAll(): Promise<Genre[] | null>;
+	findAll(): Promise<{
+		data: Genre[] | null;
+		error: Error | null;
+	}>;
 
-    findById(id: string): Promise<Genre>;
+	findById(id: string): Promise<{
+		data: Genre | null;
+		error: Error | null;
+	}>;
 }
 
 export class GenreRepository implements IGenreRepository {
-    constructor(private supabase: SupabaseClient<Database>) {
-    }
+	constructor(private supabase: SupabaseClient<Database>) {}
 
-    async findAll() {
-        const { data, error } = await this.supabase
-            .from("genres")
-            .select("*");
+	async findAll() {
+		const { data, error } = await this.supabase
+			.from("genres")
+			.select("*");
 
-        if (error) throw error;
+		if (error) {
+			return { data: null, error };
+		}
 
-        return data?.map((genre) => mapGenre(genre));
-    }
+		return {
+			data: data?.map((genre) => mapGenre(genre)) ?? null,
+			error: null,
+		};
+	}
 
-    async findById(id: string) {
-        const { data, error } = await this.supabase
-            .from("genres")
-            .select("*")
-            .eq("id", id)
-            .single();
+	async findById(id: string) {
+		const { data, error } = await this.supabase
+			.from("genres")
+			.select("*")
+			.eq("id", id)
+			.single();
 
-        if (error) throw error;
+		if (error) {
+			return { data: null, error };
+		}
 
-        return mapGenre(data);
-    }
+		return {
+			data: data ? mapGenre(data) : null,
+			error: null,
+		};
+	}
 }
