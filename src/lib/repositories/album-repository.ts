@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapAlbum } from "@/lib/mappers/map-album";
-import type { Album } from "@/types/album";
+import type { Album } from "@/types/domain/album";
 import type { Database } from "@/types/supabase";
 
 export interface IAlbumRepository {

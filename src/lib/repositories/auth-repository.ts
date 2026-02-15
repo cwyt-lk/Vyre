@@ -1,7 +1,7 @@
 import type { Provider, SupabaseClient } from "@supabase/supabase-js";
 import { mapUser } from "@/lib/mappers/map-user";
+import type { User } from "@/types/domain/user";
 import type { Database } from "@/types/supabase";
-import type { User } from "@/types/user";
 
 export interface IAuthRepository {
 	signUp(

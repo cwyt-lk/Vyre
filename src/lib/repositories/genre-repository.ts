@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapGenre } from "@/lib/mappers/map-genre";
-import type { Genre } from "@/types/genre";
+import type { Genre } from "@/types/domain/genre";
 import type { Database } from "@/types/supabase";
 
 export interface IGenreRepository {
