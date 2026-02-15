@@ -3,7 +3,7 @@ import { mapGenre } from "@/lib/mappers/map-genre";
 import type { Genre } from "@/types/domain/genre";
 import type { Database } from "@/types/supabase";
 
-export interface IGenreRepository {
+export interface GenreRepositoryContract {
 	findAll(): Promise<{
 		data: Genre[] | null;
 		error: Error | null;
@@ -15,7 +15,7 @@ export interface IGenreRepository {
 	}>;
 }
 
-export class GenreRepository implements IGenreRepository {
+export class GenreRepository implements GenreRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
 	async findAll() {

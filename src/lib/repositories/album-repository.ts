@@ -3,7 +3,7 @@ import { mapAlbum } from "@/lib/mappers/map-album";
 import type { Album } from "@/types/domain/album";
 import type { Database } from "@/types/supabase";
 
-export interface IAlbumRepository {
+export interface AlbumRepositoryContract {
 	findAll(): Promise<{
 		data: Album[] | null;
 		error: Error | null;
@@ -15,7 +15,7 @@ export interface IAlbumRepository {
 	}>;
 }
 
-export class AlbumRepository implements IAlbumRepository {
+export class AlbumRepository implements AlbumRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
 	async findAll() {

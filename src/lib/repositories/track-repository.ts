@@ -3,7 +3,7 @@ import { mapTrack } from "@/lib/mappers/map-track";
 import type { Track } from "@/types/domain/track";
 import type { Database } from "@/types/supabase";
 
-export interface ITrackRepository {
+export interface TrackRepositoryContract {
 	findAll(): Promise<{
 		data: Track[] | null;
 		error: Error | null;
@@ -15,7 +15,7 @@ export interface ITrackRepository {
 	}>;
 }
 
-export class TrackRepository implements ITrackRepository {
+export class TrackRepository implements TrackRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
 	async findAll() {

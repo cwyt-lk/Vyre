@@ -3,7 +3,7 @@ import { mapUser } from "@/lib/mappers/map-user";
 import type { User } from "@/types/domain/user";
 import type { Database } from "@/types/supabase";
 
-export interface IAuthRepository {
+export interface AuthRepositoryContract {
 	signUp(
 		email: string,
 		password: string,
@@ -30,7 +30,7 @@ export interface IAuthRepository {
 	}>;
 }
 
-export class AuthRepository implements IAuthRepository {
+export class AuthRepository implements AuthRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
 	async signUp(email: string, password: string) {
