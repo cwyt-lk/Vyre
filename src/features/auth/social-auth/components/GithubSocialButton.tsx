@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FaGithub } from "react-icons/fa6";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { signInWithGithub } from "@/features/auth/social-auth/actions";
+import { signInWithGithubAction } from "@/features/auth/social-auth/actions";
 
 export const GithubSocialButton = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +13,7 @@ export const GithubSocialButton = () => {
 		try {
 			setIsLoading(true);
 
-			await signInWithGithub();
+			await signInWithGithubAction();
 		} finally {
 			setIsLoading(false);
 		}

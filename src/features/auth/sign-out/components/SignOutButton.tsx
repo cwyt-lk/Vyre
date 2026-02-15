@@ -16,26 +16,25 @@ import {
 } from "@/components/ui/AlertDialog";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { createRepositories } from "@/lib/factories/client";
+import { signOutAction } from "@/features/auth/sign-out/actions";
 
 export const SignOutButton = () => {
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
-	const { auth } = createRepositories();
 
 	const signOut = useCallback(async () => {
 		setLoading(true);
 
-		const { error } = await auth.signOut();
+		const res = await signOutAction();
 
-		if (error) {
-			toast.error(error.message);
+		if (!res.success) {
+			toast.error(res.error);
 
 			setLoading(false);
 		} else {
 			router.replace("/auth/sign-in");
 		}
-	}, [router, auth]);
+	}, [router]);
 
 	return (
 		<AlertDialog>

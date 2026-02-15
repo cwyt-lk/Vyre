@@ -3,32 +3,38 @@
 import { redirect } from "next/navigation";
 import { createRepositories } from "@/lib/factories/server";
 
-export async function signInWithGithub() {
+export async function signInWithGithubAction(): Promise<ActionResult> {
 	const { auth } = await createRepositories();
-
 	const { data, error } = await auth.signInWithOAuth(
 		"github",
 		`${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
 	);
 
-	if (error) throw error;
+	if (error) {
+		return { success: false, error: error.message };
+	}
 
-	if (data.url) {
+	if (data?.url) {
 		redirect(data.url);
 	}
+
+	return { success: true };
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogleAction(): Promise<ActionResult> {
 	const { auth } = await createRepositories();
-
 	const { data, error } = await auth.signInWithOAuth(
 		"google",
 		`${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
 	);
 
-	if (error) throw error;
+	if (error) {
+		return { success: false, error: error.message };
+	}
 
-	if (data.url) {
+	if (data?.url) {
 		redirect(data.url);
 	}
+
+	return { success: true };
 }

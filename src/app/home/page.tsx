@@ -3,7 +3,7 @@ import { unauthorized } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { Stack } from "@/components/layout/Stack";
 import { Button } from "@/components/ui/Button";
-import { SignOutButton } from "@/features/auth/sign-out/SignOutButton";
+import { SignOutButton } from "@/features/auth/sign-out/components/SignOutButton";
 import { createRepositories } from "@/lib/factories/server";
 
 export default async function HomePage() {

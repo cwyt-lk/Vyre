@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { signInWithGoogle } from "@/features/auth/social-auth/actions";
+import { signInWithGoogleAction } from "@/features/auth/social-auth/actions";
 
 export const GoogleSocialButton = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +13,7 @@ export const GoogleSocialButton = () => {
 		try {
 			setIsLoading(true);
 
-			await signInWithGoogle();
+			await signInWithGoogleAction();
 		} finally {
 			setIsLoading(false);
 		}
