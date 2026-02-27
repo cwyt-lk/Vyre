@@ -31,30 +31,29 @@ export function AlbumClient({ album, coverUrl }: AlbumClientProps) {
 	}, [setQueue, album, clearQueue]);
 
 	return (
-		<div className="py-10 space-y-8 animate-in fade-in duration-500">
-			<header className="flex flex-col md:flex-row gap-8 items-end">
+		<section className="py-10 space-y-8 animate-in fade-in duration-500">
+			<header className="flex flex-col md:flex-row gap-8">
 				<div className="relative size-64 shrink-0 shadow-2xl">
 					<Image
 						src={coverUrl}
 						alt={`Cover art for ${album.title}`}
 						fill
 						priority
-						sizes="(max-width: 768px) 100vw, 256px"
 						className="object-cover rounded-xl"
 					/>
 				</div>
 
-				<div className="space-y-4 w-full">
+				<div className="flex flex-col gap-4 w-full">
 					<div>
-						<span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+						<span className="text-sm uppercase tracking-wider text-muted-foreground">
 							Album
 						</span>
 
-						<h1 className="text-4xl md:text-7xl font-black tracking-tighter">
+						<h1 className="text-5xl font-bold tracking-tighter">
 							{album.title}
 						</h1>
 
-						<h2 className="text-2xl md:text-6xl text-muted-foreground font-black tracking-tighter">
+						<h2 className="text-2xl text-muted-foreground font-medium">
 							{currentTrack?.title ?? ""}
 						</h2>
 					</div>
