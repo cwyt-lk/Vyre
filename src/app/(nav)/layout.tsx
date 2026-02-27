@@ -3,9 +3,11 @@ import { unauthorized } from "next/navigation";
 import type { ReactNode } from "react";
 import {
 	NavigationMenu,
+	NavigationMenuContent,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
+	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
 } from "@/components/ui/NavigationMenu";
 import { SignOutButton } from "@/features/auth/sign-out/components/SignOutButton";
@@ -16,21 +18,83 @@ const MENU_ITEMS = [
 	{ href: "/music/albums", label: "Albums" },
 ] as const;
 
+const ADMIN_ITEMS = [
+	{
+		href: "/admin/add-music",
+		title: "Add Music",
+		description: "Upload new tracks and manage metadata.",
+	},
+	{
+		href: "/admin/add-album",
+		title: "Add Album",
+		description: "Create a new album collection and assign artists.",
+	},
+	{
+		href: "/admin/add-genre",
+		title: "Add Genre",
+		description: "Expand the library categories and tags.",
+	},
+] as const;
+
+const NavLink = ({
+	href,
+	children,
+}: {
+	href: string;
+	children: ReactNode;
+}) => (
+	<NavigationMenuItem>
+		<NavigationMenuLink
+			href={href}
+			className={navigationMenuTriggerStyle()}
+		>
+			{children}
+		</NavigationMenuLink>
+	</NavigationMenuItem>
+);
+
+const AdminMenu = () => (
+	<NavigationMenuItem>
+		<NavigationMenuTrigger>Admin</NavigationMenuTrigger>
+		<NavigationMenuContent>
+			{ADMIN_ITEMS.map((item) => (
+				<NavigationMenuLink key={item.href} href={item.href}>
+					<div className="rounded-md p-2 transition hover:bg-accent/90">
+						<div className="text-sm font-medium leading-none">
+							{item.title}
+						</div>
+
+						<p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+							{item.description}
+						</p>
+					</div>
+				</NavigationMenuLink>
+			))}
+		</NavigationMenuContent>
+	</NavigationMenuItem>
+);
+
 export default async function NavLayout({
 	children,
 }: {
 	children: ReactNode;
 }) {
 	const { auth } = await createRepositories();
-	const { data: user } = await auth.getCurrentUser();
+	const [userResponse, roleResponse] = await Promise.all([
+		auth.getCurrentUser(),
+		auth.getCurrentRole(),
+	]);
+
+	const user = userResponse.data;
+	const isAdmin = roleResponse.data === "admin";
 
 	if (!user) unauthorized();
 
 	return (
 		<div className="relative flex min-h-screen flex-col">
-			<header className="sticky top-0 z-50 w-full bg-secondary/50 backdrop-blur">
-				<nav className="container flex h-16 items-center justify-between py-2 px-4">
-					<div className="flex items-center gap-6 md:gap-10">
+			<header className="sticky top-0 z-50 w-full bg-muted/30 backdrop-blur rounded-2xl">
+				<nav className="grid grid-cols-3 py-3 px-10">
+					<div className="flex items-center justify-start gap-4">
 						<Link
 							href="/home"
 							className="text-center font-bold hover:opacity-40 transition-opacity"
@@ -41,30 +105,30 @@ export default async function NavLayout({
 						<NavigationMenu>
 							<NavigationMenuList>
 								{MENU_ITEMS.map((item) => (
-									<NavigationMenuItem key={item.href}>
-										<NavigationMenuLink
-											className={navigationMenuTriggerStyle()}
-											href={item.href}
-										>
-											{item.label}
-										</NavigationMenuLink>
-									</NavigationMenuItem>
+									<NavLink
+										key={item.href}
+										href={item.href}
+									>
+										{item.label}
+									</NavLink>
 								))}
+								{isAdmin && <AdminMenu />}
 							</NavigationMenuList>
 						</NavigationMenu>
 					</div>
 
-					<div className="flex items-center gap-4">
+					<div />
+
+					<div className="flex items-center justify-end gap-4">
 						<span className="hidden text-sm text-muted-foreground md:inline-block">
 							{user.email}
 						</span>
-
 						<SignOutButton />
 					</div>
 				</nav>
 			</header>
 
-			{children}
+			<main className="flex-1">{children}</main>
 		</div>
 	);
 }
