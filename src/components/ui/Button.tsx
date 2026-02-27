@@ -15,12 +15,12 @@ const buttonVariants = cva(
     focus-visible:border-ring aria-invalid:border-destructive dark:aria-invalid:border-destructive/50
     outline-none select-none whitespace-nowrap
     transition-all duration-200 ease-in-out
-    disabled:pointer-events-none disabled:opacity-50
+    disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed
     group/button
     [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0
     [&_svg:not([class*='size-'])]:size-4
     cursor-pointer
-    hover:scale-[1.01] active:scale-[0.99]
+    hover:scale-[1.025] active:scale-[0.98]
     motion-reduce:transition-none
   `,
 	{
@@ -67,9 +67,7 @@ function Button({
 	return (
 		<ButtonPrimitive
 			data-slot="button"
-			className={cn(
-				buttonVariants({ variant, size, className }),
-			)}
+			className={cn(buttonVariants({ variant, size, className }))}
 			{...props}
 		/>
 	);
