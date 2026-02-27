@@ -28,6 +28,11 @@ export interface AuthRepositoryContract {
 		data: User | null;
 		error: Error | null;
 	}>;
+
+	getCurrentRole(): Promise<{
+		data: string | null;
+		error: Error | null;
+	}>;
 }
 
 export class AuthRepository implements AuthRepositoryContract {
@@ -73,13 +78,12 @@ export class AuthRepository implements AuthRepositoryContract {
 	}
 
 	async signInWithOAuth(provider: string, redirectUrl: string) {
-		const { data, error } =
-			await this.supabase.auth.signInWithOAuth({
-				provider: provider as Provider,
-				options: {
-					redirectTo: redirectUrl,
-				},
-			});
+		const { data, error } = await this.supabase.auth.signInWithOAuth({
+			provider: provider as Provider,
+			options: {
+				redirectTo: redirectUrl,
+			},
+		});
 
 		if (error || !data.url) {
 			return {
@@ -119,6 +123,22 @@ export class AuthRepository implements AuthRepositoryContract {
 
 		return {
 			data: mapUser(data.user),
+			error: null,
+		};
+	}
+
+	async getCurrentRole() {
+		const { data, error } = await this.supabase.auth.getClaims();
+
+		if (error || !data) {
+			return {
+				data: null,
+				error: error ?? null,
+			};
+		}
+
+		return {
+			data: data.claims?.user_role ?? "user",
 			error: null,
 		};
 	}
