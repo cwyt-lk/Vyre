@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { audioEngine } from "@/lib/audio/audio-engine";
-import { getTrackUrl } from "@/lib/helpers/storageHelper";
 import { generateShuffleOrder } from "@/lib/utils/array";
+import { getTrackUrl } from "@/lib/utils/storage";
 import type { Track } from "@/types/domain/track";
 
 type LoopMode = "off" | "track" | "playlist";
