@@ -73,6 +73,6 @@ export function AlbumClient({ album, coverUrl }: AlbumClientProps) {
 			<footer className="text-sm text-muted-foreground">
 				<p>Total Tracks: {album.tracks.length}</p>
 			</footer>
-		</div>
+		</section>
 	);
 }

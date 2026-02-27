@@ -1,17 +1,23 @@
-import type { ReactNode } from "react";
+import { type ComponentPropsWithoutRef, forwardRef } from "react";
 import { cn } from "@/lib/utils/cn";
 
-interface ContainerProps {
-    children: ReactNode;
-    className?: string;
-}
+interface ContainerProps extends ComponentPropsWithoutRef<"div"> {}
 
-export function Container({ children, className }: ContainerProps) {
-    return (
-        <div
-            className={cn("mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8", className)}
-        >
-            {children}
-        </div>
-    );
-}
+export const Container = forwardRef<HTMLDivElement, ContainerProps>(
+	({ children, className, ...props }, ref) => {
+		return (
+			<div
+				ref={ref}
+				className={cn(
+					"container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8",
+					className,
+				)}
+				{...props}
+			>
+				{children}
+			</div>
+		);
+	},
+);
+
+Container.displayName = "Container";

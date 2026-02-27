@@ -1,6 +1,5 @@
 "use client";
 
-import { Stack } from "@/components/layout/Stack";
 import {
 	LoopButton,
 	PlayPauseButton,
