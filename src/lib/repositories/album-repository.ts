@@ -13,6 +13,11 @@ export interface AlbumRepositoryContract {
 		data: Album | null;
 		error: Error | null;
 	}>;
+
+	searchByTitle(title: string): Promise<{
+		data: Album[] | null;
+		error: Error | null;
+	}>;
 }
 
 export class AlbumRepository implements AlbumRepositoryContract {
@@ -46,6 +51,22 @@ export class AlbumRepository implements AlbumRepositoryContract {
 
 		return {
 			data: data ? mapAlbum(data) : null,
+			error: null,
+		};
+	}
+
+	async searchByTitle(title: string) {
+		const { data, error } = await this.supabase
+			.from("albums")
+			.select("*, tracks!inner(*, genres!inner(*))")
+			.ilike("title", `${title}%`);
+
+		if (error) {
+			return { data: null, error };
+		}
+
+		return {
+			data: data?.map((album) => mapAlbum(album)) ?? null,
 			error: null,
 		};
 	}
