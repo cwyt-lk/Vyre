@@ -12,6 +12,7 @@ interface AudioPlayerState {
 	isReady: boolean;
 	error: Error | null;
 	isPlaying: boolean;
+	activeSourceId: string | null;
 
 	queue: Track[];
 	currentIndex: number;
@@ -28,7 +29,8 @@ interface AudioPlayerState {
 	shuffleOrder: number[];
 
 	// --- Actions ---
-	setQueue: (tracks: Track[], startIndex?: number) => void;
+	setQueue: (tracks: Track[], sourceId: string | null) => void;
+
 	addToQueue: (track: Track) => void;
 	clearQueue: () => void;
 
@@ -58,6 +60,7 @@ const initialState = {
 	isReady: false,
 	error: null,
 	isPlaying: false,
+	activeSourceId: null,
 	queue: [],
 	currentIndex: -1,
 	currentTrack: null,
@@ -130,16 +133,23 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
 		...initialState,
 
 		// --- Queue Management ---
-		setQueue: (tracks, startIndex = 0) => {
+		setQueue: (tracks, sourceId = null) => {
 			if (!tracks.length) return;
 
+			const startIndex = 0;
 			const { isShuffling } = get();
 			const shuffleOrder = isShuffling
 				? generateShuffleOrder(tracks.length, startIndex)
 				: [];
 
-			set({ queue: tracks, currentIndex: startIndex, shuffleOrder });
-			loadTrack(tracks[startIndex]);
+			set({
+				queue: tracks,
+				currentIndex: startIndex,
+				shuffleOrder,
+				activeSourceId: sourceId ?? null,
+			});
+
+			loadTrack(tracks[0]);
 		},
 
 		addToQueue: (track) => {
