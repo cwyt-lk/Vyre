@@ -1,5 +1,6 @@
 "use client";
 
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
@@ -39,7 +40,12 @@ export const SignOutButton = () => {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger
-				render={<Button variant="outline">Sign Out</Button>}
+				render={
+					<Button variant="outline">
+						<LogOut className="size-4" />
+						Sign Out
+					</Button>
+				}
 			/>
 			<AlertDialogContent size="sm">
 				<AlertDialogHeader>
@@ -60,10 +66,13 @@ export const SignOutButton = () => {
 						{loading ? (
 							<>
 								<Spinner />
-								<span>Signing Out...</span>
+								Signing Out...
 							</>
 						) : (
-							"Sign Out"
+							<>
+								<LogOut className="size-4" />
+								Sign Out
+							</>
 						)}
 					</AlertDialogAction>
 				</AlertDialogFooter>
