@@ -12,17 +12,33 @@ export function SignInActions({
 	onReset,
 }: SignInActionProps) {
 	return (
-		<Field className="mt-6">
-			<Button type="submit" size="lg" disabled={isSubmitting}>
-				{isSubmitting && <Spinner className="size-5" />}
-				{isSubmitting ? "Signing In..." : "Sign In"}
+		<Field className="mt-8 flex flex-col gap-3">
+			<Button
+				type="submit"
+				size="lg"
+				className="w-full font-semibold transition-all active:scale-[0.98]"
+				disabled={isSubmitting}
+			>
+				{isSubmitting ? (
+					<>
+						<Spinner className="mr-2" />
+						Signing In...
+					</>
+				) : (
+					"Sign In"
+				)}
 			</Button>
 
 			<Button
-				variant="outline"
-				type="reset"
+				variant="ghost"
+				type="button"
+				size="sm"
+				className="text-muted-foreground hover:text-foreground h-9"
 				disabled={isSubmitting}
-				onClick={onReset}
+				onClick={(e) => {
+					e.preventDefault();
+					onReset();
+				}}
 			>
 				Reset
 			</Button>

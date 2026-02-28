@@ -1,20 +1,24 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
-import { Field } from "@/components/ui/Field";
+import { Separator } from "@/components/ui/Separator";
 
-export function SignInFooter() {
+interface SignInFooterProps {
+	className?: string;
+}
+
+export function SignInFooter({ className }: SignInFooterProps) {
 	return (
-		<Field className="mt-6 text-sm">
-			<div className="flex flex-col items-center justify-between gap-4">
-				<span className="text-muted-foreground">
-					Don’t have an account?
-				</span>
-				<Link href="/auth/sign-up">
-					<Button type="button" variant="ghost">
-						Sign Up
-					</Button>
+		<div className="flex flex-col gap-6 items-center justify-center">
+			<Separator className={className} />
+
+			<p className="text-sm text-muted-foreground">
+				Don&apos;t have an account?{" "}
+				<Link
+					href="/auth/sign-up"
+					className="font-medium text-primary underline-offset-4 hover:underline transition-colors"
+				>
+					Sign up
 				</Link>
-			</div>
-		</Field>
+			</p>
+		</div>
 	);
 }

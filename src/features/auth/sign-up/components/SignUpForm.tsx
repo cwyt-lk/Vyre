@@ -1,8 +1,9 @@
 "use client";
 
-import { Lock, Mail, User } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { FormInputField } from "@/components/form/FormInputField";
-import { Field, FieldGroup, FieldSet } from "@/components/ui/Field";
+import { FieldGroup, FieldSet } from "@/components/ui/Field";
+import { Separator } from "@/components/ui/Separator";
 import { SignUpActions } from "@/features/auth/sign-up/components/SignUpActions";
 import { SignUpFooter } from "@/features/auth/sign-up/components/SignUpFooter";
 import { SignUpHeader } from "@/features/auth/sign-up/components/SignUpHeader";
@@ -21,17 +22,20 @@ export function SignUpForm() {
 				e.preventDefault();
 				form.handleSubmit();
 			}}
+			className="w-full"
 		>
-			<FieldGroup className="p-6">
+			<FieldGroup className="p-8">
 				<SignUpHeader />
 
-				<FieldSet className="mt-6">
+				<FieldSet className="mt-8 space-y-4">
 					<form.Field name="email">
 						{(field) => (
 							<FormInputField
 								field={field}
-								icon={<Mail className="size-5" />}
-								placeholder="Enter your Email Address"
+								icon={
+									<Mail className="size-4 text-muted-foreground" />
+								}
+								placeholder="name@example.com"
 								type="email"
 							/>
 						)}
@@ -41,8 +45,10 @@ export function SignUpForm() {
 						{(field) => (
 							<FormInputField
 								field={field}
-								icon={<Lock className="size-5" />}
-								placeholder="Enter your Password"
+								icon={
+									<Lock className="size-4 text-muted-foreground" />
+								}
+								placeholder="Create a password"
 								type="password"
 							/>
 						)}
@@ -52,8 +58,10 @@ export function SignUpForm() {
 						{(field) => (
 							<FormInputField
 								field={field}
-								icon={<Lock className="size-5" />}
-								placeholder="Confirm your Password"
+								icon={
+									<Lock className="size-4 text-muted-foreground" />
+								}
+								placeholder="Confirm your password"
 								type="password"
 							/>
 						)}
@@ -65,20 +73,24 @@ export function SignUpForm() {
 					onReset={() => form.reset()}
 				/>
 
-				<div className="my-6 flex items-center gap-3">
-					<div className="h-px flex-1 bg-border" />
-					<span className="text-sm text-muted-foreground">
-						OR
-					</span>
-					<div className="h-px flex-1 bg-border" />
+				<div className="relative my-4">
+					<div className="absolute inset-0 flex items-center">
+						<Separator />
+					</div>
+
+					<div className="relative flex justify-center text-xs uppercase">
+						<span className="bg-card px-2 text-muted-foreground">
+							Or continue with
+						</span>
+					</div>
 				</div>
 
-				<Field>
+				<div className="grid grid-cols-2 gap-4">
 					<GoogleSocialButton />
 					<GithubSocialButton />
-				</Field>
+				</div>
 
-				<SignUpFooter />
+				<SignUpFooter className="my-4" />
 			</FieldGroup>
 		</form>
 	);
