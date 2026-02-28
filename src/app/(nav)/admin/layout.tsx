@@ -1,4 +1,4 @@
-import { forbidden, unauthorized } from "next/navigation";
+import { forbidden } from "next/navigation";
 import type { ReactNode } from "react";
 import { createRepositories } from "@/lib/factories/server";
 

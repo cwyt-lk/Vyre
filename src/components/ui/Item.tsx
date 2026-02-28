@@ -60,15 +60,12 @@ function Item({
 	size = "default",
 	render,
 	...props
-}: useRender.ComponentProps<"div"> &
-	VariantProps<typeof itemVariants>) {
+}: useRender.ComponentProps<"div"> & VariantProps<typeof itemVariants>) {
 	return useRender({
 		defaultTagName: "div",
 		props: mergeProps<"div">(
 			{
-				className: cn(
-					itemVariants({ variant, size, className }),
-				),
+				className: cn(itemVariants({ variant, size, className })),
 			},
 			props,
 		),
@@ -138,10 +135,7 @@ function ItemTitle({ className, ...props }: ComponentProps<"div">) {
 	);
 }
 
-function ItemDescription({
-	className,
-	...props
-}: ComponentProps<"p">) {
+function ItemDescription({ className, ...props }: ComponentProps<"p">) {
 	return (
 		<p
 			data-slot="item-description"

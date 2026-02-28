@@ -46,8 +46,7 @@ export class StorageRepository implements StorageRepositoryContract {
 		if (error || !data) {
 			return {
 				data: null,
-				error:
-					error || new Error("Failed to create signed url"),
+				error: error || new Error("Failed to create signed url"),
 			};
 		}
 

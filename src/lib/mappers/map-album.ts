@@ -2,10 +2,9 @@ import { mapTrack, type TrackDB } from "@/lib/mappers/map-track";
 import type { Album } from "@/types/domain/album";
 import type { Database } from "@/types/supabase";
 
-export type AlbumDB =
-	Database["public"]["Tables"]["albums"]["Row"] & {
-		tracks: TrackDB[];
-	};
+export type AlbumDB = Database["public"]["Tables"]["albums"]["Row"] & {
+	tracks: TrackDB[];
+};
 
 export function mapAlbum(db: AlbumDB): Album {
 	return {

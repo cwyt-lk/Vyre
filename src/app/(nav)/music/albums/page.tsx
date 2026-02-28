@@ -1,11 +1,5 @@
-import { Search } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from "@/components/ui/InputGroup";
 import { AlbumCard } from "@/features/music/albums/AlbumCard";
 import { AlbumSearch } from "@/features/music/albums/AlbumSearch";
 import { createRepositories } from "@/lib/factories/server";

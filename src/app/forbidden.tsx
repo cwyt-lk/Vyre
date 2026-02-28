@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowLeft, Home, Lock, ShieldAlert } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 

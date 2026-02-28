@@ -7,10 +7,7 @@ import { cn } from "@/lib/utils/cn";
 
 function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
 	return (
-		<AlertDialogPrimitive.Root
-			data-slot="alert-dialog"
-			{...props}
-		/>
+		<AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
 	);
 }
 
@@ -107,10 +104,7 @@ function AlertDialogFooter({
 	);
 }
 
-function AlertDialogMedia({
-	className,
-	...props
-}: ComponentProps<"div">) {
+function AlertDialogMedia({ className, ...props }: ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="alert-dialog-media"

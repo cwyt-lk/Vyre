@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { Slider } from "@/components/ui/Slider";
 import { useSeekBar } from "@/features/music/player/hooks/useSeekBar";
-import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
 import { cn } from "@/lib/utils/cn";
 
 interface SeekBarProps {

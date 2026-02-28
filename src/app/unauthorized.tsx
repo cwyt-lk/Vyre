@@ -26,8 +26,8 @@ export default function Unauthorized() {
 				</h2>
 
 				<p className="mt-3 text-muted-foreground">
-					Access to this page is restricted. Sign in to
-					continue to your account.
+					Access to this page is restricted. Sign in to continue
+					to your account.
 				</p>
 
 				<div className="mt-8 flex flex-col gap-3 sm:flex-row">

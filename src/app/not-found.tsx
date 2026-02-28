@@ -26,8 +26,8 @@ export default function NotFound() {
 				</h2>
 
 				<p className="mt-3 text-muted-foreground">
-					The page you’re looking for doesn’t exist or may
-					have been moved. Let’s get you back on track.
+					The page you’re looking for doesn’t exist or may have
+					been moved. Let’s get you back on track.
 				</p>
 
 				<div className="mt-8 flex flex-col gap-3 sm:flex-row">

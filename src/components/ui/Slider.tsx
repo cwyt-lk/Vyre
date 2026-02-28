@@ -32,6 +32,7 @@ const sliderThumbVariants = cva(
 
 /* ---------------------------------- */
 /* Slider                             */
+
 /* ---------------------------------- */
 
 function Slider({
@@ -63,9 +64,7 @@ function Slider({
 			className={cn(sliderRootVariants(), className)}
 			{...props}
 		>
-			<SliderPrimitive.Control
-				className={sliderControlVariants()}
-			>
+			<SliderPrimitive.Control className={sliderControlVariants()}>
 				<SliderPrimitive.Track
 					data-slot="slider-track"
 					className={sliderTrackVariants()}
@@ -76,16 +75,13 @@ function Slider({
 					/>
 				</SliderPrimitive.Track>
 
-				{Array.from(
-					{ length: _values.length },
-					(_, index) => (
-						<SliderPrimitive.Thumb
-							key={index}
-							data-slot="slider-thumb"
-							className={sliderThumbVariants()}
-						/>
-					),
-				)}
+				{Array.from({ length: _values.length }, (_, index) => (
+					<SliderPrimitive.Thumb
+						key={index}
+						data-slot="slider-thumb"
+						className={sliderThumbVariants()}
+					/>
+				))}
 			</SliderPrimitive.Control>
 		</SliderPrimitive.Root>
 	);

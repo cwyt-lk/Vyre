@@ -1,2 +1,2 @@
-export * from './SeekBar';
-export * from './TimeDisplay';
+export * from "./SeekBar";
+export * from "./TimeDisplay";

@@ -9,10 +9,7 @@ import { Label } from "@/components/ui/Label";
 import { Separator } from "@/components/ui/Separator";
 import { cn } from "@/lib/utils/cn";
 
-function FieldSet({
-	className,
-	...props
-}: ComponentProps<"fieldset">) {
+function FieldSet({ className, ...props }: ComponentProps<"fieldset">) {
 	return (
 		<fieldset
 			data-slot="field-set"
@@ -90,10 +87,7 @@ function Field({
 	);
 }
 
-function FieldContent({
-	className,
-	...props
-}: ComponentProps<"div">) {
+function FieldContent({ className, ...props }: ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="field-content"
@@ -136,10 +130,7 @@ function FieldTitle({ className, ...props }: ComponentProps<"div">) {
 	);
 }
 
-function FieldDescription({
-	className,
-	...props
-}: ComponentProps<"p">) {
+function FieldDescription({ className, ...props }: ComponentProps<"p">) {
 	return (
 		<p
 			data-slot="field-description"
