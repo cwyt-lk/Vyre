@@ -17,6 +17,7 @@ export type FormInputFieldProps = {
 	label?: ReactNode;
 	icon?: ReactNode;
 
+	onChange?: (value: string) => void;
 	type?: string;
 	placeholder?: string;
 	description?: ReactNode;
@@ -26,6 +27,7 @@ export const FormInputField = ({
 	field,
 	label,
 	icon,
+	onChange,
 	type = "text",
 	placeholder,
 	description,
@@ -42,10 +44,7 @@ export const FormInputField = ({
 	return (
 		<Field data-invalid={isInvalid}>
 			{label && (
-				<FieldLabel
-					htmlFor={field.name}
-					aria-invalid={isInvalid}
-				>
+				<FieldLabel htmlFor={field.name} aria-invalid={isInvalid}>
 					{label}
 				</FieldLabel>
 			)}
@@ -56,9 +55,11 @@ export const FormInputField = ({
 					name={field.name}
 					value={field.state.value}
 					onBlur={field.handleBlur}
-					onChange={(e) =>
-						field.handleChange(e.target.value)
-					}
+					onChange={(e) => {
+						onChange
+							? onChange(e.target.value)
+							: field.handleChange(e.target.value);
+					}}
 					type={type}
 					placeholder={placeholder}
 					aria-invalid={isInvalid}
@@ -77,9 +78,7 @@ export const FormInputField = ({
 				</FieldDescription>
 			)}
 
-			{isInvalid && (
-				<FieldError errors={errors} className="px-2" />
-			)}
+			{isInvalid && <FieldError errors={errors} className="px-2" />}
 		</Field>
 	);
 };

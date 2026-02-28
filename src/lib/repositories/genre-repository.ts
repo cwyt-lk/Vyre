@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapGenre } from "@/lib/mappers/map-genre";
-import type { Genre } from "@/types/domain/genre";
+import type { CreateGenre, Genre } from "@/types/domain/genre";
 import type { Database } from "@/types/supabase";
 
 export interface GenreRepositoryContract {
@@ -11,6 +11,10 @@ export interface GenreRepositoryContract {
 
 	findById(id: string): Promise<{
 		data: Genre | null;
+		error: Error | null;
+	}>;
+
+	create(genre: CreateGenre): Promise<{
 		error: Error | null;
 	}>;
 }
@@ -46,6 +50,21 @@ export class GenreRepository implements GenreRepositoryContract {
 
 		return {
 			data: data ? mapGenre(data) : null,
+			error: null,
+		};
+	}
+
+	async create(genre: CreateGenre) {
+		const { error } = await this.supabase.from("genres").insert({
+			key: genre.key,
+			label: genre.label,
+		});
+
+		if (error) {
+			return { error };
+		}
+
+		return {
 			error: null,
 		};
 	}
