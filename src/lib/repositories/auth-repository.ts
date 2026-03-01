@@ -1,44 +1,40 @@
 import type { Provider, SupabaseClient } from "@supabase/supabase-js";
-import { mapUser } from "@/lib/mappers";
+import { mapUser } from "@/lib/mappers/domain";
+import { mapAuthError } from "@/lib/mappers/errors";
 import type { User } from "@/types/domain";
+import { VyreError } from "@/types/errors";
+import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
-export interface AuthRepositoryContract {
-	signUp(
-		email: string,
-		password: string,
-	): Promise<{ data: User | null; error: Error | null }>;
+interface OAuthResult {
+	url: string;
+	provider: string;
+}
 
-	signIn(
-		email: string,
-		password: string,
-	): Promise<{ data: User | null; error: Error | null }>;
+export interface AuthRepositoryContract {
+	signUp(email: string, password: string): Promise<RepoResult<User>>;
+
+	signIn(email: string, password: string): Promise<RepoResult<User>>;
 
 	signInWithOAuth(
 		provider: string,
 		redirectUrl: string,
-	): Promise<{
-		data: { url: string; provider: string } | null;
-		error: Error | null;
-	}>;
+	): Promise<RepoResult<OAuthResult>>;
 
-	signOut(): Promise<{ error: Error | null }>;
+	signOut(): Promise<RepoResult<void>>;
 
-	getCurrentUser(): Promise<{
-		data: User | null;
-		error: Error | null;
-	}>;
+	getCurrentUser(): Promise<RepoResult<User>>;
 
-	getCurrentRole(): Promise<{
-		data: string | null;
-		error: Error | null;
-	}>;
+	getCurrentRole(): Promise<RepoResult<string>>;
 }
 
 export class AuthRepository implements AuthRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
-	async signUp(email: string, password: string) {
+	async signUp(
+		email: string,
+		password: string,
+	): Promise<RepoResult<User>> {
 		const { data, error } = await this.supabase.auth.signUp({
 			email,
 			password,
@@ -46,18 +42,20 @@ export class AuthRepository implements AuthRepositoryContract {
 
 		if (error || !data.user) {
 			return {
-				data: null,
-				error: error ?? new Error("User creation failed"),
+				success: false,
+				error: error
+					? mapAuthError(error)
+					: new VyreError("Sign up failed", "BAD_SIGN_UP"),
 			};
 		}
 
-		return {
-			data: mapUser(data.user),
-			error: null,
-		};
+		return { success: true, data: mapUser(data.user) };
 	}
 
-	async signIn(email: string, password: string) {
+	async signIn(
+		email: string,
+		password: string,
+	): Promise<RepoResult<User>> {
 		const { data, error } =
 			await this.supabase.auth.signInWithPassword({
 				email,
@@ -66,80 +64,70 @@ export class AuthRepository implements AuthRepositoryContract {
 
 		if (error || !data.user) {
 			return {
-				data: null,
-				error: error ?? new Error("Sign in failed"),
+				success: false,
+				error: error
+					? mapAuthError(error)
+					: new VyreError("Sign in failed", "BAD_SIGN_IN"),
 			};
 		}
 
-		return {
-			data: mapUser(data.user),
-			error: null,
-		};
+		return { success: true, data: mapUser(data.user) };
 	}
 
-	async signInWithOAuth(provider: string, redirectUrl: string) {
+	async signInWithOAuth(
+		provider: string,
+		redirectUrl: string,
+	): Promise<RepoResult<OAuthResult>> {
 		const { data, error } = await this.supabase.auth.signInWithOAuth({
 			provider: provider as Provider,
-			options: {
-				redirectTo: redirectUrl,
-			},
+			options: { redirectTo: redirectUrl },
 		});
 
 		if (error || !data.url) {
 			return {
-				data: null,
-				error: error ?? new Error("Sign in failed"),
+				success: false,
+				error: error
+					? mapAuthError(error)
+					: new VyreError("OAuth failed", "BAD_OAUTH"),
 			};
 		}
 
-		return {
-			data: {
-				url: data.url,
-				provider,
-			},
-			error: null,
-		};
+		return { success: true, data: { url: data.url, provider } };
 	}
 
-	async signOut() {
+	async signOut(): Promise<RepoResult> {
 		const { error } = await this.supabase.auth.signOut();
 
-		if (error) {
-			return { error };
-		}
-
-		return { error: null };
+		return error
+			? { success: false, error: mapAuthError(error) }
+			: { success: true };
 	}
 
-	async getCurrentUser() {
+	async getCurrentUser(): Promise<RepoResult<User>> {
 		const { data, error } = await this.supabase.auth.getUser();
 
-		if (error || !data.user) {
+		if (error) {
 			return {
-				data: null,
-				error: error ?? null,
+				success: false,
+				error: mapAuthError(error),
 			};
 		}
 
-		return {
-			data: mapUser(data.user),
-			error: null,
-		};
+		return { success: true, data: mapUser(data.user) };
 	}
 
-	async getCurrentRole() {
+	async getCurrentRole(): Promise<RepoResult<string>> {
 		const { data, error } = await this.supabase.auth.getClaims();
 
 		if (error || !data) {
 			return {
-				data: null,
-				error: error ?? null,
+				success: false,
+				error: error
+					? mapAuthError(error)
+					: new VyreError("No JWT token", "BAD_JWT_TOKEN"),
 			};
 		}
 
-		return {
-			data: data.claims?.user_role ?? "user",
-			error: null,
-		};
+		return { success: true, data: data.claims?.user_role ?? "user" };
 	}
 }

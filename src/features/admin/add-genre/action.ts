@@ -23,14 +23,15 @@ export async function addGenre(
 	}
 
 	const genreData = parsed.data as Genre;
-	const { error } = await genres.create(genreData);
+	const result = await genres.create(genreData);
 
-	if (error) {
-		console.error(error);
-
+	if (!result.success) {
 		return {
 			success: false,
-			error: "Failed to add genre. Please try again.",
+			error:
+				result.error.code === "CONFLICT"
+					? "Genre key already exists."
+					: "Failed to add genre. Please try again.",
 		};
 	}
 

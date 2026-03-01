@@ -6,12 +6,13 @@ export function getTrackUrl(track: Track): string | null {
 
 	if (!track?.filePath) return null;
 
-	const { data, error } = storage.getPublicFile("music", track.filePath);
+	const result = storage.getPublicFile("music", track.filePath);
 
-	if (error) {
-		console.error("Failed to get track URL", error);
+	if (!result.success) {
+		console.error("Failed to get track URL", result.error.message);
+
 		return null;
 	}
 
-	return data;
+	return result.data;
 }

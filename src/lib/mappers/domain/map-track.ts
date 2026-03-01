@@ -1,4 +1,4 @@
-import { type GenreDB, mapGenre } from "@/lib/mappers";
+import { type GenreDB, mapGenre } from "@/lib/mappers/domain";
 import type { Track } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 

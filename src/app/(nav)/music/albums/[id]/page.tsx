@@ -11,16 +11,20 @@ export default async function AlbumPage({ params }: AlbumParamsType) {
 	const { id } = await params;
 
 	const { albums, storage } = await createRepositories();
-	const { data: album, error } = await albums.findById(id);
+	const albumResult = await albums.findById(id);
 
-	if (error || !album) {
+	if (!albumResult.success) {
 		notFound();
 	}
 
-	const { data: coverUrl } = storage.getPublicFile(
+	const album = albumResult.data;
+
+	const storageResult = storage.getPublicFile(
 		"cover-art",
 		album.coverPath,
 	);
+
+	const coverUrl = storageResult.success ? storageResult.data : "";
 
 	return (
 		<Container>

@@ -1,4 +1,4 @@
-import { mapTrack, type TrackDB } from "@/lib/mappers";
+import { mapTrack, type TrackDB } from "@/lib/mappers/domain";
 import type { Album } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 

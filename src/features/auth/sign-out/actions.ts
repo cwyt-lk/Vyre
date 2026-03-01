@@ -5,10 +5,10 @@ import type { ActionResult } from "@/types/results";
 
 export async function signOutAction(): Promise<ActionResult> {
 	const { auth } = await createRepositories();
-	const { error } = await auth.signOut();
+	const result = await auth.signOut();
 
-	if (error) {
-		return { success: false, error: error.message };
+	if (!result.success) {
+		return { success: false, error: result.error.message };
 	}
 
 	return { success: true };

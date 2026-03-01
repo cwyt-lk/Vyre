@@ -4,10 +4,11 @@ import { capitalize, getNameFromEmail } from "@/lib/utils/string";
 
 export default async function HomePage() {
 	const { auth } = await createRepositories();
-	const { data: user } = await auth.getCurrentUser();
+	const result = await auth.getCurrentUser();
 
-	if (!user) unauthorized();
+	if (!result.success) unauthorized();
 
+	const user = result.data;
 	const greetingName = user.fullName ?? getNameFromEmail(user.email);
 
 	return (

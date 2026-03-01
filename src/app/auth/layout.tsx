@@ -8,10 +8,9 @@ export default async function AuthLayout({
 	children: ReactNode;
 }>) {
 	const { auth } = await createRepositories();
+	const result = await auth.getCurrentUser();
 
-	const { data: user } = await auth.getCurrentUser();
-
-	if (user) {
+	if (result.success) {
 		redirect("/home");
 	}
 

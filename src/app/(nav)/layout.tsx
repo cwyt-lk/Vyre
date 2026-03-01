@@ -81,15 +81,17 @@ export default async function NavLayout({
 	children: ReactNode;
 }) {
 	const { auth } = await createRepositories();
-	const [userResponse, roleResponse] = await Promise.all([
+	const [userResult, roleResult] = await Promise.all([
 		auth.getCurrentUser(),
 		auth.getCurrentRole(),
 	]);
 
-	const user = userResponse.data;
-	const isAdmin = roleResponse.data === "admin";
+	if (!userResult.success || !roleResult.success) {
+		unauthorized();
+	}
 
-	if (!user) unauthorized();
+	const user = userResult.data;
+	const isAdmin = roleResult.data === "admin";
 
 	return (
 		<div className="relative flex min-h-screen flex-col">

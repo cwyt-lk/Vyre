@@ -16,12 +16,9 @@ interface AlbumCardProps {
 export const AlbumCard = async ({ album }: AlbumCardProps) => {
 	const { storage } = await createRepositories();
 
-	const { data: coverUrl } = storage.getPublicFile(
-		"cover-art",
-		album.coverPath,
-	);
+	const result = storage.getPublicFile("cover-art", album.coverPath);
 
-	const imageSrc = coverUrl ?? "/placeholder.png";
+	const imageSrc = result.success ? result.data : "/placeholder.png";
 
 	return (
 		<Card className="group h-full overflow-hidden border-none bg-muted/10 transition-all hover:bg-muted/50">

@@ -24,12 +24,12 @@ export async function signInAction(
 	const { email, password } = parsed.data;
 
 	const { auth } = await createRepositories();
-	const { error } = await auth.signIn(email, password);
+	const result = await auth.signIn(email, password);
 
-	if (error) {
+	if (!result.success) {
 		return {
 			success: false,
-			error: error.message,
+			error: result.error.message,
 		};
 	}
 

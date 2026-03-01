@@ -12,15 +12,22 @@ export default async function AlbumsPage({
 	const { albums } = await createRepositories();
 
 	const query = (await searchParams)?.query ?? "";
-	const { data: albumsList, error } = await albums.searchByTitle(query);
+	const result = await albums.searchByTitle(query);
 
-	if (
-		((error || albumsList.length === 0) && query === "") ||
-		!albumsList
-	) {
+	if (!result.success) {
 		return (
 			<Container className="flex min-h-[50vh] flex-col items-center justify-center">
-				TODO Add Empty & Error Screens
+				TODO Add Error Screens
+			</Container>
+		);
+	}
+
+	const albumsList = result.data;
+
+	if (albumsList.length === 0 && query === "") {
+		return (
+			<Container className="flex min-h-[50vh] flex-col items-center justify-center">
+				TODO Add Empty Screens
 			</Container>
 		);
 	}

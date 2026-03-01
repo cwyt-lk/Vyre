@@ -1,52 +1,47 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { mapTrack } from "@/lib/mappers";
+import { mapTrack } from "@/lib/mappers/domain";
+import { mapPostgresError } from "@/lib/mappers/errors";
 import type { Track } from "@/types/domain";
+import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
-export interface TrackRepositoryContract {
-	findAll(): Promise<{
-		data: Track[] | null;
-		error: Error | null;
-	}>;
+const TRACK_SELECT_QUERY = "*, genres!inner(*)";
 
-	findById(id: string): Promise<{
-		data: Track | null;
-		error: Error | null;
-	}>;
+export interface TrackRepositoryContract {
+	findAll(): Promise<RepoResult<Track[]>>;
+
+	findById(id: string): Promise<RepoResult<Track>>;
 }
 
 export class TrackRepository implements TrackRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
-	async findAll() {
+	async findAll(): Promise<RepoResult<Track[]>> {
 		const { data, error } = await this.supabase
 			.from("tracks")
-			.select("*, genres!inner(*)");
+			.select(TRACK_SELECT_QUERY);
 
 		if (error) {
-			return { data: null, error };
+			return { success: false, error: mapPostgresError(error) };
 		}
 
 		return {
-			data: data?.map((track) => mapTrack(track)) ?? null,
-			error: null,
+			success: true,
+			data: data.map(mapTrack).filter((a): a is Track => !!a),
 		};
 	}
 
-	async findById(id: string) {
+	async findById(id: string): Promise<RepoResult<Track>> {
 		const { data, error } = await this.supabase
 			.from("tracks")
-			.select("*, genres!inner(*)")
+			.select(TRACK_SELECT_QUERY)
 			.eq("id", id)
 			.single();
 
 		if (error) {
-			return { data: null, error };
+			return { success: false, error: mapPostgresError(error) };
 		}
 
-		return {
-			data: data ? mapTrack(data) : null,
-			error: null,
-		};
+		return { success: true, data: mapTrack(data) };
 	}
 }

@@ -3,10 +3,9 @@ import { createRepositories } from "@/lib/factories/repository/server";
 
 export default async function RootPage() {
 	const { auth } = await createRepositories();
+	const result = await auth.getCurrentUser();
 
-	const { data: user } = await auth.getCurrentUser();
-
-	if (!user) {
+	if (!result.success) {
 		redirect("/auth/sign-in");
 	}
 

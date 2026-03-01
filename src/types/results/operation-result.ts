@@ -1,3 +1,3 @@
-export type OperationResult<T = void, E = string> =
-	| (T extends void ? { success: true } : { success: true; data: T })
-	| { success: false; error: E };
+export type OperationResult<T, E> = T extends void
+	? { success: true } | { success: false; error: E }
+	: { success: true; data: T } | { success: false; error: E };
