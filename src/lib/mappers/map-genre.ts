@@ -1,4 +1,4 @@
-import type { Genre } from "@/types/domain/genre";
+import type { Genre } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
 export type GenreDB = Database["public"]["Tables"]["genres"]["Row"];

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { audioEngine } from "@/lib/audio/audio-engine";
 import { generateShuffleOrder } from "@/lib/utils/array";
 import { getTrackUrl } from "@/lib/utils/storage";
-import type { Track } from "@/types/domain/track";
+import type { Track } from "@/types/domain";
 
 type LoopMode = "off" | "track" | "playlist";
 

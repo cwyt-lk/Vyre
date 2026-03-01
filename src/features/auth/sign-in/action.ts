@@ -5,7 +5,8 @@ import {
 	type SignInInput,
 	signInSchema,
 } from "@/features/auth/sign-in/schema";
-import { createRepositories } from "@/lib/factories/server";
+import { createRepositories } from "@/lib/factories/repository/server";
+import type { ActionResult } from "@/types/results";
 
 export async function signInAction(
 	input: SignInInput,

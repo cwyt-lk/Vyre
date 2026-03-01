@@ -1,4 +1,4 @@
-import type { Track } from "@/types/domain/track";
+import type { Track } from "@/types/domain";
 
 export interface Album {
 	id: string;

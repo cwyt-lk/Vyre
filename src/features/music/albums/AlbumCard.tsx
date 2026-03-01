@@ -6,8 +6,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/Card";
-import { createRepositories } from "@/lib/factories/server";
-import type { Album } from "@/types/domain/album";
+import { createRepositories } from "@/lib/factories/repository/server";
+import type { Album } from "@/types/domain";
 
 interface AlbumCardProps {
 	album: Album;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { AlbumCard } from "@/features/music/albums/AlbumCard";
 import { AlbumSearch } from "@/features/music/albums/AlbumSearch";
-import { createRepositories } from "@/lib/factories/server";
+import { createRepositories } from "@/lib/factories/repository/server";
 
 export default async function AlbumsPage({
 	searchParams,

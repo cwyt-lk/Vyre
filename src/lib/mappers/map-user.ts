@@ -1,5 +1,5 @@
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import type { User } from "@/types/domain/user";
+import type { User } from "@/types/domain";
 
 export function mapUser(user: SupabaseUser): User {
 	return {

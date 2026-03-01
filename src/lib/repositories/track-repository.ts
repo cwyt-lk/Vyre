@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { mapTrack } from "@/lib/mappers/map-track";
-import type { Track } from "@/types/domain/track";
+import { mapTrack } from "@/lib/mappers";
+import type { Track } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
 export interface TrackRepositoryContract {

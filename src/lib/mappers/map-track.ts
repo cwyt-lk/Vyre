@@ -1,5 +1,5 @@
-import { type GenreDB, mapGenre } from "@/lib/mappers/map-genre";
-import type { Track } from "@/types/domain/track";
+import { type GenreDB, mapGenre } from "@/lib/mappers";
+import type { Track } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
 export type TrackDB = Database["public"]["Tables"]["tracks"]["Row"] & {

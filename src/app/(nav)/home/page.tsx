@@ -1,5 +1,5 @@
 import { unauthorized } from "next/navigation";
-import { createRepositories } from "@/lib/factories/server";
+import { createRepositories } from "@/lib/factories/repository/server";
 import { capitalize, getNameFromEmail } from "@/lib/utils/string";
 
 export default async function HomePage() {

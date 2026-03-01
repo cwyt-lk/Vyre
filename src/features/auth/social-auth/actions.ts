@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createRepositories } from "@/lib/factories/server";
+import { createRepositories } from "@/lib/factories/repository/server";
+import type { ActionResult } from "@/types/results";
 
 export async function signInWithGithubAction(): Promise<ActionResult> {
 	const { auth } = await createRepositories();

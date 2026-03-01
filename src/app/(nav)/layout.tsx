@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { unauthorized } from "next/navigation";
 import type { ReactNode } from "react";
+import { VyreLogo } from "@/components/brand/VyreLogo";
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -11,7 +12,7 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/NavigationMenu";
 import { SignOutButton } from "@/features/auth/sign-out/components/SignOutButton";
-import { createRepositories } from "@/lib/factories/server";
+import { createRepositories } from "@/lib/factories/repository/server";
 
 const MENU_ITEMS = [
 	{ href: "/home", label: "Home" },
@@ -20,8 +21,8 @@ const MENU_ITEMS = [
 
 const ADMIN_ITEMS = [
 	{
-		href: "/admin/add-music",
-		title: "Add Music",
+		href: "/admin/add-track",
+		title: "Add Track",
 		description: "Upload new tracks and manage metadata.",
 	},
 	{
@@ -59,7 +60,7 @@ const AdminMenu = () => (
 		<NavigationMenuContent>
 			{ADMIN_ITEMS.map((item) => (
 				<NavigationMenuLink key={item.href} href={item.href}>
-					<div className="rounded-md p-2 transition hover:bg-accent/90">
+					<div className="rounded-md p-2 transition hover:bg-accent/20">
 						<div className="text-sm font-medium leading-none">
 							{item.title}
 						</div>
@@ -92,14 +93,14 @@ export default async function NavLayout({
 
 	return (
 		<div className="relative flex min-h-screen flex-col">
-			<header className="sticky top-0 z-50 w-full bg-muted/30 backdrop-blur rounded-2xl">
+			<header className="sticky top-0 z-50 w-full bg-muted/25 backdrop-blur-md">
 				<nav className="grid grid-cols-3 py-3 px-10">
 					<div className="flex items-center justify-start gap-4">
 						<Link
 							href="/home"
 							className="text-center font-bold hover:opacity-40 transition-opacity"
 						>
-							Vyre
+							<VyreLogo className="size-8" />
 						</Link>
 
 						<NavigationMenu>

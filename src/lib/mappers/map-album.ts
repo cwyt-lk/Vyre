@@ -1,5 +1,5 @@
-import { mapTrack, type TrackDB } from "@/lib/mappers/map-track";
-import type { Album } from "@/types/domain/album";
+import { mapTrack, type TrackDB } from "@/lib/mappers";
+import type { Album } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
 export type AlbumDB = Database["public"]["Tables"]["albums"]["Row"] & {

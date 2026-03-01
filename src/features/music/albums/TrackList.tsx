@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/Item";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
 import { cn } from "@/lib/utils/cn";
-import type { Track } from "@/types/domain/track";
+import type { Track } from "@/types/domain";
 
 interface TrackListProps {
 	tracks: Track[];

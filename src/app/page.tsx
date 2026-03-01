@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createRepositories } from "@/lib/factories/server";
+import { createRepositories } from "@/lib/factories/repository/server";
 
 export default async function RootPage() {
 	const { auth } = await createRepositories();

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { AlbumClient } from "@/features/music/albums/AlbumClient";
-import { createRepositories } from "@/lib/factories/server";
+import { createRepositories } from "@/lib/factories/repository/server";
 
 interface AlbumParamsType {
 	params: Promise<{ id: string }>;

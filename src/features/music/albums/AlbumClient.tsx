@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { TrackList } from "@/features/music/albums/TrackList";
 import { Player } from "@/features/music/player/Player";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
-import type { Album } from "@/types/domain/album";
+import type { Album } from "@/types/domain";
 
 interface AlbumClientProps {
 	album: Album;

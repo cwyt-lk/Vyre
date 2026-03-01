@@ -5,8 +5,9 @@ import {
 	type AddGenreInput,
 	addGenreSchema,
 } from "@/features/admin/add-genre/schema";
-import { createRepositories } from "@/lib/factories/server";
-import type { Genre } from "@/types/domain/genre";
+import { createRepositories } from "@/lib/factories/repository/server";
+import type { Genre } from "@/types/domain";
+import type { ActionResult } from "@/types/results";
 
 export async function addGenre(
 	data: AddGenreInput,

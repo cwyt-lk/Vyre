@@ -1,4 +1,4 @@
-import type { Genre } from "@/types/domain/genre";
+import type { Genre } from "@/types/domain";
 
 export interface Track {
 	id: string;
