@@ -9,10 +9,11 @@ import {
 import {
 	InputGroup,
 	InputGroupAddon,
-	InputGroupInput,
+	InputGroupText,
+	InputGroupTextarea,
 } from "@/components/ui/InputGroup";
 
-export interface FormInputFieldProps {
+export interface FormTextareaFieldProps {
 	field: AnyFieldApi;
 	label?: ReactNode;
 	placeholder?: string;
@@ -22,19 +23,21 @@ export interface FormInputFieldProps {
 	onBlur?: (value: string) => void;
 	onChange?: (value: string) => void;
 
-	type?: string;
+	rows?: number;
+	maxLength?: number;
 }
 
-export const FormInputField = ({
+export const FormTextareaField = ({
 	field,
 	label,
+	placeholder,
+	description,
 	icon,
 	onBlur,
 	onChange,
-	type = "text",
-	placeholder,
-	description,
-}: FormInputFieldProps) => {
+	rows = 6,
+	maxLength = 100,
+}: FormTextareaFieldProps) => {
 	const { isTouched, isValid, errors } = field.state.meta;
 	const isInvalid = isTouched && !isValid;
 
@@ -54,12 +57,12 @@ export const FormInputField = ({
 
 			<InputGroup>
 				{icon && (
-					<InputGroupAddon align="inline-start">
+					<InputGroupAddon align="block-start">
 						{icon}
 					</InputGroupAddon>
 				)}
 
-				<InputGroupInput
+				<InputGroupTextarea
 					id={field.name}
 					name={field.name}
 					value={field.state.value}
@@ -73,8 +76,10 @@ export const FormInputField = ({
 							? onChange(e.target.value)
 							: field.handleChange(e.target.value);
 					}}
-					type={type}
 					placeholder={placeholder}
+					rows={rows}
+					maxLength={maxLength}
+					className="min-h-24 resize-none"
 					aria-invalid={isInvalid}
 					aria-describedby={
 						[descriptionId, errorId]
@@ -82,6 +87,12 @@ export const FormInputField = ({
 							.join(" ") || undefined
 					}
 				/>
+
+				<InputGroupAddon align="block-end">
+					<InputGroupText className="tabular-nums">
+						{field.state.value.length}/{maxLength} characters
+					</InputGroupText>
+				</InputGroupAddon>
 			</InputGroup>
 
 			{description && (

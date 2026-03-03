@@ -1,8 +1,8 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { AlertCircle, UploadCloud } from "lucide-react";
-import { useCallback } from "react";
+import { AlertCircle, Upload } from "lucide-react";
+import { type ReactNode, useCallback } from "react";
 import { type DropzoneOptions, useDropzone } from "react-dropzone";
 import { FilePreview } from "@/components/ui/FilePreview";
 import { cn } from "@/lib/utils/cn";
@@ -24,14 +24,15 @@ const dropzoneVariants = cva(
 	},
 );
 
-interface FileUploadProps
+export interface FileUploadProps
 	extends Omit<DropzoneOptions, "disabled">,
 		VariantProps<typeof dropzoneVariants> {
 	value?: File[];
 	onValueChange?: (files: File[]) => void;
 	disabled?: boolean;
 	className?: string;
-	error?: string;
+	invalid?: boolean;
+	children?: ReactNode;
 }
 
 export function FileUpload({
@@ -41,7 +42,8 @@ export function FileUpload({
 	multiple,
 	disabled = false,
 	maxFiles,
-	error,
+	invalid,
+	children,
 	...props
 }: FileUploadProps) {
 	const onDrop = useCallback(
@@ -49,8 +51,10 @@ export function FileUpload({
 			const newFiles = multiple
 				? [...value, ...acceptedFiles]
 				: [acceptedFiles[0]];
+
 			onValueChange?.(newFiles.slice(0, maxFiles ?? Infinity));
 		},
+
 		[value, onValueChange, multiple, maxFiles],
 	);
 
@@ -76,7 +80,7 @@ export function FileUpload({
 				{...getRootProps()}
 				className={cn(
 					dropzoneVariants({ isDragActive, disabled }),
-					error && "border-destructive bg-destructive/5",
+					invalid && "border-destructive bg-destructive/5",
 				)}
 			>
 				<input {...getInputProps()} />
@@ -94,38 +98,37 @@ export function FileUpload({
 				) : (
 					<div className="flex flex-col items-center gap-3 text-center">
 						<div className="p-3 rounded-full bg-muted">
-							<UploadCloud className="size-6 text-muted-foreground" />
+							<Upload className="size-6 text-muted-foreground" />
 						</div>
 
-						<p className="text-sm font-semibold">
-							{isDragActive
-								? "Drop files here"
-								: "Click or drag to upload"}
-						</p>
+						<div className="text-sm font-semibold">
+							{isDragActive ? (
+								<p>Drop files here</p>
+							) : (
+								<>
+									<p>Click or drag to upload</p>
+									{children}
+								</>
+							)}
+						</div>
 					</div>
 				)}
 			</div>
 
 			{/* Error Messages */}
-			{(fileRejections.length > 0 || error) && (
+			{fileRejections.length > 0 && (
 				<div className="space-y-1 px-1">
-					{error && (
-						<div className="flex items-center gap-2 text-destructive text-sm font-medium">
-							<AlertCircle className="size-4" />
-
-							<span>{error}</span>
-						</div>
-					)}
-
 					{fileRejections.map(({ file, errors }) => (
 						<div
 							key={file.name}
 							className="flex items-start gap-2 text-destructive text-sm font-medium"
 						>
 							<AlertCircle className="size-4" />
-
 							<span>
-								{file.name}: {errors[0].message}
+								{file.name}:{" "}
+								{errors
+									.map((error) => error.message)
+									.join(",")}
 							</span>
 						</div>
 					))}

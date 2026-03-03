@@ -7,34 +7,37 @@ import {
 	FieldLabel,
 } from "@/components/ui/Field";
 import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from "@/components/ui/InputGroup";
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/Select";
 
-export interface FormInputFieldProps {
+export interface SelectOption {
+	label: string;
+	value: string;
+}
+
+export interface FormSelectFieldProps {
 	field: AnyFieldApi;
 	label?: ReactNode;
 	placeholder?: string;
 	description?: ReactNode;
-	icon?: ReactNode;
 
-	onBlur?: (value: string) => void;
 	onChange?: (value: string) => void;
 
-	type?: string;
+	options: SelectOption[];
 }
 
-export const FormInputField = ({
+export const FormSelectField = ({
 	field,
 	label,
-	icon,
-	onBlur,
-	onChange,
-	type = "text",
 	placeholder,
 	description,
-}: FormInputFieldProps) => {
+	options,
+	onChange,
+}: FormSelectFieldProps) => {
 	const { isTouched, isValid, errors } = field.state.meta;
 	const isInvalid = isTouched && !isValid;
 
@@ -52,37 +55,40 @@ export const FormInputField = ({
 				</FieldLabel>
 			)}
 
-			<InputGroup>
-				{icon && (
-					<InputGroupAddon align="inline-start">
-						{icon}
-					</InputGroupAddon>
-				)}
-
-				<InputGroupInput
+			<Select
+				value={field.state.value?.toString() ?? ""}
+				onValueChange={(value) => {
+					onChange ? onChange(value) : field.handleChange(value);
+				}}
+			>
+				<SelectTrigger
 					id={field.name}
-					name={field.name}
-					value={field.state.value}
-					onBlur={(e) => {
-						onBlur
-							? onBlur(e.target.value)
-							: field.handleBlur();
-					}}
-					onChange={(e) => {
-						onChange
-							? onChange(e.target.value)
-							: field.handleChange(e.target.value);
-					}}
-					type={type}
-					placeholder={placeholder}
 					aria-invalid={isInvalid}
 					aria-describedby={
 						[descriptionId, errorId]
 							.filter(Boolean)
 							.join(" ") || undefined
 					}
-				/>
-			</InputGroup>
+				>
+					<SelectValue placeholder={placeholder}>
+						{
+							options.find(
+								(opt) => opt.value === field.state.value,
+							)?.label
+						}
+					</SelectValue>
+				</SelectTrigger>
+				<SelectContent>
+					{options.map((option) => (
+						<SelectItem
+							key={option.value}
+							value={option.value}
+						>
+							{option.label}
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
 
 			{description && (
 				<FieldDescription id={descriptionId} className="px-2">
