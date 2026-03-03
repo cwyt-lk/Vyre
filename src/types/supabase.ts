@@ -89,24 +89,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-			role_permissions: {
-				Row: {
-					id: number;
-					permission: Database["public"]["Enums"]["app_permission"];
-					role: Database["public"]["Enums"]["app_role"];
-				};
-				Insert: {
-					id?: number;
-					permission: Database["public"]["Enums"]["app_permission"];
-					role: Database["public"]["Enums"]["app_role"];
-				};
-				Update: {
-					id?: number;
-					permission?: Database["public"]["Enums"]["app_permission"];
-					role?: Database["public"]["Enums"]["app_role"];
-				};
-				Relationships: [];
-			};
 			tracks: {
 				Row: {
 					artists: string[];
@@ -168,9 +150,9 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			authorize: {
+			check_role: {
 				Args: {
-					requested_permission: Database["public"]["Enums"]["app_permission"];
+					target_role: Database["public"]["Enums"]["app_role"];
 				};
 				Returns: boolean;
 			};
@@ -180,7 +162,6 @@ export type Database = {
 			};
 		};
 		Enums: {
-			app_permission: "all.all";
 			app_role: "admin" | "user";
 			"Audio Formats":
 				| "mp3"
@@ -325,7 +306,6 @@ export type CompositeTypes<
 export const Constants = {
 	public: {
 		Enums: {
-			app_permission: ["all.all"],
 			app_role: ["admin", "user"],
 			"Audio Formats": [
 				"mp3",

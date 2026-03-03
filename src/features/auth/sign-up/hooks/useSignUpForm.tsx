@@ -18,10 +18,7 @@ export function useSignUpForm() {
 		},
 	});
 
-	const isSubmitting = useStore(
-		form.store,
-		(state) => state.isSubmitting,
-	);
+	const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
 
 	return { form, isSubmitting };
 }

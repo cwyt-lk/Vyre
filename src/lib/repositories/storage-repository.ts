@@ -4,13 +4,25 @@ import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 export interface StorageRepositoryContract {
+	getPublicFile(bucket: string, path: string): RepoResult<string>;
+
 	getSignedFile(
 		bucket: string,
 		path: string,
 		signedUrlExpiry?: number,
 	): Promise<RepoResult<string>>;
 
-	getPublicFile(bucket: string, path: string): RepoResult<string>;
+	uploadFile(
+		file: File,
+		bucket: string,
+		path: string,
+	): Promise<RepoResult<string>>;
+
+	moveFile(
+		bucket: string,
+		oldPath: string,
+		newPath: string,
+	): Promise<RepoResult>;
 }
 
 export class StorageRepository implements StorageRepositoryContract {
@@ -43,6 +55,65 @@ export class StorageRepository implements StorageRepositoryContract {
 		return {
 			success: true,
 			data: data.signedUrl,
+		};
+	}
+
+	async uploadFile(
+		file: File,
+		bucket: string,
+		path: string,
+	): Promise<RepoResult<string>> {
+		const { data, error } = await this.supabase.storage
+			.from(bucket)
+			.upload(path, file, {
+				cacheControl: "3600",
+				upsert: true,
+			});
+
+		if (error || !data) {
+			return {
+				success: false,
+				error: error
+					? mapStorageError(error)
+					: new VyreError("Failed to upload file", "BAD_UPLOAD"),
+			};
+		}
+
+		return {
+			success: true,
+			data: data.path,
+		};
+	}
+
+	async moveFile(
+		bucket: string,
+		oldPath: string,
+		newPath: string,
+	): Promise<RepoResult> {
+		const { error: copyError } = await this.supabase.storage
+			.from(bucket)
+			.copy(oldPath, newPath);
+
+		if (copyError) {
+			return {
+				success: false,
+				error: mapStorageError(copyError),
+			};
+		}
+
+		const { error: removeError } = await this.supabase.storage
+			.from(bucket)
+			.remove([oldPath]);
+
+		if (removeError) {
+			return {
+				success: false,
+				error: mapStorageError(removeError),
+			};
+		}
+
+		return {
+			success: true,
 		};
 	}
 }

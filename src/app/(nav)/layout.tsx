@@ -126,6 +126,7 @@ export default async function NavLayout({
 						<span className="hidden text-sm text-muted-foreground md:inline-block">
 							{user.email}
 						</span>
+
 						<SignOutButton />
 					</div>
 				</nav>

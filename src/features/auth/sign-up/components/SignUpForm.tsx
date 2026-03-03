@@ -33,7 +33,7 @@ export function SignUpForm() {
 							<FormInputField
 								field={field}
 								icon={
-									<Mail className="size-4 text-muted-foreground" />
+									<Mail className="size-4 opacity-70" />
 								}
 								placeholder="name@example.com"
 								type="email"
@@ -46,7 +46,7 @@ export function SignUpForm() {
 							<FormInputField
 								field={field}
 								icon={
-									<Lock className="size-4 text-muted-foreground" />
+									<Lock className="size-4 opacity-70" />
 								}
 								placeholder="Create a password"
 								type="password"

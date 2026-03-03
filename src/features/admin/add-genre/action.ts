@@ -6,7 +6,7 @@ import {
 	addGenreSchema,
 } from "@/features/admin/add-genre/schema";
 import { createRepositories } from "@/lib/factories/repository/server";
-import type { Genre } from "@/types/domain";
+import type { CreateGenre } from "@/types/domain";
 import type { ActionResult } from "@/types/results";
 
 export async function addGenre(
@@ -22,7 +22,7 @@ export async function addGenre(
 		};
 	}
 
-	const genreData = parsed.data as Genre;
+	const genreData = parsed.data as CreateGenre;
 	const result = await genres.create(genreData);
 
 	if (!result.success) {

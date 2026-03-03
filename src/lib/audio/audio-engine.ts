@@ -294,6 +294,7 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 		if (this.timeRaf) {
 			cancelAnimationFrame(this.timeRaf);
 		}
+
 		this.timeRaf = null;
 	}
 }

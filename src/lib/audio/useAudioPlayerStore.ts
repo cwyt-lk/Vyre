@@ -284,10 +284,13 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
 		},
 
 		cycleLoopMode: () => {
+			const { setLoopMode, loopMode } = get();
+
 			const modes: LoopMode[] = ["off", "track", "playlist"];
 			const nextMode =
-				modes[(modes.indexOf(get().loopMode) + 1) % modes.length];
-			get().setLoopMode(nextMode);
+				modes[(modes.indexOf(loopMode) + 1) % modes.length];
+
+			setLoopMode(nextMode);
 		},
 
 		setShuffle: (shuffle) => {
@@ -301,6 +304,10 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
 			set({ isShuffling: shuffle, shuffleOrder: order });
 		},
 
-		toggleShuffle: () => get().setShuffle(!get().isShuffling),
+		toggleShuffle: () => {
+			const { setShuffle, isShuffling } = get();
+
+			setShuffle(!isShuffling);
+		},
 	};
 });

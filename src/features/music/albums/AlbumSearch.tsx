@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type ChangeEvent, useRef, useTransition } from "react";
+import { type ChangeEvent, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import {
 	InputGroup,
@@ -16,8 +16,10 @@ export function AlbumSearch() {
 	const pathname = usePathname();
 	const { replace } = useRouter();
 
-	const queryRef = useRef(searchParams.get("query")?.toString() ?? "");
 	const [isPending, startTransition] = useTransition();
+	const [search, setSearch] = useState(
+		searchParams.get("query")?.toString() ?? "",
+	);
 
 	const handleSearch = useDebouncedCallback((term: string) => {
 		const params = new URLSearchParams(searchParams);
@@ -47,9 +49,13 @@ export function AlbumSearch() {
 					<Search className="text-muted-foreground" />
 				)}
 			</InputGroupAddon>
+
 			<InputGroupInput
-				defaultValue={queryRef.current}
-				onChange={handleChange}
+				value={search}
+				onChange={(e) => {
+					setSearch(e.target.value);
+					handleChange(e);
+				}}
 				placeholder="Search by Title..."
 				aria-label="Search albums"
 			/>
