@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/Item";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
 import { cn } from "@/lib/utils/cn";
-import type { Track } from "@/types/domain";
+import type { TrackAggregate } from "@/types/domain";
 
 interface TrackListProps {
-	tracks: Track[];
+	tracks: TrackAggregate[];
 }
 
 export const TrackList = ({ tracks }: TrackListProps) => {
@@ -56,7 +56,9 @@ export const TrackList = ({ tracks }: TrackListProps) => {
 							</ItemTitle>
 
 							<ItemDescription>
-								{track.artists.join(", ")}
+								{track.artists
+									.map((a) => a.name)
+									.join(", ")}
 							</ItemDescription>
 						</ItemContent>
 					</Item>

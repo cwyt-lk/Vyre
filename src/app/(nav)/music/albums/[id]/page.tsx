@@ -11,7 +11,7 @@ export default async function AlbumPage({ params }: AlbumParamsType) {
 	const { id } = await params;
 
 	const { albums, storage } = await createRepositories();
-	const albumResult = await albums.findById(id);
+	const albumResult = await albums.findWithRelationsById(id);
 
 	if (!albumResult.success) {
 		notFound();
@@ -19,16 +19,26 @@ export default async function AlbumPage({ params }: AlbumParamsType) {
 
 	const album = albumResult.data;
 
-	const storageResult = storage.getPublicFile(
-		"cover-art",
-		album.coverPath,
-	);
+	let imageSrc = "/placeholder.png";
 
-	const coverUrl = storageResult.success ? storageResult.data : "";
+	if (album.coverUrl) {
+		const storageResult = storage.getPublicFile(
+			"cover-art",
+			album.coverUrl,
+		);
+
+		if (storageResult.success) {
+			imageSrc = storageResult.data;
+		}
+	}
 
 	return (
 		<Container>
-			<AlbumClient album={album} coverUrl={coverUrl} />
+			<AlbumClient
+				album={album}
+				albumTracks={album.tracks}
+				coverUrl={imageSrc}
+			/>
 		</Container>
 	);
 }

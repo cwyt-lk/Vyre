@@ -1,10 +1,13 @@
 import "client-only";
 
-import { AlbumRepository } from "@/lib/repositories/album-repository";
-import { AuthRepository } from "@/lib/repositories/auth-repository";
-import { GenreRepository } from "@/lib/repositories/genre-repository";
-import { StorageRepository } from "@/lib/repositories/storage-repository";
-import { TrackRepository } from "@/lib/repositories/track-repository";
+import {
+	AlbumRepository,
+	ArtistRepository,
+	AuthRepository,
+	GenreRepository,
+	StorageRepository,
+	TrackRepository,
+} from "@/lib/repositories";
 import { createClient } from "@/lib/supabase/client";
 
 export function createRepositories() {
@@ -14,6 +17,7 @@ export function createRepositories() {
 		auth: new AuthRepository(supabase),
 		storage: new StorageRepository(supabase),
 		albums: new AlbumRepository(supabase),
+		artists: new ArtistRepository(supabase),
 		genres: new GenreRepository(supabase),
 		tracks: new TrackRepository(supabase),
 	};

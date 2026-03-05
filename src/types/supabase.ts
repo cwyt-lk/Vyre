@@ -18,25 +18,28 @@ export type Database = {
 				Row: {
 					album_id: string;
 					track_id: string;
+					track_number: number;
 				};
 				Insert: {
 					album_id: string;
 					track_id: string;
+					track_number: number;
 				};
 				Update: {
 					album_id?: string;
 					track_id?: string;
+					track_number?: number;
 				};
 				Relationships: [
 					{
-						foreignKeyName: "AlbumTracks_album_id_fkey";
+						foreignKeyName: "album_tracks_album_id_fkey";
 						columns: ["album_id"];
 						isOneToOne: false;
 						referencedRelation: "albums";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "AlbumTracks_track_id_fkey";
+						foreignKeyName: "album_tracks_track_id_fkey";
 						columns: ["track_id"];
 						isOneToOne: false;
 						referencedRelation: "tracks";
@@ -46,25 +49,46 @@ export type Database = {
 			};
 			albums: {
 				Row: {
-					cover_path: string;
+					cover_url: string | null;
 					created_at: string;
-					description: string | null;
 					id: string;
+					release_date: string;
 					title: string;
 				};
 				Insert: {
-					cover_path: string;
+					cover_url?: string | null;
 					created_at?: string;
-					description?: string | null;
 					id?: string;
+					release_date?: string;
 					title: string;
 				};
 				Update: {
-					cover_path?: string;
+					cover_url?: string | null;
 					created_at?: string;
-					description?: string | null;
 					id?: string;
+					release_date?: string;
 					title?: string;
+				};
+				Relationships: [];
+			};
+			artists: {
+				Row: {
+					bio: string | null;
+					created_at: string;
+					id: string;
+					name: string;
+				};
+				Insert: {
+					bio?: string | null;
+					created_at?: string;
+					id?: string;
+					name: string;
+				};
+				Update: {
+					bio?: string | null;
+					created_at?: string;
+					id?: string;
+					name?: string;
 				};
 				Relationships: [];
 			};
@@ -89,37 +113,64 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			track_artists: {
+				Row: {
+					artist_id: string;
+					artist_order: number;
+					track_id: string;
+				};
+				Insert: {
+					artist_id: string;
+					artist_order?: number;
+					track_id: string;
+				};
+				Update: {
+					artist_id?: string;
+					artist_order?: number;
+					track_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "track_artists_artist_id_fkey";
+						columns: ["artist_id"];
+						isOneToOne: false;
+						referencedRelation: "artists";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "track_artists_track_id_fkey";
+						columns: ["track_id"];
+						isOneToOne: false;
+						referencedRelation: "tracks";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			tracks: {
 				Row: {
-					artists: string[];
+					audio_url: string;
 					created_at: string;
-					description: string | null;
-					file_path: string;
 					genre_id: string;
 					id: string;
 					title: string;
 				};
 				Insert: {
-					artists: string[];
+					audio_url: string;
 					created_at?: string;
-					description?: string | null;
-					file_path: string;
 					genre_id: string;
 					id?: string;
 					title: string;
 				};
 				Update: {
-					artists?: string[];
+					audio_url?: string;
 					created_at?: string;
-					description?: string | null;
-					file_path?: string;
 					genre_id?: string;
 					id?: string;
 					title?: string;
 				};
 				Relationships: [
 					{
-						foreignKeyName: "Tracks_genre_id_fkey";
+						foreignKeyName: "tracks_genre_id_fkey";
 						columns: ["genre_id"];
 						isOneToOne: false;
 						referencedRelation: "genres";
@@ -160,6 +211,8 @@ export type Database = {
 				Args: { event: Json };
 				Returns: Json;
 			};
+			show_limit: { Args: never; Returns: number };
+			show_trgm: { Args: { "": string }; Returns: string[] };
 		};
 		Enums: {
 			app_role: "admin" | "user";

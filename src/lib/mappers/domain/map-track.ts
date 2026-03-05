@@ -1,19 +1,43 @@
-import { type GenreDB, mapGenre } from "@/lib/mappers/domain";
-import type { Track } from "@/types/domain";
+import {
+	type ArtistDB,
+	ArtistMapper,
+	type GenreDB,
+	GenreMapper,
+} from "@/lib/mappers/domain";
+import { flatMapList } from "@/lib/utils/array";
+import type { Track, TrackAggregate } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
-export type TrackDB = Database["public"]["Tables"]["tracks"]["Row"] & {
-	genres: GenreDB | null;
+export type TrackDB = Database["public"]["Tables"]["tracks"]["Row"];
+export type TrackAggregateDB = TrackDB & {
+	genres: GenreDB;
+
+	track_artists: {
+		artist_order: number;
+		artists: ArtistDB;
+	}[];
 };
 
-export function mapTrack(db: TrackDB): Track {
-	return {
-		id: db.id,
-		title: db.title,
-		artists: db.artists,
-		description: db.description,
-		genre: db.genres && mapGenre(db.genres),
-		filePath: db.file_path,
-		createdAt: new Date(db.created_at),
-	};
-}
+export const TrackMapper = {
+	map(row: TrackDB): Track {
+		return {
+			id: row.id,
+			title: row.title,
+			genreId: row.genre_id,
+			audioUrl: row.audio_url,
+			createdAt: new Date(row.created_at),
+		};
+	},
+
+	mapWithRelations(row: TrackAggregateDB): TrackAggregate {
+		return {
+			...this.map(row),
+
+			genre: GenreMapper.map(row.genres),
+
+			artists: flatMapList(row.track_artists, (item) => {
+				return ArtistMapper.map(item.artists);
+			}),
+		};
+	},
+};

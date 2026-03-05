@@ -6,14 +6,19 @@ import { useShallow } from "zustand/react/shallow";
 import { TrackList } from "@/features/music/albums/TrackList";
 import { Player } from "@/features/music/player/Player";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
-import type { Album } from "@/types/domain";
+import type { Album, TrackAggregate } from "@/types/domain";
 
 interface AlbumClientProps {
 	album: Album;
+	albumTracks: TrackAggregate[];
 	coverUrl: string;
 }
 
-export function AlbumClient({ album, coverUrl }: AlbumClientProps) {
+export function AlbumClient({
+	album,
+	albumTracks,
+	coverUrl,
+}: AlbumClientProps) {
 	const { currentTrack, setQueue, clearQueue } = useAudioPlayerStore(
 		useShallow((s) => ({
 			currentTrack: s.currentTrack,
@@ -23,12 +28,12 @@ export function AlbumClient({ album, coverUrl }: AlbumClientProps) {
 	);
 
 	useEffect(() => {
-		setQueue(album.tracks, album.id);
+		setQueue(albumTracks, album.id);
 
 		return () => {
 			clearQueue();
 		};
-	}, [setQueue, album, clearQueue]);
+	}, [setQueue, album, albumTracks, clearQueue]);
 
 	return (
 		<section className="py-10 space-y-8 animate-in fade-in duration-500">
@@ -66,11 +71,11 @@ export function AlbumClient({ album, coverUrl }: AlbumClientProps) {
 
 			<section>
 				<h2 className="text-2xl font-semibold mb-4">Tracks</h2>
-				<TrackList tracks={album.tracks} />
+				<TrackList tracks={albumTracks} />
 			</section>
 
 			<footer className="text-sm text-muted-foreground">
-				<p>Total Tracks: {album.tracks.length}</p>
+				<p>Total Tracks: {albumTracks.length}</p>
 			</footer>
 		</section>
 	);

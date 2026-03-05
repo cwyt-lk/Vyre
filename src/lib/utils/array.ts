@@ -32,3 +32,37 @@ export const generateShuffleOrder = (
 	const remaining = allIndices.filter((i) => i !== currentIndex);
 	return [currentIndex, ...shuffleArray(remaining)];
 };
+
+/**
+ * Maps each item in a list and flattens the result, excluding `null` values.
+ *
+ * This utility is useful when you want to transform a list while conditionally
+ * omitting items. If the mapper returns `null`, that item is excluded from the
+ * resulting array.
+ *
+ * @template TInput - The type of items in the input array.
+ * @template TOutput - The type of items in the output array.
+ *
+ * @param items - The input array to map over. If `null` or `undefined`, an empty array is returned.
+ * @param mapper - A function that transforms each item. Returning `null` will omit that item.
+ *
+ * @returns A new flattened array containing only the non-null mapped results.
+ *
+ * @example
+ * ```ts
+ * const nums = [1, 2, 3];
+ * const result = flatMapList(nums, (n) => (n % 2 === 0 ? n * 2 : null));
+ * // result: [4]
+ * ```
+ */
+export function flatMapList<TInput, TOutput>(
+	items: TInput[] | null,
+	mapper: (v: TInput) => TOutput | null,
+): TOutput[] {
+	if (!items) return [];
+
+	return items.flatMap((item) => {
+		const val = mapper(item);
+		return val ? [val] : [];
+	});
+}

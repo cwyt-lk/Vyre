@@ -4,9 +4,9 @@ import type { Track } from "@/types/domain";
 export function getTrackUrl(track: Track): string | null {
 	const { storage } = createRepositories();
 
-	if (!track?.filePath) return null;
+	if (!track.audioUrl) return null;
 
-	const result = storage.getPublicFile("music", track.filePath);
+	const result = storage.getPublicFile("music", track.audioUrl);
 
 	if (!result.success) {
 		console.error("Failed to get track URL", result.error.message);

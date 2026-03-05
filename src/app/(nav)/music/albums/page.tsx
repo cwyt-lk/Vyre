@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
+import ErrorState from "@/components/layout/ErrorState";
 import { AlbumCard } from "@/features/music/albums/AlbumCard";
 import { AlbumSearch } from "@/features/music/albums/AlbumSearch";
+import EmptyAlbumState from "@/features/music/albums/EmptyAlbumState";
 import { createRepositories } from "@/lib/factories/repository/server";
 
 export default async function AlbumsPage({
@@ -16,20 +18,17 @@ export default async function AlbumsPage({
 
 	if (!result.success) {
 		return (
-			<Container className="flex min-h-[50vh] flex-col items-center justify-center">
-				TODO Add Error Screens
-			</Container>
+			<ErrorState
+				message={result.error.message}
+				code={result.error.code}
+			/>
 		);
 	}
 
 	const albumsList = result.data;
 
 	if (albumsList.length === 0 && query === "") {
-		return (
-			<Container className="flex min-h-[50vh] flex-col items-center justify-center">
-				TODO Add Empty Screens
-			</Container>
-		);
+		return <EmptyAlbumState />;
 	}
 
 	return (

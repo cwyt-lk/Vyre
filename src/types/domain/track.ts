@@ -1,11 +1,17 @@
-import type { Genre } from "@/types/domain";
+import type { Artist, Genre } from "@/types/domain";
 
 export interface Track {
 	id: string;
 	title: string;
-	artists: string[];
-	genre: Genre | null;
-	description: string | null;
-	filePath: string;
+	genreId: string;
+	audioUrl: string;
 	createdAt: Date;
 }
+
+export type TrackAggregate = Track & {
+	artists: Artist[];
+	genre: Genre | null;
+};
+
+export type CreateTrack = Omit<Track, "id" | "createdAt">;
+export type UpdateTrack = Partial<CreateTrack> & Pick<Track, "id">;

@@ -3,11 +3,13 @@ import type { Database } from "@/types/supabase";
 
 export type GenreDB = Database["public"]["Tables"]["genres"]["Row"];
 
-export function mapGenre(db: GenreDB): Genre {
-	return {
-		id: db.id,
-		key: db.key,
-		label: db.label,
-		createdAt: new Date(db.created_at),
-	};
-}
+export const GenreMapper = {
+	map(row: GenreDB): Genre {
+		return {
+			id: row.id,
+			key: row.key,
+			label: row.label,
+			createdAt: new Date(row.created_at),
+		};
+	},
+};
