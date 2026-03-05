@@ -41,12 +41,6 @@ export const FormSelectField = ({
 	const { isTouched, isValid, errors } = field.state.meta;
 	const isInvalid = isTouched && !isValid;
 
-	const descriptionId = description
-		? `${field.name}-description`
-		: undefined;
-
-	const errorId = isInvalid ? `${field.name}-error` : undefined;
-
 	return (
 		<Field data-invalid={isInvalid}>
 			{label && (
@@ -61,15 +55,7 @@ export const FormSelectField = ({
 					onChange ? onChange(value) : field.handleChange(value);
 				}}
 			>
-				<SelectTrigger
-					id={field.name}
-					aria-invalid={isInvalid}
-					aria-describedby={
-						[descriptionId, errorId]
-							.filter(Boolean)
-							.join(" ") || undefined
-					}
-				>
+				<SelectTrigger id={field.name} aria-invalid={isInvalid}>
 					<SelectValue placeholder={placeholder}>
 						{
 							options.find(
@@ -91,7 +77,7 @@ export const FormSelectField = ({
 			</Select>
 
 			{description && (
-				<FieldDescription id={descriptionId} className="px-2">
+				<FieldDescription className="px-2">
 					{description}
 				</FieldDescription>
 			)}
