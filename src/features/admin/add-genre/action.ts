@@ -22,8 +22,7 @@ export async function addGenre(
 		};
 	}
 
-	const genreData = parsed.data as CreateGenre;
-	const result = await genres.create(genreData);
+	const result = await genres.create(parsed.data as CreateGenre);
 
 	if (!result.success) {
 		return {

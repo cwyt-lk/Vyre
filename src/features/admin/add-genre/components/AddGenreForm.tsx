@@ -27,6 +27,7 @@ export function AddGenreForm() {
 						{(field) => (
 							<FormInputField
 								field={field}
+								label="Label"
 								icon={
 									<Edit className="size-4 text-muted-foreground" />
 								}
@@ -47,6 +48,7 @@ export function AddGenreForm() {
 						{(field) => (
 							<FormInputField
 								field={field}
+								label="Key"
 								icon={
 									<Key className="size-4 text-muted-foreground" />
 								}

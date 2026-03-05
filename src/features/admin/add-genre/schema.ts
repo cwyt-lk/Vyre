@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { capitalizeWords } from "@/lib/utils/string";
 
 export const addGenreSchema = z.object({
 	key: z
@@ -17,7 +18,7 @@ export const addGenreSchema = z.object({
 		.min(2, "Label must be at least 2 characters")
 		.max(50, "Label is too long")
 		.trim()
-		.transform((val) => val.charAt(0).toUpperCase() + val.slice(1)),
+		.transform(capitalizeWords),
 });
 
 export type AddGenreInput = z.infer<typeof addGenreSchema>;
