@@ -21,19 +21,24 @@ const MENU_ITEMS = [
 
 const ADMIN_ITEMS = [
 	{
-		href: "/admin/add-track",
-		title: "Add Track",
-		description: "Upload new tracks and manage metadata.",
-	},
-	{
 		href: "/admin/add-album",
 		title: "Add Album",
 		description: "Create a new album collection and assign artists.",
 	},
 	{
+		href: "/admin/add-track",
+		title: "Add Track",
+		description: "Upload new tracks and manage metadata.",
+	},
+	{
 		href: "/admin/add-genre",
 		title: "Add Genre",
 		description: "Expand the library categories and tags.",
+	},
+	{
+		href: "/admin/add-artist",
+		title: "Add Artist",
+		description: "Add an artist to assign for tracks",
 	},
 ] as const;
 
@@ -57,7 +62,7 @@ const NavLink = ({
 const AdminMenu = () => (
 	<NavigationMenuItem>
 		<NavigationMenuTrigger>Admin</NavigationMenuTrigger>
-		<NavigationMenuContent>
+		<NavigationMenuContent className="grid grid-cols-2">
 			{ADMIN_ITEMS.map((item) => (
 				<NavigationMenuLink key={item.href} href={item.href}>
 					<div className="rounded-md p-2 transition hover:bg-accent/20">
