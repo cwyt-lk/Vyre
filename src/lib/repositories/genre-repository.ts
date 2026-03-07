@@ -28,7 +28,7 @@ export interface GenreRepositoryContract {
 	/**
 	 * Create a new genre.
 	 *
-	 * @param genre - Genre creation payload
+	 * @param genre - Genre creation data
 	 */
 	create(genre: CreateGenre): Promise<RepoResult>;
 }

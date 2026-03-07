@@ -4,7 +4,7 @@ export interface Track {
 	id: string;
 	title: string;
 	genreId: string;
-	audioUrl: string;
+	audioPath: string;
 	createdAt: Date;
 }
 

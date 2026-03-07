@@ -18,8 +18,8 @@ export const AlbumCard = async ({ album }: AlbumCardProps) => {
 
 	let imageSrc = "/placeholder.png";
 
-	if (album.coverUrl) {
-		const result = storage.getPublicFile("cover-art", album.coverUrl);
+	if (album.coverPath) {
+		const result = storage.getPublicFile("cover-art", album.coverPath);
 
 		if (result.success) {
 			imageSrc = result.data;

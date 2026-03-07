@@ -21,10 +21,10 @@ export default async function AlbumPage({ params }: AlbumParamsType) {
 
 	let imageSrc = "/placeholder.png";
 
-	if (album.coverUrl) {
+	if (album.coverPath) {
 		const storageResult = storage.getPublicFile(
 			"cover-art",
-			album.coverUrl,
+			album.coverPath,
 		);
 
 		if (storageResult.success) {

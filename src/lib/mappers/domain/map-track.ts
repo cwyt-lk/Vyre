@@ -24,7 +24,7 @@ export const TrackMapper = {
 			id: row.id,
 			title: row.title,
 			genreId: row.genre_id,
-			audioUrl: row.audio_url,
+			audioPath: row.audio_path,
 			createdAt: new Date(row.created_at),
 		};
 	},

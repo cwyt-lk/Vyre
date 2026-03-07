@@ -5,7 +5,7 @@ export interface Album {
 	title: string;
 	description: string;
 	releaseDate: Date;
-	coverUrl: string | null;
+	coverPath: string | null;
 	createdAt: Date;
 }
 

@@ -31,7 +31,7 @@ export const AlbumMapper = {
 			id: row.id,
 			title: row.title,
 			description: "",
-			coverUrl: row.cover_url ?? null,
+			coverPath: row.cover_path ?? null,
 			releaseDate: new Date(row.release_date),
 			createdAt: new Date(row.created_at),
 		};
