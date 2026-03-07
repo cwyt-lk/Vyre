@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import { audioEngine } from "@/lib/audio/audio-engine";
 import { generateShuffleOrder } from "@/lib/utils/array";
-import { getTrackUrl } from "@/lib/utils/storage";
-import type { Track } from "@/types/domain";
 
 type LoopMode = "off" | "track" | "playlist";
+
+export interface AudioPlayerTrack {
+	id: string;
+	src: string;
+}
 
 interface AudioPlayerState {
 	// --- State ---
@@ -14,9 +17,9 @@ interface AudioPlayerState {
 	isPlaying: boolean;
 	activeSourceId: string | null;
 
-	queue: Track[];
+	queue: AudioPlayerTrack[];
 	currentIndex: number;
-	currentTrack: Track | null;
+	currentTrack: AudioPlayerTrack | null;
 
 	currentTime: number;
 	duration: number;
@@ -29,9 +32,12 @@ interface AudioPlayerState {
 	shuffleOrder: number[];
 
 	// --- Actions ---
-	setQueue: (tracks: Track[], sourceId: string | null) => void;
+	setQueue: (
+		tracks: AudioPlayerTrack[],
+		sourceId: string | null,
+	) => void;
 
-	addToQueue: (track: Track) => void;
+	addToQueue: (track: AudioPlayerTrack) => void;
 	clearQueue: () => void;
 
 	playByIndex: (index: number) => void;
@@ -75,13 +81,16 @@ const initialState = {
 
 export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
 	// --- Internal Helpers ---
-	const loadTrack = (track: Track, forceAutoplay: boolean = false) => {
+	const loadTrack = (
+		track: AudioPlayerTrack,
+		forceAutoplay: boolean = false,
+	) => {
 		const { volume, isMuted, loopMode, isPlaying } = get();
 
 		set({ currentTrack: track, currentTime: 0, duration: 0 });
 
 		audioEngine.load({
-			src: getTrackUrl(track) ?? "",
+			src: [track.src],
 			volume,
 			mute: isMuted,
 			loop: loopMode === "track",
@@ -301,6 +310,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
 				shuffle && queue.length
 					? generateShuffleOrder(queue.length, currentIndex)
 					: [];
+
 			set({ isShuffling: shuffle, shuffleOrder: order });
 		},
 
