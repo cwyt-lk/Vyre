@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapStorageError } from "@/lib/mappers/errors/map-storage-error";
+import { VyreError } from "@/types/errors";
 import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 

@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { TrackMapper } from "@/lib/mappers/domain";
 import { mapPostgresError } from "@/lib/mappers/errors";
 import { flatMapList } from "@/lib/utils/array";
-import type { Track } from "@/types/domain";
+import type { CreateTrack, Track } from "@/types/domain";
 import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
@@ -24,6 +24,26 @@ export interface TrackRepositoryContract {
 	 * @param id - Track ID
 	 */
 	findById(id: string): Promise<RepoResult<Track>>;
+
+	/**
+	 * Create a new track.
+	 *
+	 * @param track - Track creation data
+	 */
+	create(track: CreateTrack): Promise<RepoResult<Track>>;
+
+	/**
+	 * Adds an artist to a track.
+	 *
+	 * @param trackId
+	 * @param artistId
+	 * @param order
+	 */
+	addArtist(
+		trackId: string,
+		artistId: string,
+		order: number,
+	): Promise<RepoResult>;
 }
 
 /**
@@ -72,5 +92,55 @@ export class TrackRepository implements TrackRepositoryContract {
 		}
 
 		return { success: true, data: TrackMapper.map(data) };
+	}
+
+	/**
+	 * Create a new track.
+	 *
+	 * @param track - Track creation data
+	 */
+	async create(track: CreateTrack): Promise<RepoResult<Track>> {
+		const { data, error } = await this.supabase
+			.from("tracks")
+			.insert({
+				title: track.title,
+				genre_id: track.genreId,
+				audio_path: track.audioPath,
+			})
+			.select()
+			.single();
+
+		if (error) {
+			return { success: false, error: mapPostgresError(error) };
+		}
+
+		return { success: true, data: TrackMapper.map(data) };
+	}
+
+	/**
+	 * Adds an artist to a track.
+	 *
+	 * @param trackId
+	 * @param artistId
+	 * @param order
+	 */
+	async addArtist(
+		trackId: string,
+		artistId: string,
+		order: number,
+	): Promise<RepoResult> {
+		const { error } = await this.supabase
+			.from("track_artists")
+			.insert({
+				track_id: trackId,
+				artist_id: artistId,
+				artist_order: order,
+			});
+
+		if (error) {
+			return { success: false, error: mapPostgresError(error) };
+		}
+
+		return { success: true };
 	}
 }
