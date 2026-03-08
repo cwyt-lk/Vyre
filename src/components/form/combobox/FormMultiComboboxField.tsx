@@ -101,7 +101,7 @@ export const FormMultiComboboxField = ({
 				onValueChange={handleChange}
 				items={allLabels}
 			>
-				<ComboboxChips ref={anchor} className="w-full max-w-xs">
+				<ComboboxChips ref={anchor} className="w-full">
 					<ComboboxValue>
 						{(values) => (
 							<Fragment>

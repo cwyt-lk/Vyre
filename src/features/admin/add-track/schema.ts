@@ -30,8 +30,8 @@ export const addTrackServerSchema = z.object({
 	audioPath: z.string(),
 });
 
-export type AddTrackServerInput = z.infer<typeof addTrackServerSchema>;
 export type AddTrackClientInput = z.infer<typeof addTrackClientSchema>;
+export type AddTrackServerInput = z.infer<typeof addTrackServerSchema>;
 
 export const addTrackClientDefaultValues: Partial<AddTrackClientInput> = {
 	title: "",

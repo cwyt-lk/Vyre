@@ -26,12 +26,12 @@ export const TrackList = ({ tracks }: TrackListProps) => {
 		})),
 	);
 
-	const currentTrack = queue[currentIndex ?? 0];
+	const currentTrack = queue[currentIndex];
 
 	return (
 		<ItemGroup>
 			{tracks.map((track, index) => {
-				const isSelected = track.id === currentTrack.id;
+				const isSelected = track.id === currentTrack?.id;
 
 				return (
 					<Item
