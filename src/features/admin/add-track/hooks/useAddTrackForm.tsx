@@ -34,8 +34,6 @@ export function useAddTrackForm() {
 
 			if (!uploadRes.success) {
 				toast.error("Failed to upload file");
-
-				console.log(uploadRes.error);
 			} else {
 				const serverData: AddTrackServerInput = {
 					title: clientData.title,

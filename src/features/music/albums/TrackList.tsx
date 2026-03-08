@@ -31,7 +31,7 @@ export const TrackList = ({ tracks }: TrackListProps) => {
 	return (
 		<ItemGroup>
 			{tracks.map((track, index) => {
-				const isSelected = track === currentTrack;
+				const isSelected = track.id === currentTrack.id;
 
 				return (
 					<Item

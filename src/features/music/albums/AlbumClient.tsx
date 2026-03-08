@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { TrackList } from "@/features/music/albums/TrackList";
 import { Player } from "@/features/music/player/Player";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
+import { createRepositories } from "@/lib/factories/repository/client";
 import type { Album, TrackAggregate } from "@/types/domain";
 
 interface AlbumClientProps {
@@ -19,6 +20,7 @@ export function AlbumClient({
 	albumTracks,
 	coverUrl,
 }: AlbumClientProps) {
+	const { storage } = createRepositories();
 	const { currentTrack, setQueue, clearQueue } = useAudioPlayerStore(
 		useShallow((s) => ({
 			currentTrack: s.currentTrack,
@@ -27,13 +29,26 @@ export function AlbumClient({
 		})),
 	);
 
+	const queue = useMemo(() => {
+		return albumTracks.map((it) => {
+			const res = storage.getPublicFile("music", it.audioPath);
+
+			return {
+				id: it.id,
+				src: res.success ? res.data : "",
+				title: it.title,
+				artist: it.artists.map((it) => it.name).join(", "),
+			};
+		});
+	}, [albumTracks, storage]);
+
 	useEffect(() => {
-		setQueue(albumTracks, album.id);
+		setQueue(queue, album.id);
 
 		return () => {
 			clearQueue();
 		};
-	}, [setQueue, album, albumTracks, clearQueue]);
+	}, [setQueue, album, clearQueue, queue]);
 
 	return (
 		<section className="py-10 space-y-8 animate-in fade-in duration-500">
