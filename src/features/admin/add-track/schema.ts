@@ -11,8 +11,6 @@ export const addTrackClientSchema = z.object({
 
 	genreId: z.string().min(1, "Genre is required").trim(),
 
-	description: z.string().trim().optional(),
-
 	audioFile: z
 		.instanceof(File, { message: "File is required" })
 		.refine(
@@ -27,13 +25,8 @@ export const addTrackClientSchema = z.object({
 
 export const addTrackServerSchema = z.object({
 	title: z.string().min(1).trim(),
-
 	artistIds: z.array(z.string()).min(1),
-
 	genreId: z.string(),
-
-	description: z.string().optional(),
-
 	audioPath: z.string(),
 });
 
@@ -44,5 +37,4 @@ export const addTrackClientDefaultValues: Partial<AddTrackClientInput> = {
 	title: "",
 	artistIds: [],
 	genreId: "",
-	description: "",
 };

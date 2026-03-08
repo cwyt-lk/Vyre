@@ -10,7 +10,6 @@ import {
 	FormInputField,
 	FormMultiComboboxField,
 } from "@/components/form";
-import { FormTextareaField } from "@/components/form/FormTextareaField";
 import { FieldGroup, FieldSet } from "@/components/ui/Field";
 import { Separator } from "@/components/ui/Separator";
 import { AddTrackActions } from "@/features/admin/add-track/components/AddTrackActions";
@@ -83,17 +82,6 @@ export function AddTrackForm({ genres, artists }: AddTrackFormProps) {
 								options={genreOptions}
 								label="Genre"
 								placeholder="Select a genre (optional)"
-							/>
-						)}
-					</form.Field>
-
-					<form.Field name="description">
-						{(field) => (
-							<FormTextareaField
-								field={field}
-								label="Description"
-								placeholder="Brief description (optional)..."
-								maxLength={300}
 							/>
 						)}
 					</form.Field>
