@@ -6,6 +6,7 @@ import type {
 	Album,
 	AlbumAggregate,
 	AlbumFullAggregate,
+	CreateAlbum,
 	Track,
 	TrackAggregate,
 } from "@/types/domain";
@@ -112,6 +113,26 @@ export interface AlbumRepositoryContract {
 	findWithRelationsById(
 		id: string,
 	): Promise<RepoResult<AlbumFullAggregate>>;
+
+	/**
+	 * Create a new album.
+	 *
+	 * @param album - Album creation data
+	 */
+	create(album: CreateAlbum): Promise<RepoResult<Album>>;
+
+	/**
+	 * Adds a track to an album.
+	 *
+	 * @param albumId
+	 * @param trackId
+	 * @param order - Position of the track within the album
+	 */
+	addTrack(
+		albumId: string,
+		trackId: string,
+		order: number,
+	): Promise<RepoResult>;
 }
 
 /**
@@ -272,5 +293,55 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			success: true,
 			data: AlbumMapper.mapWithDetailedRelations(data),
 		};
+	}
+
+	/**
+	 * Create a new album.
+	 *
+	 * @param album - Album creation data
+	 */
+	async create(album: CreateAlbum): Promise<RepoResult<Album>> {
+		const { data, error } = await this.supabase
+			.from("albums")
+			.insert({
+				title: album.title,
+				description: album.description,
+				release_date: album.releaseDate.toISOString(),
+				cover_path: album.coverPath,
+			})
+			.select()
+			.single();
+
+		if (error)
+			return { success: false, error: mapPostgresError(error) };
+
+		return {
+			success: true,
+			data: AlbumMapper.map(data),
+		};
+	}
+
+	/**
+	 * Adds a track to an album.
+	 *
+	 * @param albumId
+	 * @param trackId
+	 * @param order - Position of the track within the album
+	 */
+	async addTrack(
+		albumId: string,
+		trackId: string,
+		order: number,
+	): Promise<RepoResult> {
+		const { error } = await this.supabase.from("album_tracks").insert({
+			album_id: albumId,
+			track_id: trackId,
+			track_number: order,
+		});
+
+		if (error)
+			return { success: false, error: mapPostgresError(error) };
+
+		return { success: true };
 	}
 }
