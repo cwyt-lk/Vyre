@@ -1,70 +1,65 @@
 "use client";
 
 import { Edit, Key } from "lucide-react";
-import { FormInputField } from "@/components/form/FormInputField";
-import { FieldGroup, FieldSet } from "@/components/ui/Field";
-import { AddGenreActions } from "@/features/admin/add-genre/components/AddGenreActions";
-import { AddGenreHeader } from "@/features/admin/add-genre/components/AddGenreHeader";
+import { FormInputField } from "@/components/form/fields/FormInputField";
+import { FieldSet } from "@/components/ui/Field";
+
 import { useAddGenreForm } from "@/features/admin/add-genre/hooks/useAddGenreForm";
+import { AdminFormLayout } from "@/features/admin/components/AdminFormLayout";
 import { slugify } from "@/lib/utils/string";
 
 export function AddGenreForm() {
 	const { form, isSubmitting } = useAddGenreForm();
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				form.handleSubmit();
-			}}
-			className="w-full"
+		<AdminFormLayout
+			title="Add New Genre"
+			description="Create a new genre and assign a unique key for URLs."
+			isSubmitting={isSubmitting}
+			onSubmit={form.handleSubmit}
+			onReset={form.reset}
+			submitMessage="Create Genre"
+			submittingMessage="Creating..."
 		>
-			<FieldGroup className="p-4">
-				<AddGenreHeader />
+			{/* Genre Info */}
+			<FieldSet className="space-y-6">
+				<div>
+					<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+						Genre Details
+					</h3>
+				</div>
 
-				<FieldSet className="mt-8 space-y-4">
-					<form.Field name="label">
-						{(field) => (
-							<FormInputField
-								field={field}
-								label="Label"
-								icon={
-									<Edit className="size-4 text-muted-foreground" />
-								}
-								onChange={(value) => {
-									field.handleChange(value);
+				<form.Field name="label">
+					{(field) => (
+						<FormInputField
+							field={field}
+							label="Label"
+							placeholder="Genre name"
+							icon={
+								<Edit className="size-4 text-muted-foreground" />
+							}
+							onChange={(value) => {
+								field.handleChange(value);
+								form.setFieldValue("key", slugify(value));
+							}}
+						/>
+					)}
+				</form.Field>
 
-									const derivedKey = slugify(value);
-
-									form.setFieldValue("key", derivedKey);
-								}}
-								placeholder="Label"
-								type="text"
-							/>
-						)}
-					</form.Field>
-
-					<form.Field name="key">
-						{(field) => (
-							<FormInputField
-								field={field}
-								label="Key"
-								icon={
-									<Key className="size-4 text-muted-foreground" />
-								}
-								placeholder="Key"
-								type="text"
-								description="Used for URLs and database lookups."
-							/>
-						)}
-					</form.Field>
-				</FieldSet>
-
-				<AddGenreActions
-					isSubmitting={isSubmitting}
-					onReset={() => form.reset()}
-				/>
-			</FieldGroup>
-		</form>
+				<form.Field name="key">
+					{(field) => (
+						<FormInputField
+							field={field}
+							label="Key"
+							placeholder="Slug / key"
+							icon={
+								<Key className="size-4 text-muted-foreground" />
+							}
+							description="Used for URLs and database lookups."
+						/>
+					)}
+				</form.Field>
+			</FieldSet>
+		</AdminFormLayout>
 	);
 }

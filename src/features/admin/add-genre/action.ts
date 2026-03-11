@@ -9,12 +9,14 @@ import { createRepositories } from "@/lib/factories/repository/server";
 import type { CreateGenre } from "@/types/domain";
 import type { ActionResult } from "@/types/results";
 
+/**
+ * Adds a new genre to the database
+ */
 export async function addGenre(
 	data: AddGenreInput,
 ): Promise<ActionResult> {
-	const { genres } = await createRepositories();
+	// Validate input
 	const parsed = addGenreSchema.safeParse(data);
-
 	if (!parsed.success) {
 		return {
 			success: false,
@@ -22,19 +24,20 @@ export async function addGenre(
 		};
 	}
 
-	const result = await genres.create(parsed.data as CreateGenre);
+	const genreData = parsed.data as CreateGenre;
+
+	// Create genre
+	const { genres } = await createRepositories();
+	const result = await genres.create(genreData);
 
 	if (!result.success) {
-		return {
-			success: false,
-			error:
-				result.error.code === "CONFLICT"
-					? "Genre key already exists."
-					: "Failed to add genre. Please try again.",
-		};
+		const message =
+			result.error.code === "CONFLICT"
+				? "Genre key already exists."
+				: "Failed to add genre. Please try again.";
+
+		return { success: false, error: message };
 	}
 
-	return {
-		success: true,
-	};
+	return { success: true };
 }

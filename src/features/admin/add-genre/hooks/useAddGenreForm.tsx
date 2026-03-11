@@ -8,22 +8,23 @@ import {
 	addGenreSchema,
 } from "@/features/admin/add-genre/schema";
 
+/**
+ * Hook for the Add Genre form
+ */
 export function useAddGenreForm() {
 	const form = useForm({
 		defaultValues: addGenreDefaultValues,
-		validators: {
-			onSubmit: addGenreSchema,
-		},
+		validators: { onSubmit: addGenreSchema },
 		onSubmit: async ({ value }) => {
-			const res = await addGenre(value);
+			const result = await addGenre(value);
 
-			if (!res.success) {
-				toast.error(res.error);
-			} else {
-				form.reset();
-
-				toast.success(`Created Genre: ${value.label}`);
+			if (!result.success) {
+				toast.error(result.error);
+				return;
 			}
+
+			form.reset();
+			toast.success(`Created Genre: ${value.label}`);
 		},
 	});
 

@@ -2,15 +2,21 @@ import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Spinner } from "@/components/ui/Spinner";
 
-interface AddGenreActionsProps {
+interface FormGenericActionsProps {
+	message?: string;
+	isSubmittingMsg?: string;
 	isSubmitting: boolean;
+	resetMessage?: string;
 	onReset: () => void;
 }
 
-export function AddGenreActions({
+export function FormGenericActions({
+	message = "Submit",
+	isSubmittingMsg = "Submitting...",
 	isSubmitting,
+	resetMessage = "Reset",
 	onReset,
-}: AddGenreActionsProps) {
+}: FormGenericActionsProps) {
 	return (
 		<Field className="mt-8 flex flex-col gap-3">
 			<Button
@@ -22,10 +28,10 @@ export function AddGenreActions({
 				{isSubmitting ? (
 					<>
 						<Spinner className="mr-2" />
-						Creating...
+						{isSubmittingMsg}
 					</>
 				) : (
-					"Create"
+					message
 				)}
 			</Button>
 
@@ -40,7 +46,7 @@ export function AddGenreActions({
 					onReset();
 				}}
 			>
-				Reset
+				{resetMessage}
 			</Button>
 		</Field>
 	);

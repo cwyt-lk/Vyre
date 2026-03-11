@@ -2,20 +2,19 @@
 
 import { Edit } from "lucide-react";
 import { useMemo } from "react";
-
 import {
 	type ComboboxOption,
 	FormComboboxField,
 	FormFileUploadField,
 	FormInputField,
 	FormMultiComboboxField,
-} from "@/components/form";
-import { FieldGroup, FieldSet } from "@/components/ui/Field";
+} from "@/components/form/fields";
+import { FieldSet } from "@/components/ui/Field";
 import { Separator } from "@/components/ui/Separator";
-import { AddTrackActions } from "@/features/admin/add-track/components/AddTrackActions";
-import { AddTrackHeader } from "@/features/admin/add-track/components/AddTrackHeader";
+
 import { useAddTrackForm } from "@/features/admin/add-track/hooks/useAddTrackForm";
 import { MAX_AUDIO_SIZE } from "@/features/admin/add-track/schema";
+import { AdminFormLayout } from "@/features/admin/components/AdminFormLayout";
 import { getHumanSize } from "@/lib/utils/file";
 import type { Artist, Genre } from "@/types/domain";
 
@@ -28,84 +27,88 @@ export function AddTrackForm({ genres, artists }: AddTrackFormProps) {
 	const { form, isSubmitting } = useAddTrackForm();
 
 	const artistOptions: ComboboxOption[] = useMemo(
-		() => artists.map((it) => ({ label: it.name, value: it.id })),
+		() => artists.map((a) => ({ label: a.name, value: a.id })),
 		[artists],
 	);
 
 	const genreOptions: ComboboxOption[] = useMemo(
-		() => genres.map((it) => ({ label: it.label, value: it.id })),
+		() => genres.map((g) => ({ label: g.label, value: g.id })),
 		[genres],
 	);
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
-			className="w-full"
+		<AdminFormLayout
+			title="Add New Track"
+			description="Upload a new track and assign artists and genre."
+			isSubmitting={isSubmitting}
+			onSubmit={form.handleSubmit}
+			onReset={form.reset}
+			submitMessage="Create Track"
+			submittingMessage="Uploading..."
 		>
-			<FieldGroup className="p-4">
-				<AddTrackHeader />
+			{/* Track Info */}
+			<FieldSet className="space-y-4">
+				<div>
+					<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+						Track Information
+					</h3>
+				</div>
 
-				<FieldSet className="mt-8 space-y-6">
-					{/* Primary Metadata */}
-					<form.Field name="title">
-						{(field) => (
-							<FormInputField
-								field={field}
-								label="Track Title"
-								icon={
-									<Edit className="size-4 opacity-70" />
-								}
-								placeholder="Enter track title"
-							/>
-						)}
-					</form.Field>
+				<form.Field name="title">
+					{(field) => (
+						<FormInputField
+							field={field}
+							label="Track Title"
+							placeholder="Enter track title"
+							icon={<Edit className="size-4 opacity-70" />}
+						/>
+					)}
+				</form.Field>
 
-					<form.Field name="artistIds">
-						{(field) => (
-							<FormMultiComboboxField
-								field={field}
-								options={artistOptions}
-								label="Artists"
-								placeholder="Select artists"
-							/>
-						)}
-					</form.Field>
+				<form.Field name="artistIds">
+					{(field) => (
+						<FormMultiComboboxField
+							field={field}
+							options={artistOptions}
+							label="Artists"
+							placeholder="Select artists"
+						/>
+					)}
+				</form.Field>
 
-					<form.Field name="genreId">
-						{(field) => (
-							<FormComboboxField
-								field={field}
-								options={genreOptions}
-								label="Genre"
-								placeholder="Select a genre (optional)"
-							/>
-						)}
-					</form.Field>
+				<form.Field name="genreId">
+					{(field) => (
+						<FormComboboxField
+							field={field}
+							options={genreOptions}
+							label="Genre"
+							placeholder="Select a genre (optional)"
+						/>
+					)}
+				</form.Field>
+			</FieldSet>
 
-					<Separator />
+			<Separator />
 
-					{/* Media Upload */}
-					<form.Field name="audioFile">
-						{(field) => (
-							<FormFileUploadField
-								field={field}
-								label="Audio File"
-								description={`Max size: ${getHumanSize(MAX_AUDIO_SIZE)}`}
-								accept={{ "audio/*": [] }}
-							/>
-						)}
-					</form.Field>
-				</FieldSet>
+			{/* Audio Upload */}
+			<FieldSet className="space-y-4">
+				<div>
+					<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+						Audio File
+					</h3>
+				</div>
 
-				<AddTrackActions
-					isSubmitting={isSubmitting}
-					onReset={() => form.reset()}
-				/>
-			</FieldGroup>
-		</form>
+				<form.Field name="audioFile">
+					{(field) => (
+						<FormFileUploadField
+							field={field}
+							label="Upload Audio"
+							description={`Max size: ${getHumanSize(MAX_AUDIO_SIZE)}`}
+							accept={{ "audio/*": [] }}
+						/>
+					)}
+				</form.Field>
+			</FieldSet>
+		</AdminFormLayout>
 	);
 }

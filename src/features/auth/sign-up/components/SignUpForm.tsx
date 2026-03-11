@@ -1,7 +1,7 @@
 "use client";
 
 import { Lock, Mail } from "lucide-react";
-import { FormInputField } from "@/components/form/FormInputField";
+import { FormInputField } from "@/components/form/fields/FormInputField";
 import { FieldGroup, FieldSet } from "@/components/ui/Field";
 import { Separator } from "@/components/ui/Separator";
 import { SignUpActions } from "@/features/auth/sign-up/components/SignUpActions";

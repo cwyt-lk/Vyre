@@ -21,22 +21,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/Popover";
-
-// --- Utils ---
-
-const formatDate = (date?: Date) => {
-	if (!date || isNaN(date.getTime())) return "";
-	return date.toLocaleDateString("en-US", {
-		day: "2-digit",
-		month: "long",
-		year: "numeric",
-	});
-};
-
-const parseDate = (value: string) => {
-	const d = new Date(value);
-	return isNaN(d.getTime()) ? undefined : d;
-};
+import { formatDate, parseDate } from "@/lib/utils/time";
 
 // --- Component ---
 
@@ -58,7 +43,7 @@ export const FormDatePickerField = ({
 		formatDate(field.state.value),
 	);
 
-	const { isTouched, isValid, errors } = field.state.meta;
+	const { isTouched, errors } = field.state.meta;
 	const isInvalid = isTouched && !!errors.length;
 
 	useEffect(() => {
@@ -67,6 +52,7 @@ export const FormDatePickerField = ({
 
 	const commitValue = (val: string) => {
 		const parsed = parseDate(val);
+
 		if (parsed) {
 			field.handleChange(parsed);
 			setInputValue(formatDate(parsed));
@@ -93,9 +79,10 @@ export const FormDatePickerField = ({
 						field.handleBlur();
 						commitValue(inputValue);
 					}}
-					onKeyDown={(e) =>
-						e.key === "ArrowDown" && setOpen(true)
-					}
+					onKeyDown={(e) => {
+						if (e.key === "Enter") commitValue(inputValue);
+						else if (e.key === "ArrowDown") setOpen(true);
+					}}
 				/>
 
 				<InputGroupAddon align="inline-end">

@@ -4,58 +4,68 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { addTrack } from "@/features/admin/add-track/action";
 import {
-	addTrackClientDefaultValues,
 	type AddTrackClientInput,
-	addTrackClientSchema,
 	type AddTrackServerInput,
+	addTrackClientDefaultValues,
+	addTrackClientSchema,
 } from "@/features/admin/add-track/schema";
 import { createRepositories } from "@/lib/factories/repository/client";
+import type { StorageRepositoryContract } from "@/lib/repositories";
 import { getHashedPath } from "@/lib/utils/hash";
 
+/**
+ * Hook for the Add Track form
+ */
 export function useAddTrackForm() {
+	const { storage } = createRepositories();
+
 	const form = useForm({
 		defaultValues: addTrackClientDefaultValues,
-		validators: {
-			onSubmit: addTrackClientSchema,
-		},
+		validators: { onSubmit: addTrackClientSchema },
 		onSubmit: async ({ value }) => {
-			const { storage } = createRepositories();
+			const { audioFile, ...trackData } =
+				value as AddTrackClientInput;
 
-			const clientData = value as AddTrackClientInput;
-			const file = clientData.audioFile;
+			const uploadResult = await uploadAudio(storage, audioFile);
 
-			const hashedPath = await getHashedPath(file);
-
-			const uploadRes = await storage.uploadFile(
-				file,
-				"music",
-				hashedPath,
-			);
-
-			if (!uploadRes.success) {
-				toast.error("Failed to upload file");
-			} else {
-				const serverData: AddTrackServerInput = {
-					title: clientData.title,
-					artistIds: clientData.artistIds,
-					genreId: clientData.genreId,
-					audioPath: uploadRes.data,
-				};
-
-				const addTrackRes = await addTrack(serverData);
-
-				if (!addTrackRes.success) {
-					toast.error(addTrackRes.error);
-				} else {
-					form.reset();
-
-					toast.success(`Created Track: ${serverData.title}`);
-				}
+			if (!uploadResult.success) {
+				toast.error("Failed to upload audio file");
+				return;
 			}
+
+			const serverData: AddTrackServerInput = {
+				...trackData,
+				audioPath: uploadResult.path,
+			};
+
+			const result = await addTrack(serverData);
+
+			if (!result.success) {
+				toast.error(result.error);
+				return;
+			}
+
+			form.reset();
+			toast.success(`Created track: ${serverData.title}`);
 		},
 	});
 
 	const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
 
 	return { form, isSubmitting };
+}
+
+/**
+ * Upload audio file to storage
+ */
+async function uploadAudio(
+	storage: StorageRepositoryContract,
+	file: File,
+) {
+	const hashedPath = await getHashedPath(file);
+	const result = await storage.uploadFile(file, "music", hashedPath);
+
+	if (!result.success) return { success: false as const };
+
+	return { success: true as const, path: result.data };
 }

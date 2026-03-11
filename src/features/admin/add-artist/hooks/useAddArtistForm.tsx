@@ -8,22 +8,23 @@ import {
 	addArtistSchema,
 } from "@/features/admin/add-artist/schema";
 
+/**
+ * Hook for the Add Artist form
+ */
 export function useAddArtistForm() {
 	const form = useForm({
 		defaultValues: addArtistDefaultValues,
-		validators: {
-			onSubmit: addArtistSchema,
-		},
+		validators: { onSubmit: addArtistSchema },
 		onSubmit: async ({ value }) => {
-			const res = await addArtist(value);
+			const result = await addArtist(value);
 
-			if (!res.success) {
-				toast.error(res.error);
-			} else {
-				form.reset();
-
-				toast.success(`Added Artist: ${value.name}`);
+			if (!result.success) {
+				toast.error(result.error);
+				return;
 			}
+
+			form.reset();
+			toast.success(`Added Artist: ${value.name}`);
 		},
 	});
 

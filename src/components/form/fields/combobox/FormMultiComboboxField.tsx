@@ -1,6 +1,6 @@
 import type { AnyFieldApi } from "@tanstack/react-form";
 import { Fragment, type ReactNode, useCallback, useMemo } from "react";
-import type { ComboboxOption } from "@/components/form";
+import type { ComboboxOption } from "@/components/form/fields";
 import {
 	Combobox,
 	ComboboxChip,

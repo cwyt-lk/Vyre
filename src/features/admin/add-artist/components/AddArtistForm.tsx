@@ -1,59 +1,58 @@
 "use client";
 
 import { User } from "lucide-react";
-import { FormInputField } from "@/components/form/FormInputField";
-import { FormTextareaField } from "@/components/form/FormTextareaField";
-import { FieldGroup, FieldSet } from "@/components/ui/Field";
-import { AddArtistActions } from "@/features/admin/add-artist/components/AddArtistActions";
-import { AddArtistHeader } from "@/features/admin/add-artist/components/AddArtistHeader";
+import { FormInputField } from "@/components/form/fields/FormInputField";
+import { FormTextareaField } from "@/components/form/fields/FormTextareaField";
+import { FieldSet } from "@/components/ui/Field";
+
 import { useAddArtistForm } from "@/features/admin/add-artist/hooks/useAddArtistForm";
+import { AdminFormLayout } from "@/features/admin/components/AdminFormLayout";
 
 export function AddArtistForm() {
 	const { form, isSubmitting } = useAddArtistForm();
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				form.handleSubmit();
-			}}
-			className="w-full"
+		<AdminFormLayout
+			title="Add New Artist"
+			description="Add a new artist and provide a short biography."
+			isSubmitting={isSubmitting}
+			onSubmit={form.handleSubmit}
+			onReset={form.reset}
+			submitMessage="Create Artist"
+			submittingMessage="Creating..."
 		>
-			<FieldGroup className="p-4">
-				<AddArtistHeader />
+			{/* Artist Info */}
+			<FieldSet className="space-y-6">
+				<div>
+					<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+						Artist Details
+					</h3>
+				</div>
 
-				<FieldSet className="mt-8 space-y-4">
-					<form.Field name="name">
-						{(field) => (
-							<FormInputField
-								field={field}
-								label="Name"
-								icon={
-									<User className="size-4 text-muted-foreground" />
-								}
-								placeholder="Name"
-								type="text"
-							/>
-						)}
-					</form.Field>
+				<form.Field name="name">
+					{(field) => (
+						<FormInputField
+							field={field}
+							label="Name"
+							placeholder="Artist Name"
+							icon={
+								<User className="size-4 text-muted-foreground" />
+							}
+						/>
+					)}
+				</form.Field>
 
-					<form.Field name="bio">
-						{(field) => (
-							<FormTextareaField
-								field={field}
-								label="Bio"
-								placeholder="Artist Bio (optional)..."
-								maxLength={300}
-							/>
-						)}
-					</form.Field>
-				</FieldSet>
-
-				<AddArtistActions
-					isSubmitting={isSubmitting}
-					onReset={() => form.reset()}
-				/>
-			</FieldGroup>
-		</form>
+				<form.Field name="bio">
+					{(field) => (
+						<FormTextareaField
+							field={field}
+							label="Bio"
+							placeholder="Artist Bio (optional)"
+							maxLength={300}
+						/>
+					)}
+				</form.Field>
+			</FieldSet>
+		</AdminFormLayout>
 	);
 }

@@ -1,5 +1,8 @@
-import { Check } from "lucide-react";
+"use client";
+
+import { Check, Music, Plus } from "lucide-react";
 import { useState } from "react";
+
 import { Button } from "@/components/ui/Button";
 import {
 	Command,
@@ -10,6 +13,7 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/Command";
+
 import type { Track } from "@/types/domain";
 
 interface AddAlbumTracksDialogProps {
@@ -18,30 +22,45 @@ interface AddAlbumTracksDialogProps {
 	onAdd: (id: string) => void;
 }
 
-export const AddAlbumTracksDialog = ({
+export function AddAlbumTracksDialog({
 	tracks,
 	selected,
 	onAdd,
-}: AddAlbumTracksDialogProps) => {
+}: AddAlbumTracksDialogProps) {
 	const [open, setOpen] = useState(false);
 
+	function handleSelect(trackId: string) {
+		if (!selected.includes(trackId)) {
+			onAdd(trackId);
+		}
+	}
+
 	return (
-		<div className="flex flex-col gap-4">
+		<>
 			<Button
-				onClick={() => setOpen(true)}
+				type="button"
 				variant="outline"
-				className="w-fit"
+				size="sm"
+				className="gap-2"
+				onClick={() => setOpen(true)}
 			>
+				<Plus className="size-4" />
 				Add Track
 			</Button>
 
 			<CommandDialog open={open} onOpenChange={setOpen}>
 				<Command>
-					<CommandInput placeholder="Type a command or search..." />
-					<CommandList>
-						<CommandEmpty>No results found.</CommandEmpty>
+					<CommandInput placeholder="Search tracks..." />
 
-						<CommandGroup heading="Tracks">
+					<CommandList>
+						<CommandEmpty className="py-6 text-sm text-muted-foreground">
+							No tracks found
+						</CommandEmpty>
+
+						<CommandGroup
+							heading={`Tracks (${tracks.length})`}
+							className="max-h-[320px] overflow-auto"
+						>
 							{tracks.map((track) => {
 								const isSelected = selected.includes(
 									track.id,
@@ -50,12 +69,20 @@ export const AddAlbumTracksDialog = ({
 								return (
 									<CommandItem
 										key={track.id}
-										onSelect={() => onAdd(track.id)}
+										value={track.title}
+										onSelect={() =>
+											handleSelect(track.id)
+										}
+										className="flex items-center gap-2"
 									>
-										{track.title}
+										<Music className="size-4 opacity-60" />
+
+										<span className="flex-1 truncate">
+											{track.title}
+										</span>
 
 										{isSelected && (
-											<Check className="ml-auto size-4" />
+											<Check className="size-4 text-primary" />
 										)}
 									</CommandItem>
 								);
@@ -64,6 +91,6 @@ export const AddAlbumTracksDialog = ({
 					</CommandList>
 				</Command>
 			</CommandDialog>
-		</div>
+		</>
 	);
-};
+}

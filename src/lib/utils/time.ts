@@ -19,3 +19,19 @@ export function formatTime(seconds: number): string {
 
 	return `${minsStr}:${secsStr}`;
 }
+
+export function formatDate(date?: Date) {
+	if (!date || isNaN(date.getTime())) return "";
+
+	return date.toLocaleDateString("en-US", {
+		day: "2-digit",
+		month: "long",
+		year: "numeric",
+	});
+}
+
+export function parseDate(value: string) {
+	const d = new Date(value);
+
+	return isNaN(d.getTime()) ? undefined : d;
+}

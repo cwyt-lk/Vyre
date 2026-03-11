@@ -9,12 +9,14 @@ import { createRepositories } from "@/lib/factories/repository/server";
 import type { CreateTrack } from "@/types/domain";
 import type { ActionResult } from "@/types/results";
 
+/**
+ * Adds a track and associates artists
+ */
 export async function addTrack(
 	data: AddTrackServerInput,
 ): Promise<ActionResult> {
-	const { tracks } = await createRepositories();
+	// Validate input
 	const parsed = addTrackServerSchema.safeParse(data);
-
 	if (!parsed.success) {
 		return {
 			success: false,
@@ -22,22 +24,27 @@ export async function addTrack(
 		};
 	}
 
-	const result = await tracks.create(parsed.data as CreateTrack);
+	const trackData = parsed.data as CreateTrack;
+	const trackArtistIds = parsed.data.artistIds;
 
-	if (!result.success) {
+	// Create track
+	const { tracks } = await createRepositories();
+	const createResult = await tracks.create(trackData);
+	if (!createResult.success) {
 		return {
 			success: false,
 			error: "Failed to add track. Please try again.",
 		};
 	}
 
-	for (let i = 0; i < parsed.data.artistIds.length; i++) {
-		const artistId = parsed.data.artistIds[i];
+	const trackId = createResult.data.id;
 
+	// Associate artists
+	for (const [index, artistId] of trackArtistIds.entries()) {
 		const artistResult = await tracks.addArtist(
-			result.data.id,
+			trackId,
 			artistId,
-			i,
+			index,
 		);
 
 		if (!artistResult.success) {
@@ -48,7 +55,5 @@ export async function addTrack(
 		}
 	}
 
-	return {
-		success: true,
-	};
+	return { success: true };
 }

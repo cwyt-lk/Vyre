@@ -1,23 +1,28 @@
 import { z } from "zod";
 import { capitalizeWords } from "@/lib/utils/string";
 
+/**
+ * Validates Genre categorization.
+ * 'key' is used for URL slugs (e.g., /genre/hip-hop).
+ * 'label' is used for display (e.g., "Hip Hop").
+ */
 export const addGenreSchema = z.object({
 	key: z
 		.string()
-		.min(2, "Key must be at least 2 characters")
-		.max(30, "Key is too long")
 		.trim()
 		.toLowerCase()
-		.regex(/^[a-z0-9-]+$/, {
-			message:
-				"Key can only contain letters, numbers, and hyphens (no spaces)",
-		}),
+		.min(2, "Key must be at least 2 characters")
+		.max(30, "Key is too long")
+		.regex(
+			/^[a-z0-9-]+$/,
+			"Key can only contain letters, numbers, and hyphens",
+		),
 
 	label: z
 		.string()
+		.trim()
 		.min(2, "Label must be at least 2 characters")
 		.max(50, "Label is too long")
-		.trim()
 		.transform(capitalizeWords),
 });
 
