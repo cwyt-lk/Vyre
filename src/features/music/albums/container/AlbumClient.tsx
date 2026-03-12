@@ -6,7 +6,6 @@ import { useShallow } from "zustand/react/shallow";
 import { AlbumTrackList } from "@/features/music/albums/components/AlbumTrackList";
 import { Player } from "@/features/music/player/Player";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
-import { createRepositories } from "@/lib/factories/repository/client";
 import type {
 	AlbumWithCover,
 	TrackAggregateWithAudio,

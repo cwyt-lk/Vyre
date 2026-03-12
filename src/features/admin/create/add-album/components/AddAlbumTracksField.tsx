@@ -6,23 +6,27 @@ import { Button } from "@/components/ui/Button";
 import { AddAlbumTracksDialog } from "@/features/admin/create/add-album/components/AddAlbumTracksDialog";
 import type { Track } from "@/types/domain";
 
-interface Props {
+interface AddAlbumTracksFieldProps {
 	tracks: Track[];
 	value: string[];
 	onChange: (ids: string[]) => void;
 }
 
-export function AddAlbumTracksField({ tracks, value, onChange }: Props) {
+export function AddAlbumTracksField({
+	tracks,
+	value,
+	onChange,
+}: AddAlbumTracksFieldProps) {
 	const selectedTracks = tracks.filter((t) => value.includes(t.id));
 
-	function addTrack(trackId: string) {
+	const addTrack = (trackId: string) => {
 		if (value.includes(trackId)) return;
 		onChange([...value, trackId]);
-	}
+	};
 
-	function removeTrack(trackId: string) {
+	const removeTrack = (trackId: string) => {
 		onChange(value.filter((id) => id !== trackId));
-	}
+	};
 
 	return (
 		<div className="space-y-4">
