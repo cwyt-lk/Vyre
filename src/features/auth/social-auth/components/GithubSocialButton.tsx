@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { FaGithub } from "react-icons/fa6";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
