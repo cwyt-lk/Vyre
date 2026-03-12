@@ -2,7 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
 	AlertDialog,
@@ -20,24 +20,23 @@ import { Spinner } from "@/components/ui/Spinner";
 import { signOutAction } from "@/features/auth/sign-out/actions";
 
 export const SignOutButton = () => {
-	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
+	const [isLoading, startTransition] = useTransition();
 
 	const signOut = async () => {
-		try {
-			setIsLoading(true);
-			const res = await signOutAction();
+		startTransition(async () => {
+			try {
+				const res = await signOutAction();
 
-			if (!res.success) {
-				toast.error(res.error);
-			} else {
-				router.replace("/auth/sign-in");
+				if (!res.success) {
+					toast.error(res.error);
+				} else {
+					router.replace("/auth/sign-in");
+				}
+			} catch (_) {
+				toast.error("Something went wrong while signing out.");
 			}
-		} catch (_) {
-			toast.error("Something went wrong while signing out.");
-		} finally {
-			setIsLoading(false);
-		}
+		});
 	};
 
 	return (

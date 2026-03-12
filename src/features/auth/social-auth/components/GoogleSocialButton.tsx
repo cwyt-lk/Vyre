@@ -1,21 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { signInWithGoogleAction } from "@/features/auth/social-auth/actions";
 
 export const GoogleSocialButton = () => {
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, startTransition] = useTransition();
 
 	const handleSignIn = async () => {
-		try {
-			setIsLoading(true);
+		startTransition(async () => {
 			await signInWithGoogleAction();
-		} finally {
-			setIsLoading(false);
-		}
+		});
 	};
 
 	return (

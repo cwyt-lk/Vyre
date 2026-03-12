@@ -1,21 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { FaGithub } from "react-icons/fa6";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { signInWithGithubAction } from "@/features/auth/social-auth/actions";
 
 export const GithubSocialButton = () => {
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, startTransition] = useTransition();
 
 	const handleSignIn = async () => {
-		try {
-			setIsLoading(true);
+		startTransition(async () => {
 			await signInWithGithubAction();
-		} finally {
-			setIsLoading(false);
-		}
+		});
 	};
 
 	return (
