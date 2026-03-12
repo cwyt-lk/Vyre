@@ -13,11 +13,11 @@ import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
 import { cn } from "@/lib/utils/cn";
 import type { TrackAggregate } from "@/types/domain";
 
-interface TrackListProps {
+interface AlbumTrackListProps {
 	tracks: TrackAggregate[];
 }
 
-export const TrackList = ({ tracks }: TrackListProps) => {
+export const AlbumTrackList = ({ tracks }: AlbumTrackListProps) => {
 	const { queue, currentIndex, playByIndex } = useAudioPlayerStore(
 		useShallow((s) => ({
 			queue: s.queue,

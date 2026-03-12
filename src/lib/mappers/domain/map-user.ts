@@ -1,6 +1,7 @@
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import type { User } from "@/types/domain";
 
+/** Map a Supabase User object to domain User type */
 export function mapUser(user: SupabaseUser): User {
 	return {
 		id: user.id,

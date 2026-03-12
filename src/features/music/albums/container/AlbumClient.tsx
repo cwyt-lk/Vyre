@@ -3,24 +3,21 @@
 import Image from "next/image";
 import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { TrackList } from "@/features/music/albums/TrackList";
+import { AlbumTrackList } from "@/features/music/albums/components/AlbumTrackList";
 import { Player } from "@/features/music/player/Player";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
 import { createRepositories } from "@/lib/factories/repository/client";
-import type { Album, TrackAggregate } from "@/types/domain";
+import type {
+	AlbumWithCover,
+	TrackAggregateWithAudio,
+} from "@/lib/mappers/domain";
 
 interface AlbumClientProps {
-	album: Album;
-	albumTracks: TrackAggregate[];
-	coverUrl: string;
+	album: AlbumWithCover;
+	tracks: TrackAggregateWithAudio[];
 }
 
-export function AlbumClient({
-	album,
-	albumTracks,
-	coverUrl,
-}: AlbumClientProps) {
-	const { storage } = createRepositories();
+export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 	const { currentTrack, setQueue, clearQueue } = useAudioPlayerStore(
 		useShallow((s) => ({
 			currentTrack: s.currentTrack,
@@ -30,17 +27,15 @@ export function AlbumClient({
 	);
 
 	const queue = useMemo(() => {
-		return albumTracks.map((it) => {
-			const res = storage.getPublicFile("music", it.audioPath);
-
+		return tracks.map((it) => {
 			return {
 				id: it.id,
-				src: res.success ? res.data : "",
+				src: it.audioUrl ?? "",
 				title: it.title,
 				artist: it.artists.map((it) => it.name).join(", "),
 			};
 		});
-	}, [albumTracks, storage]);
+	}, [tracks]);
 
 	useEffect(() => {
 		setQueue(queue, album.id);
@@ -55,7 +50,7 @@ export function AlbumClient({
 			<header className="flex flex-col md:flex-row gap-8">
 				<div className="relative size-64 shrink-0 shadow-2xl">
 					<Image
-						src={coverUrl}
+						src={album.coverUrl ?? "/placeholder.png"}
 						alt={`Cover art for ${album.title}`}
 						fill
 						priority
@@ -86,12 +81,12 @@ export function AlbumClient({
 
 			<section>
 				<h2 className="text-2xl font-semibold mb-4">Tracks</h2>
-				<TrackList tracks={albumTracks} />
+				<AlbumTrackList tracks={tracks} />
 			</section>
 
 			<footer className="text-sm text-muted-foreground">
-				<p>Total Tracks: {albumTracks.length}</p>
+				<p>Total Tracks: {tracks.length}</p>
 			</footer>
 		</section>
 	);
-}
+};

@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import ErrorState from "@/components/layout/ErrorState";
-import { AlbumCard } from "@/features/music/albums/AlbumCard";
-import { AlbumSearch } from "@/features/music/albums/AlbumSearch";
-import EmptyAlbumState from "@/features/music/albums/EmptyAlbumState";
+import { AlbumCard } from "@/features/music/albums/components/AlbumCard";
+import { AlbumSearch } from "@/features/music/albums/components/AlbumSearch";
+import EmptyAlbumState from "@/features/music/albums/components/EmptyAlbumState";
 import { createRepositories } from "@/lib/factories/repository/server";
+import { AlbumMapper, type AlbumWithCover } from "@/lib/mappers/domain";
 
 export default async function AlbumsPage({
 	searchParams,
 }: {
 	searchParams?: Promise<{ query?: string }>;
 }) {
-	const { albums } = await createRepositories();
+	const { albums, storage } = await createRepositories();
 
 	const query = (await searchParams)?.query ?? "";
 	const result = await albums.searchByTitle(query);
@@ -25,7 +26,9 @@ export default async function AlbumsPage({
 		);
 	}
 
-	const albumsList = result.data;
+	const albumsList: AlbumWithCover[] = result.data.map((it) =>
+		AlbumMapper.mapWithCover(it, storage),
+	);
 
 	if (albumsList.length === 0 && query === "") {
 		return <EmptyAlbumState />;

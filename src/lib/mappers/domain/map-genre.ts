@@ -4,6 +4,7 @@ import type { Database } from "@/types/supabase";
 export type GenreDB = Database["public"]["Tables"]["genres"]["Row"];
 
 export const GenreMapper = {
+	/** Map a genre row from the database to domain Genre */
 	map(row: GenreDB): Genre {
 		return {
 			id: row.id,

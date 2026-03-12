@@ -1,7 +1,13 @@
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/Container";
-import { AlbumClient } from "@/features/music/albums/AlbumClient";
+import { AlbumClient } from "@/features/music/albums/container/AlbumClient";
 import { createRepositories } from "@/lib/factories/repository/server";
+import {
+	AlbumMapper,
+	type AlbumWithCover,
+	type TrackAggregateWithAudio,
+	TrackMapper,
+} from "@/lib/mappers/domain";
 
 interface AlbumParamsType {
 	params: Promise<{ id: string }>;
@@ -17,28 +23,18 @@ export default async function AlbumPage({ params }: AlbumParamsType) {
 		notFound();
 	}
 
-	const album = albumResult.data;
+	const album: AlbumWithCover = AlbumMapper.mapWithCover(
+		albumResult.data,
+		storage,
+	);
 
-	let imageSrc = "/placeholder.png";
-
-	if (album.coverPath) {
-		const storageResult = storage.getPublicFile(
-			"cover-art",
-			album.coverPath,
-		);
-
-		if (storageResult.success) {
-			imageSrc = storageResult.data;
-		}
-	}
+	const tracks: TrackAggregateWithAudio[] = albumResult.data.tracks.map(
+		(it) => TrackMapper.mapWithAudio(it, storage),
+	);
 
 	return (
 		<Container>
-			<AlbumClient
-				album={album}
-				albumTracks={album.tracks}
-				coverUrl={imageSrc}
-			/>
+			<AlbumClient album={album} tracks={tracks} />
 		</Container>
 	);
 }
