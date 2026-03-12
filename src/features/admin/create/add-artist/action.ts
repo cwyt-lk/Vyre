@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
 	type AddArtistInput,
@@ -10,7 +9,7 @@ import { createRepositories } from "@/lib/factories/repository/server";
 import type { CreateArtist } from "@/types/domain";
 import type { ActionResult } from "@/types/results";
 
-export async function addArtist(
+export async function addArtistAction(
 	data: AddArtistInput,
 ): Promise<ActionResult> {
 	const { artists } = await createRepositories();
@@ -31,9 +30,6 @@ export async function addArtist(
 			error: "Failed to add artist. Please try again later.",
 		};
 	}
-
-	// Revalidate the add track page
-	revalidatePath("/admin/add-track");
 
 	return {
 		success: true,

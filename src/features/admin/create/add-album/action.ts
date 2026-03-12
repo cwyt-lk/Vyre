@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
 	type AddAlbumServerInput,
@@ -10,7 +9,7 @@ import { createRepositories } from "@/lib/factories/repository/server";
 import type { CreateAlbum } from "@/types/domain";
 import type { ActionResult } from "@/types/results";
 
-export async function addAlbum(
+export async function addAlbumAction(
 	data: AddAlbumServerInput,
 ): Promise<ActionResult> {
 	// Validate input
@@ -55,9 +54,6 @@ export async function addAlbum(
 			}
 		}
 	}
-
-	// Revalidate the albums page
-	revalidatePath("/music/albums");
 
 	return { success: true };
 }

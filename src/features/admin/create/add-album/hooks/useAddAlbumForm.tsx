@@ -2,12 +2,12 @@
 
 import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { addAlbum } from "@/features/admin/create/add-album/action";
+import { addAlbumAction } from "@/features/admin/create/add-album/action";
 import {
-	addAlbumClientDefaultValues,
 	type AddAlbumClientInput,
-	addAlbumClientSchema,
 	type AddAlbumServerInput,
+	addAlbumClientDefaultValues,
+	addAlbumClientSchema,
 } from "@/features/admin/create/add-album/schema";
 import { createRepositories } from "@/lib/factories/repository/client";
 import type { StorageRepositoryContract } from "@/lib/repositories";
@@ -38,7 +38,7 @@ export function useAddAlbumForm() {
 				coverPath: uploadResult.path,
 			};
 
-			const result = await addAlbum(serverInput);
+			const result = await addAlbumAction(serverInput);
 
 			if (!result.success) {
 				toast.error(result.error);

@@ -2,7 +2,7 @@
 
 import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { addTrack } from "@/features/admin/create/add-track/action";
+import { addTrackAction } from "@/features/admin/create/add-track/action";
 import {
 	addTrackClientDefaultValues,
 	type AddTrackClientInput,
@@ -38,7 +38,7 @@ export function useAddTrackForm() {
 				audioPath: uploadResult.path,
 			};
 
-			const result = await addTrack(serverData);
+			const result = await addTrackAction(serverData);
 
 			if (!result.success) {
 				toast.error(result.error);

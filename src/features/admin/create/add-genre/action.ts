@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
 	type AddGenreInput,
@@ -13,7 +12,7 @@ import type { ActionResult } from "@/types/results";
 /**
  * Adds a new genre to the database
  */
-export async function addGenre(
+export async function addGenreAction(
 	data: AddGenreInput,
 ): Promise<ActionResult> {
 	// Validate input
@@ -39,9 +38,6 @@ export async function addGenre(
 
 		return { success: false, error: message };
 	}
-
-	// Revalidate the add track page
-	revalidatePath("/admin/add-track");
 
 	return { success: true };
 }

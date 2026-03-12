@@ -2,7 +2,7 @@
 
 import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { addGenre } from "@/features/admin/create/add-genre/action";
+import { addGenreAction } from "@/features/admin/create/add-genre/action";
 import {
 	addGenreDefaultValues,
 	addGenreSchema,
@@ -16,7 +16,7 @@ export function useAddGenreForm() {
 		defaultValues: addGenreDefaultValues,
 		validators: { onSubmit: addGenreSchema },
 		onSubmit: async ({ value }) => {
-			const result = await addGenre(value);
+			const result = await addGenreAction(value);
 
 			if (!result.success) {
 				toast.error(result.error);

@@ -2,7 +2,7 @@
 
 import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { addArtist } from "@/features/admin/create/add-artist/action";
+import { addArtistAction } from "@/features/admin/create/add-artist/action";
 import {
 	addArtistDefaultValues,
 	addArtistSchema,
@@ -16,7 +16,7 @@ export function useAddArtistForm() {
 		defaultValues: addArtistDefaultValues,
 		validators: { onSubmit: addArtistSchema },
 		onSubmit: async ({ value }) => {
-			const result = await addArtist(value);
+			const result = await addArtistAction(value);
 
 			if (!result.success) {
 				toast.error(result.error);

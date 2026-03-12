@@ -12,7 +12,7 @@ import type { ActionResult } from "@/types/results";
 /**
  * Adds a track and associates artists
  */
-export async function addTrack(
+export async function addTrackAction(
 	data: AddTrackServerInput,
 ): Promise<ActionResult> {
 	// Validate input
