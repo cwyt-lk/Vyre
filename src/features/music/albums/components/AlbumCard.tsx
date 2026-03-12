@@ -14,7 +14,7 @@ interface AlbumCardProps {
 
 export const AlbumCard = async ({ album }: AlbumCardProps) => {
 	return (
-		<Card className="group h-full overflow-hidden border-none bg-muted/10 transition-all hover:bg-muted/50">
+		<Card className="group h-full overflow-hidden border-none bg-card/50 transition-all hover:bg-muted">
 			<CardHeader className="p-4">
 				<div className="relative aspect-square overflow-hidden rounded-xl">
 					<Image

@@ -24,8 +24,11 @@ export const GoogleSocialButton = () => {
 			onClick={handleSignIn}
 			className="flex items-center justify-center gap-4"
 		>
-			{isLoading && <Spinner className="size-5" />}
-			<FcGoogle className="size-6" />
+			{isLoading ? (
+				<Spinner className="size-6" />
+			) : (
+				<FcGoogle className="size-6" />
+			)}
 			<span>
 				{isLoading
 					? "Continuing with Google..."

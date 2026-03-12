@@ -24,8 +24,12 @@ export const GithubSocialButton = () => {
 			onClick={handleSignIn}
 			className="flex items-center justify-center gap-4"
 		>
-			{isLoading && <Spinner className="size-5" />}
-			<FaGithub className="size-6" />
+			{isLoading ? (
+				<Spinner className="size-6" />
+			) : (
+				<FaGithub className="size-6" />
+			)}
+
 			<span>
 				{isLoading
 					? "Continuing with GitHub..."

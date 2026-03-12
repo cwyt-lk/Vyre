@@ -47,19 +47,19 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 	return (
 		<section className="py-10 space-y-8 animate-in fade-in duration-500">
 			<header className="flex flex-col md:flex-row gap-8">
-				<div className="relative size-64 shrink-0 shadow-2xl">
+				<div className="relative size-64 shrink-0 overflow-hidden rounded-xl">
 					<Image
 						src={album.coverUrl ?? "/placeholder.png"}
 						alt={`Cover art for ${album.title}`}
 						fill
 						priority
-						className="object-cover rounded-xl"
+						className="object-cover"
 					/>
 				</div>
 
 				<div className="flex flex-col gap-4 w-full">
-					<div>
-						<span className="text-sm uppercase tracking-wider text-muted-foreground">
+					<div className="space-y-1">
+						<span className="text-base uppercase tracking-wider text-muted-foreground">
 							Album
 						</span>
 
@@ -70,6 +70,20 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 						<h2 className="text-2xl text-muted-foreground font-medium">
 							{currentTrack?.title ?? ""}
 						</h2>
+
+						<time
+							dateTime={album.releaseDate.toISOString()}
+							className="mt-1 text-sm text-muted-foreground"
+						>
+							{album.releaseDate.toLocaleDateString(
+								undefined,
+								{
+									year: "numeric",
+									month: "short",
+									day: "numeric",
+								},
+							)}
+						</time>
 					</div>
 
 					<div className="pt-4">

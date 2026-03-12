@@ -42,7 +42,7 @@ export const AdminDeleteButton = ({
 					<Button
 						variant="ghost"
 						size="icon"
-						className="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+						className="size-8 text-muted-foreground hover:bg-destructive/25 hover:text-destructive"
 						aria-label={`Delete ${entityName} ${title}`}
 					>
 						<Trash2 className="size-5" />

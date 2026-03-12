@@ -19,8 +19,8 @@ export const AdminAlbumRow = ({
 }: AdminAlbumRowProps) => {
 	return (
 		<div
-			className={`group flex items-center justify-between gap-4 rounded-xl border bg-card p-3 transition-all
-		        hover:bg-accent/50 hover:shadow-sm`}
+			className={`group flex items-center justify-between gap-4 rounded-xl border bg-card/50 p-3 transition-all
+		        hover:bg-muted hover:shadow-sm`}
 		>
 			<div className="flex items-center gap-4 min-w-0">
 				{/* Cover Art Container */}

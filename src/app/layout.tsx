@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Lora, Plus_Jakarta_Sans } from "next/font/google";
+import { Fira_Code, Lora, Montserrat } from "next/font/google";
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/Sonner";
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 	title: "Vyre",
 };
 
-const fontSans = Plus_Jakarta_Sans({
+const fontSans = Montserrat({
 	subsets: ["latin"],
 	variable: "--font-sans",
 });
@@ -17,6 +17,11 @@ const fontSans = Plus_Jakarta_Sans({
 const fontSerif = Lora({
 	subsets: ["latin"],
 	variable: "--font-serif",
+});
+
+const fontMono = Fira_Code({
+	subsets: ["latin"],
+	variable: "--font-mono",
 });
 
 export default function RootLayout({
@@ -27,7 +32,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" className="dark">
 			<body
-				className={`${fontSans.variable} ${fontSerif.variable} antialiased`}
+				className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
 			>
 				{children}
 				<Toaster

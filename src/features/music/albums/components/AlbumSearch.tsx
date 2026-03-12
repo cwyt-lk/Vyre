@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/InputGroup";
 import { Spinner } from "@/components/ui/Spinner";
 
-export function AlbumSearch() {
+export const AlbumSearch = () => {
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const { replace } = useRouter();
@@ -61,4 +61,4 @@ export function AlbumSearch() {
 			/>
 		</InputGroup>
 	);
-}
+};

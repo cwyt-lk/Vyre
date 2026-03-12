@@ -36,14 +36,13 @@ export const AlbumTrackList = ({ tracks }: AlbumTrackListProps) => {
 				return (
 					<Item
 						key={track.id}
-						variant="muted"
+						variant="card"
 						size="sm"
 						onClick={() => {
 							playByIndex(index);
 						}}
 						className={cn(
-							"transition duration-500 cursor-pointer",
-							"hover:bg-muted",
+							"transition duration-300 cursor-pointer hover:bg-muted",
 							isSelected && "ring-2 ring-primary",
 						)}
 					>
