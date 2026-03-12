@@ -12,7 +12,6 @@ export const GithubSocialButton = () => {
 	const handleSignIn = async () => {
 		try {
 			setIsLoading(true);
-
 			await signInWithGithubAction();
 		} finally {
 			setIsLoading(false);

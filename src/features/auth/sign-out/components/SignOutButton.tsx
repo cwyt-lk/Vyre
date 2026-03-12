@@ -2,7 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
 	AlertDialog,
@@ -20,22 +20,25 @@ import { Spinner } from "@/components/ui/Spinner";
 import { signOutAction } from "@/features/auth/sign-out/actions";
 
 export const SignOutButton = () => {
-	const [loading, setLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 
-	const signOut = useCallback(async () => {
-		setLoading(true);
+	const signOut = async () => {
+		try {
+			setIsLoading(true);
+			const res = await signOutAction();
 
-		const res = await signOutAction();
-
-		if (!res.success) {
-			toast.error(res.error);
-
-			setLoading(false);
-		} else {
-			router.replace("/auth/sign-in");
+			if (!res.success) {
+				toast.error(res.error);
+			} else {
+				router.replace("/auth/sign-in");
+			}
+		} catch (_) {
+			toast.error("Something went wrong while signing out.");
+		} finally {
+			setIsLoading(false);
 		}
-	}, [router]);
+	};
 
 	return (
 		<AlertDialog>
@@ -55,15 +58,15 @@ export const SignOutButton = () => {
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel disabled={loading}>
+					<AlertDialogCancel disabled={isLoading}>
 						Cancel
 					</AlertDialogCancel>
 					<AlertDialogAction
 						onClick={signOut}
-						disabled={loading}
+						disabled={isLoading}
 						className="flex items-center justify-center gap-2"
 					>
-						{loading ? (
+						{isLoading ? (
 							<>
 								<Spinner />
 								Signing Out...

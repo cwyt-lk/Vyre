@@ -80,6 +80,7 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 
 			<section>
 				<h2 className="text-2xl font-semibold mb-4">Tracks</h2>
+
 				<AlbumTrackList tracks={tracks} />
 			</section>
 

@@ -12,7 +12,6 @@ export const GoogleSocialButton = () => {
 	const handleSignIn = async () => {
 		try {
 			setIsLoading(true);
-
 			await signInWithGoogleAction();
 		} finally {
 			setIsLoading(false);
