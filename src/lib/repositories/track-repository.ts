@@ -7,37 +7,28 @@ import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 /**
- * Contract describing persistence operations available for tracks.
+ * Repository contract defining persistence operations for tracks.
  *
- * Implementations are responsible for retrieving track data
- * from the underlying data source and mapping it into domain models.
+ * Abstracts data access and maps database rows into domain models.
  */
 export interface TrackRepositoryContract {
-	/**
-	 * Retrieve all tracks.
-	 */
+	/** Fetch all tracks */
 	findAll(): Promise<RepoResult<Track[]>>;
 
-	/**
-	 * Retrieve a single track by its unique identifier.
-	 *
-	 * @param id - Track ID
+	/** Fetch a single track by ID
+	 * @param id - Track unique identifier
 	 */
 	findById(id: string): Promise<RepoResult<Track>>;
 
-	/**
-	 * Create a new track.
-	 *
+	/** Create a new track
 	 * @param track - Track creation data
 	 */
 	create(track: CreateTrack): Promise<RepoResult<Track>>;
 
-	/**
-	 * Adds an artist to a track.
-	 *
-	 * @param trackId
-	 * @param artistId
-	 * @param order
+	/** Add an artist to a track
+	 * @param trackId - Track unique identifier
+	 * @param artistId - Artist unique identifier
+	 * @param order - Position of the artist within the track
 	 */
 	addArtist(
 		trackId: string,
@@ -47,19 +38,17 @@ export interface TrackRepositoryContract {
 }
 
 /**
- * Supabase-backed repository responsible for track persistence.
+ * Supabase-backed repository for track persistence.
  *
- * This class:
- * - Executes database queries against Supabase
- * - Maps raw database rows into domain models
- * - Normalizes database errors into `RepoResult`
+ * Handles:
+ * - Executing database queries
+ * - Mapping raw rows into domain models
+ * - Normalizing database errors into `RepoResult`
  */
 export class TrackRepository implements TrackRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
-	/**
-	 * Fetch all tracks from the database.
-	 */
+	/** {@inheritDoc TrackRepositoryContract.findAll} */
 	async findAll(): Promise<RepoResult<Track[]>> {
 		const { data, error } = await this.supabase
 			.from("tracks")
@@ -69,17 +58,10 @@ export class TrackRepository implements TrackRepositoryContract {
 			return { success: false, error: mapPostgresError(error) };
 		}
 
-		return {
-			success: true,
-			data: flatMapList(data, TrackMapper.map),
-		};
+		return { success: true, data: flatMapList(data, TrackMapper.map) };
 	}
 
-	/**
-	 * Fetch a single track by ID.
-	 *
-	 * @param id - Track ID
-	 */
+	/** {@inheritDoc TrackRepositoryContract.findById} */
 	async findById(id: string): Promise<RepoResult<Track>> {
 		const { data, error } = await this.supabase
 			.from("tracks")
@@ -94,11 +76,7 @@ export class TrackRepository implements TrackRepositoryContract {
 		return { success: true, data: TrackMapper.map(data) };
 	}
 
-	/**
-	 * Create a new track.
-	 *
-	 * @param track - Track creation data
-	 */
+	/** {@inheritDoc TrackRepositoryContract.create} */
 	async create(track: CreateTrack): Promise<RepoResult<Track>> {
 		const { data, error } = await this.supabase
 			.from("tracks")
@@ -117,13 +95,7 @@ export class TrackRepository implements TrackRepositoryContract {
 		return { success: true, data: TrackMapper.map(data) };
 	}
 
-	/**
-	 * Adds an artist to a track.
-	 *
-	 * @param trackId
-	 * @param artistId
-	 * @param order
-	 */
+	/** {@inheritDoc TrackRepositoryContract.addArtist} */
 	async addArtist(
 		trackId: string,
 		artistId: string,

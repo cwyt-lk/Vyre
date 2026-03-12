@@ -14,13 +14,13 @@ import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 /**
- * Supabase select fragment used to fetch tracks with their related entities.
+ * Supabase select fragment to fetch tracks with their related entities.
  *
  * Includes:
- * - track fields
- * - genres
- * - track artists
- * - artist information
+ * - Track fields
+ * - Genres
+ * - Track artists
+ * - Artist information
  */
 const TRACK_RELATION_SELECT = `
   tracks (
@@ -31,8 +31,8 @@ const TRACK_RELATION_SELECT = `
 `;
 
 /**
- * Supabase select fragment used to fetch albums with their tracks
- * and all nested track relations.
+ * Supabase select fragment to fetch albums with nested tracks and
+ * all nested track relations.
  */
 const ALBUM_RELATION_SELECT = `
   *,
@@ -42,49 +42,35 @@ const ALBUM_RELATION_SELECT = `
 `;
 
 /**
- * Contract describing the operations available for album persistence.
+ * Repository contract for album persistence operations.
  *
- * This repository abstracts Supabase queries and maps database records
- * into domain models using mappers.
+ * Abstracts database access and maps raw rows into domain models.
  */
 export interface AlbumRepositoryContract {
-	/**
-	 * Fetch all albums without related entities.
-	 */
+	/** Fetch all albums without related entities */
 	findAll(): Promise<RepoResult<Album[]>>;
 
-	/**
-	 * Fetch a single album by its unique identifier.
-	 *
+	/** Fetch a single album by its unique identifier
 	 * @param id - Album ID
 	 */
 	findById(id: string): Promise<RepoResult<Album>>;
 
-	/**
-	 * Search albums by title prefix.
-	 *
-	 * Uses a case-insensitive match.
-	 *
+	/** Search albums by title prefix (case-insensitive)
 	 * @param title - Album title prefix
 	 */
 	searchByTitle(title: string): Promise<RepoResult<Album[]>>;
 
-	/**
-	 * Retrieve tracks belonging to an album.
-	 *
-	 * Does not include additional track relations.
-	 *
+	/** Retrieve tracks belonging to an album (without relations)
 	 * @param id - Album ID
 	 */
 	findTracksByAlbumId(id: string): Promise<RepoResult<Track[]>>;
 
-	/**
-	 * Retrieve tracks belonging to an album with their relations.
+	/** Retrieve tracks for an album with their relations
 	 *
 	 * Includes:
-	 * - genres
-	 * - track artists
-	 * - artist information
+	 * - Genres
+	 * - Track artists
+	 * - Artist information
 	 *
 	 * @param id - Album ID
 	 */
@@ -92,21 +78,15 @@ export interface AlbumRepositoryContract {
 		id: string,
 	): Promise<RepoResult<TrackAggregate[]>>;
 
-	/**
-	 * Fetch all albums with nested track relations.
-	 *
-	 * This returns a richer aggregate representation suitable
-	 * for album detail pages or full library views.
-	 */
+	/** Fetch all albums with nested track relations */
 	findAllWithRelations(): Promise<RepoResult<AlbumAggregate[]>>;
 
-	/**
-	 * Fetch a single album with all nested relations.
+	/** Fetch a single album with all nested relations
 	 *
 	 * Includes:
-	 * - album metadata
-	 * - album tracks
-	 * - track relations (genres, artists)
+	 * - Album metadata
+	 * - Album tracks
+	 * - Track relations (genres, artists)
 	 *
 	 * @param id - Album ID
 	 */
@@ -114,110 +94,80 @@ export interface AlbumRepositoryContract {
 		id: string,
 	): Promise<RepoResult<AlbumFullAggregate>>;
 
-	/**
-	 * Create a new album.
-	 *
+	/** Create a new album
 	 * @param album - Album creation data
 	 */
 	create(album: CreateAlbum): Promise<RepoResult<Album>>;
 
-	/**
-	 * Adds a track to an album.
-	 *
-	 * @param albumId
-	 * @param trackId
-	 * @param order - Position of the track within the album
+	/** Add a track to an album
+	 * @param albumId - Album ID
+	 * @param trackId - Track ID
+	 * @param order - Track position in the album
 	 */
 	addTrack(
 		albumId: string,
 		trackId: string,
 		order: number,
 	): Promise<RepoResult>;
+
+	/** Delete an album
+	 * @param albumId - Album ID
+	 */
+	delete(albumId: string): Promise<RepoResult>;
 }
 
 /**
- * Supabase-backed repository responsible for album persistence.
+ * Supabase-backed repository for album persistence.
  *
- * This class:
- * - Executes database queries
- * - Maps raw rows into domain models
- * - Normalizes database errors into RepoResult
+ * Handles:
+ * - Database queries
+ * - Mapping raw database rows into domain models
+ * - Normalizing errors into RepoResult format
  */
 export class AlbumRepository implements AlbumRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
-	/**
-	 * Retrieve all albums.
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.findAll} */
 	async findAll(): Promise<RepoResult<Album[]>> {
 		const { data, error } = await this.supabase
 			.from("albums")
 			.select("*");
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
-		return {
-			success: true,
-			data: flatMapList(data, AlbumMapper.map),
-		};
+		return { success: true, data: flatMapList(data, AlbumMapper.map) };
 	}
 
-	/**
-	 * Retrieve an album by ID.
-	 *
-	 * @param id - Album ID
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.findById} */
 	async findById(id: string): Promise<RepoResult<Album>> {
 		const { data, error } = await this.supabase
 			.from("albums")
 			.select("*")
 			.eq("id", id)
 			.single();
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
-		return {
-			success: true,
-			data: AlbumMapper.map(data),
-		};
+		return { success: true, data: AlbumMapper.map(data) };
 	}
 
-	/**
-	 * Search albums by title prefix using a case-insensitive match.
-	 *
-	 * @param title - Title prefix
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.searchByTitle} */
 	async searchByTitle(title: string): Promise<RepoResult<Album[]>> {
 		const { data, error } = await this.supabase
 			.from("albums")
 			.select("*")
 			.ilike("title", `${title}%`);
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
-		return {
-			success: true,
-			data: flatMapList(data, AlbumMapper.map),
-		};
+		return { success: true, data: flatMapList(data, AlbumMapper.map) };
 	}
 
-	/**
-	 * Fetch tracks associated with an album.
-	 *
-	 * @param id - Album ID
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.findTracksByAlbumId} */
 	async findTracksByAlbumId(id: string): Promise<RepoResult<Track[]>> {
 		const { data, error } = await this.supabase
 			.from("album_tracks")
 			.select("tracks (*)")
 			.eq("album_id", id);
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
 		return {
 			success: true,
 			data: flatMapList(data, (item) =>
@@ -226,16 +176,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	/**
-	 * Fetch tracks for an album including nested relations.
-	 *
-	 * Relations included:
-	 * - genres
-	 * - track artists
-	 * - artists
-	 *
-	 * @param id - Album ID
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.findTracksWithRelationsByAlbumId} */
 	async findTracksWithRelationsByAlbumId(
 		id: string,
 	): Promise<RepoResult<TrackAggregate[]>> {
@@ -243,10 +184,8 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			.from("album_tracks")
 			.select(TRACK_RELATION_SELECT)
 			.eq("album_id", id);
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
 		return {
 			success: true,
 			data: flatMapList(data, (item) =>
@@ -255,28 +194,20 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	/**
-	 * Retrieve all albums with their tracks and track relations.
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.findAllWithRelations} */
 	async findAllWithRelations(): Promise<RepoResult<AlbumAggregate[]>> {
 		const { data, error } = await this.supabase
 			.from("albums")
 			.select(ALBUM_RELATION_SELECT);
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
 		return {
 			success: true,
 			data: flatMapList(data, AlbumMapper.mapWithDetailedRelations),
 		};
 	}
 
-	/**
-	 * Retrieve a single album with all nested relations.
-	 *
-	 * @param id - Album ID
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.findWithRelationsById} */
 	async findWithRelationsById(
 		id: string,
 	): Promise<RepoResult<AlbumFullAggregate>> {
@@ -285,21 +216,15 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			.select(ALBUM_RELATION_SELECT)
 			.eq("id", id)
 			.single();
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
 		return {
 			success: true,
 			data: AlbumMapper.mapWithDetailedRelations(data),
 		};
 	}
 
-	/**
-	 * Create a new album.
-	 *
-	 * @param album - Album creation data
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.create} */
 	async create(album: CreateAlbum): Promise<RepoResult<Album>> {
 		const { data, error } = await this.supabase
 			.from("albums")
@@ -311,23 +236,12 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			})
 			.select()
 			.single();
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
-
-		return {
-			success: true,
-			data: AlbumMapper.map(data),
-		};
+		return { success: true, data: AlbumMapper.map(data) };
 	}
 
-	/**
-	 * Adds a track to an album.
-	 *
-	 * @param albumId
-	 * @param trackId
-	 * @param order - Position of the track within the album
-	 */
+	/** {@inheritDoc AlbumRepositoryContract.addTrack} */
 	async addTrack(
 		albumId: string,
 		trackId: string,
@@ -338,10 +252,19 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			track_id: trackId,
 			track_number: order,
 		});
-
 		if (error)
 			return { success: false, error: mapPostgresError(error) };
+		return { success: true };
+	}
 
+	/** {@inheritDoc AlbumRepositoryContract.delete} */
+	async delete(albumId: string): Promise<RepoResult> {
+		const { error } = await this.supabase
+			.from("albums")
+			.delete()
+			.eq("id", albumId);
+		if (error)
+			return { success: false, error: mapPostgresError(error) };
 		return { success: true };
 	}
 }

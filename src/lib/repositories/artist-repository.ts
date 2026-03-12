@@ -7,46 +7,37 @@ import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 /**
- * Contract describing persistence operations available for artists.
+ * Repository contract defining persistence operations for artists.
  *
- * Implementations are responsible for retrieving artist data
- * from the underlying data source and mapping it into domain models.
+ * Abstracts data access and maps database rows into domain models.
  */
 export interface ArtistRepositoryContract {
-	/**
-	 * Retrieve all artists.
-	 */
+	/** Fetch all artists */
 	findAll(): Promise<RepoResult<Artist[]>>;
 
-	/**
-	 * Retrieve a single artist by its unique identifier.
-	 *
-	 * @param id - Artist ID
+	/** Fetch a single artist by ID
+	 * @param id - Artist unique identifier
 	 */
 	findById(id: string): Promise<RepoResult<Artist>>;
 
-	/**
-	 * Creates a single artist
-	 *
-	 * @param data - The CreateArtist object used for insertion
+	/** Create a new artist
+	 * @param data - Artist creation data
 	 */
 	create(data: CreateArtist): Promise<RepoResult>;
 }
 
 /**
- * Supabase-backed repository responsible for artist persistence.
+ * Supabase-backed repository for artist persistence.
  *
- * This class:
- * - Executes database queries against Supabase
- * - Maps raw database rows into domain models
- * - Normalizes database errors into `RepoResult`
+ * Handles:
+ * - Executing Supabase queries
+ * - Mapping raw rows into domain models
+ * - Normalizing database errors into `RepoResult`
  */
 export class ArtistRepository implements ArtistRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
-	/**
-	 * Fetch all artists from the database.
-	 */
+	/** {@inheritDoc ArtistRepositoryContract.findAll} */
 	async findAll(): Promise<RepoResult<Artist[]>> {
 		const { data, error } = await this.supabase
 			.from("artists")
@@ -62,11 +53,7 @@ export class ArtistRepository implements ArtistRepositoryContract {
 		};
 	}
 
-	/**
-	 * Fetch a single artist by ID.
-	 *
-	 * @param id - Artist ID
-	 */
+	/** {@inheritDoc ArtistRepositoryContract.findById} */
 	async findById(id: string): Promise<RepoResult<Artist>> {
 		const { data, error } = await this.supabase
 			.from("artists")
@@ -81,19 +68,12 @@ export class ArtistRepository implements ArtistRepositoryContract {
 		return { success: true, data: ArtistMapper.map(data) };
 	}
 
-	/**
-	 * Creates a single artist
-	 *
-	 * @param data - The CreateArtist object used for insertion
-	 */
+	/** {@inheritDoc ArtistRepositoryContract.create} */
 	async create(data: CreateArtist): Promise<RepoResult> {
 		const { error } = await this.supabase.from("artists").insert(data);
 
 		if (error) {
-			return {
-				success: false,
-				error: mapPostgresError(error),
-			};
+			return { success: false, error: mapPostgresError(error) };
 		}
 
 		return { success: true };
