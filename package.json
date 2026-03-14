@@ -8,7 +8,7 @@
 		"start": "next start",
 		"lint": "biome check",
 		"format": "biome format --write",
-		"supabase-types": "supabase gen types typescript --project-id mqheazfqjgesaoyoyrqw > src/types/supabase.ts"
+		"supabase-types": "supabase gen types typescript > src/types/supabase.ts"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.2.0",
