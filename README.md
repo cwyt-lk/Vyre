@@ -10,7 +10,7 @@ Vyre is a lightweight and scalable music platform that allows users to discover,
 
 # 🛠️ How to Setup
 
-Follow these steps to run **VYRE** locally.
+Follow these steps to run **Vyre** locally.
 
 ---
 
@@ -396,7 +396,42 @@ USING (
 
 ---
 
-## 5. Create Environment Variables
+## 5. Set Up Storage Buckets
+
+This step must be completed manually in Supabase.
+
+### Create the Buckets
+
+1. Open your **Supabase Dashboard**
+2. Navigate to **Storage**
+3. Click **New Bucket**
+4. Create the following buckets:
+
+- `cover-art`
+- `music`
+
+---
+
+### Configure Bucket Policies
+
+1. Go to the **Policies** tab
+2. Click **New Policy**
+3. Select **For Full Customization**
+4. Enable the following permissions:
+   - `Select`
+   - `Insert`
+   - `Update`
+5. Under **Policy Definition**, enter the following SQL:
+
+Replace bucket-id with the name of the bucket (for example, music or cover-art).
+
+```sql
+((bucket_id = 'bucket-id'::text) AND (auth.role() = 'authenticated'::text))
+```
+
+---
+
+## 6. Create Environment Variables
 
 Create a file in the root of the project called:
 
@@ -421,7 +456,7 @@ Replace:
 
 ---
 
-## 6. (Optional) Generate TypeScript Types
+## 7. (Optional) Generate TypeScript Types
 
 You can generate database types directly from Supabase. This allows your queries to be fully type-safe.
 Install the Supabase CLI if you haven't already:
@@ -442,7 +477,7 @@ You can then import them in your project for better autocomplete and type safety
 
 ---
 
-## 7. Start the Development Server
+## 8. Start the Development Server
 
 Run the development server:
 
@@ -457,5 +492,3 @@ http://localhost:3000
 ```
 
 ---
-
-✨ More features, documentation, and deployment guides will be added soon.
