@@ -59,8 +59,13 @@ You can find the relevant sql scripts under the sql folder.
 1. Open your **Supabase Dashboard**
 2. Navigate to **SQL Editor**
 3. Create a **New Query**
-4. Use the scripts under the **SQL** folder.
-   - They are numbered so make sure to run them in order. (1 -> 2 -> 3)
+4. Use the scripts under the **SQL** folder. Make sure to run them in order.
+5. For Script #1, you need to enable the hook function **custom_access_token_hook** under **Authentication -> (Auth) Hooks** -> **Add Hook**. 
+   1. Select **Add Customize Access Token (JWT) Claims hook**
+   2. Hook Type: **Postgres**
+   3. Postgres Schema: **Public**
+   4. Under Postgres Function select the new function.
+   5. Click Create Hook
 
 ---
 
@@ -68,7 +73,7 @@ You can find the relevant sql scripts under the sql folder.
 
 This step must be completed manually in Supabase.
 
-### Create the Buckets
+### 5.1. Create the Buckets
 
 1. Open your **Supabase Dashboard**
 2. Navigate to **Storage**
@@ -80,7 +85,7 @@ This step must be completed manually in Supabase.
 
 ---
 
-### Configure Bucket Policies
+### 5.2. Configure Bucket Policies
 
 1. Go to the **Policies** tab
 2. Click **New Policy**
@@ -126,18 +131,12 @@ Replace:
 
 ## 7. (Optional) Generate TypeScript Types
 
-You can generate database types directly from Supabase. This allows your queries to be fully type-safe.
-Install the Supabase CLI if you haven't already:
+You can generate database types directly from Supabase. This allows your queries to be fully type-safe. You will need to link your supabase project with the CLI.
 
 ```bash
-pnpm add -D supabase
+pnpm run supabase-types
 ```
 
-Then run:
-
-```bash
-pnpm exec supabase gen types typescript --project-id YOUR_PROJECT_ID > src/types/supabase.ts
-```
 
 This will generate TypeScript types for your database schema.
 
