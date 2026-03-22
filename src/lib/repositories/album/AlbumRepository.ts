@@ -1,6 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { AlbumMapper, TrackMapper } from "@/lib/mappers/domain";
 import { mapPostgresError } from "@/lib/mappers/errors";
+import type { AlbumRepositoryContract } from "@/lib/repositories/album";
+import {
+	applyQueryOptions,
+	type QueryOptions,
+} from "@/lib/repositories/query-options";
 import { flatMapList } from "@/lib/utils/array";
 import type {
 	Album,
@@ -43,92 +48,6 @@ const ALBUM_RELATION_SELECT = `
 `;
 
 /**
- * Repository contract for album persistence operations.
- *
- * Abstracts database access and maps raw rows into domain models.
- */
-export interface AlbumRepositoryContract {
-	/** Fetch all albums without related entities */
-	findAll(): Promise<RepoResult<Album[]>>;
-
-	/** Fetch a single album by its unique identifier
-	 * @param id - Album ID
-	 */
-	findById(id: string): Promise<RepoResult<Album>>;
-
-	/** Search albums by title prefix (case-insensitive)
-	 * @param title - Album title prefix
-	 */
-	searchByTitle(title: string): Promise<RepoResult<Album[]>>;
-
-	/** Retrieve tracks belonging to an album (without relations)
-	 * @param id - Album ID
-	 */
-	findTracksByAlbumId(id: string): Promise<RepoResult<Track[]>>;
-
-	/** Retrieve tracks for an album with their relations
-	 *
-	 * Includes:
-	 * - Genres
-	 * - Track artists
-	 * - Artist information
-	 *
-	 * @param id - Album ID
-	 */
-	findTracksWithRelationsByAlbumId(
-		id: string,
-	): Promise<RepoResult<TrackAggregate[]>>;
-
-	/** Fetch all albums with nested track relations */
-	findAllWithRelations(): Promise<RepoResult<AlbumAggregate[]>>;
-
-	/** Fetch a single album with all nested relations
-	 *
-	 * Includes:
-	 * - Album metadata
-	 * - Album tracks
-	 * - Track relations (genres, artists)
-	 *
-	 * @param id - Album ID
-	 */
-	findWithRelationsById(
-		id: string,
-	): Promise<RepoResult<AlbumFullAggregate>>;
-
-	/** Create a new album
-	 * @param album - Album creation data
-	 */
-	create(album: CreateAlbum): Promise<RepoResult<Album>>;
-
-	/** Delete an album
-	 * @param albumId - Album ID
-	 */
-	delete(albumId: string): Promise<RepoResult>;
-
-	/** Update an album
-	 * @param updateData - Album Data for updating (Partial)
-	 */
-	update(updateData: UpdateAlbum): Promise<RepoResult<Album>>;
-
-	/** Add a track to an album
-	 * @param albumId - Album ID
-	 * @param trackId - Track ID
-	 * @param order - Track position in the album
-	 */
-	addTrack(
-		albumId: string,
-		trackId: string,
-		order: number,
-	): Promise<RepoResult>;
-
-	/** Remove a track from an album
-	 * @param albumId - Album ID
-	 * @param trackIds - List of Track IDs
-	 */
-	removeTracks(albumId: string, trackIds: string[]): Promise<RepoResult>;
-}
-
-/**
  * Supabase-backed repository for album persistence.
  *
  * Handles:
@@ -139,11 +58,12 @@ export interface AlbumRepositoryContract {
 export class AlbumRepository implements AlbumRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
-	/** {@inheritDoc AlbumRepositoryContract.findAll} */
-	async findAll(): Promise<RepoResult<Album[]>> {
-		const { data, error } = await this.supabase
-			.from("albums")
-			.select("*");
+	/** @inheritDoc AlbumRepositoryContract.findAll */
+	async findAll(options?: QueryOptions): Promise<RepoResult<Album[]>> {
+		const baseQuery = this.supabase.from("albums").select("*");
+		const query = applyQueryOptions(baseQuery, options);
+
+		const { data, error } = await query;
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
@@ -152,7 +72,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true, data: flatMapList(data, AlbumMapper.map) };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.findById} */
+	/** @inheritDoc AlbumRepositoryContract.findById */
 	async findById(id: string): Promise<RepoResult<Album>> {
 		const { data, error } = await this.supabase
 			.from("albums")
@@ -167,12 +87,19 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true, data: AlbumMapper.map(data) };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.searchByTitle} */
-	async searchByTitle(title: string): Promise<RepoResult<Album[]>> {
-		const { data, error } = await this.supabase
+	/** @inheritDoc AlbumRepositoryContract.searchByTitle */
+	async searchByTitle(
+		title: string,
+		options?: QueryOptions,
+	): Promise<RepoResult<Album[]>> {
+		const baseQuery = this.supabase
 			.from("albums")
 			.select("*")
 			.ilike("title", `${title}%`);
+
+		const query = applyQueryOptions(baseQuery, options);
+
+		const { data, error } = await query;
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
@@ -181,12 +108,19 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true, data: flatMapList(data, AlbumMapper.map) };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.findTracksByAlbumId} */
-	async findTracksByAlbumId(id: string): Promise<RepoResult<Track[]>> {
-		const { data, error } = await this.supabase
+	/** @inheritDoc AlbumRepositoryContract.findTracksByAlbumId */
+	async findTracksByAlbumId(
+		id: string,
+		options?: QueryOptions,
+	): Promise<RepoResult<Track[]>> {
+		const baseQuery = this.supabase
 			.from("album_tracks")
 			.select("tracks (*)")
 			.eq("album_id", id);
+
+		const query = applyQueryOptions(baseQuery, options);
+
+		const { data, error } = await query;
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
@@ -200,14 +134,19 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.findTracksWithRelationsByAlbumId} */
+	/** @inheritDoc AlbumRepositoryContract.findTracksWithRelationsByAlbumId */
 	async findTracksWithRelationsByAlbumId(
 		id: string,
+		options?: QueryOptions,
 	): Promise<RepoResult<TrackAggregate[]>> {
-		const { data, error } = await this.supabase
+		const baseQuery = this.supabase
 			.from("album_tracks")
 			.select(TRACK_RELATION_SELECT)
 			.eq("album_id", id);
+
+		const query = applyQueryOptions(baseQuery, options);
+
+		const { data, error } = await query;
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
@@ -221,11 +160,17 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.findAllWithRelations} */
-	async findAllWithRelations(): Promise<RepoResult<AlbumAggregate[]>> {
-		const { data, error } = await this.supabase
+	/** @inheritDoc AlbumRepositoryContract.findAllWithRelations */
+	async findAllWithRelations(
+		options?: QueryOptions,
+	): Promise<RepoResult<AlbumAggregate[]>> {
+		const baseQuery = this.supabase
 			.from("albums")
 			.select(ALBUM_RELATION_SELECT);
+
+		const query = applyQueryOptions(baseQuery, options);
+
+		const { data, error } = await query;
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
@@ -237,7 +182,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.findWithRelationsById} */
+	/** @inheritDoc AlbumRepositoryContract.findWithRelationsById */
 	async findWithRelationsById(
 		id: string,
 	): Promise<RepoResult<AlbumFullAggregate>> {
@@ -257,7 +202,23 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.create} */
+	/** @inheritDoc AlbumRepositoryContract.count */
+	async count(): Promise<RepoResult<number>> {
+		const { count, error } = await this.supabase
+			.from("albums")
+			.select("id", { count: "exact", head: true });
+
+		if (error) {
+			return { success: false, error: mapPostgresError(error) };
+		}
+
+		return {
+			success: true,
+			data: count ?? -1,
+		};
+	}
+
+	/** @inheritDoc AlbumRepositoryContract.create */
 	async create(album: CreateAlbum): Promise<RepoResult<Album>> {
 		const { data, error } = await this.supabase
 			.from("albums")
@@ -277,12 +238,12 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true, data: AlbumMapper.map(data) };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.delete} */
-	async delete(albumId: string): Promise<RepoResult> {
+	/** @inheritDoc AlbumRepositoryContract.delete */
+	async delete(id: string): Promise<RepoResult> {
 		const { error } = await this.supabase
 			.from("albums")
 			.delete()
-			.eq("id", albumId);
+			.eq("id", id);
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
@@ -291,7 +252,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.update} */
+	/** @inheritDoc AlbumRepositoryContract.update */
 	async update(updateData: UpdateAlbum): Promise<RepoResult<Album>> {
 		const { error, data } = await this.supabase
 			.from("albums")
@@ -312,7 +273,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true, data: AlbumMapper.map(data) };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.addTrack} */
+	/** @inheritDoc AlbumRepositoryContract.addTrack */
 	async addTrack(
 		albumId: string,
 		trackId: string,
@@ -331,7 +292,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.removeTrack} */
+	/** @inheritDoc AlbumRepositoryContract.removeTrack */
 	async removeTracks(
 		albumId: string,
 		trackIds: string[],

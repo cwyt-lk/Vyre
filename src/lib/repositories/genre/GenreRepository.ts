@@ -1,30 +1,15 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { GenreMapper } from "@/lib/mappers/domain";
 import { mapPostgresError } from "@/lib/mappers/errors";
+import type { GenreRepositoryContract } from "@/lib/repositories/genre";
+import {
+	applyQueryOptions,
+	type QueryOptions,
+} from "@/lib/repositories/query-options";
 import { flatMapList } from "@/lib/utils/array";
 import type { CreateGenre, Genre } from "@/types/domain";
 import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
-
-/**
- * Repository contract defining persistence operations for genres.
- *
- * Abstracts data access and maps database rows into domain models.
- */
-export interface GenreRepositoryContract {
-	/** Fetch all genres */
-	findAll(): Promise<RepoResult<Genre[]>>;
-
-	/** Fetch a single genre by ID
-	 * @param id - Genre unique identifier
-	 */
-	findById(id: string): Promise<RepoResult<Genre>>;
-
-	/** Create a new genre
-	 * @param genre - Genre creation data
-	 */
-	create(genre: CreateGenre): Promise<RepoResult>;
-}
 
 /**
  * Supabase-backed repository for genre persistence.
@@ -37,11 +22,12 @@ export interface GenreRepositoryContract {
 export class GenreRepository implements GenreRepositoryContract {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
-	/** {@inheritDoc GenreRepositoryContract.findAll} */
-	async findAll(): Promise<RepoResult<Genre[]>> {
-		const { data, error } = await this.supabase
-			.from("genres")
-			.select("*");
+	/** @inheritDoc GenreRepositoryContract.findAll */
+	async findAll(options?: QueryOptions): Promise<RepoResult<Genre[]>> {
+		const baseQuery = this.supabase.from("genres").select("*");
+		const query = applyQueryOptions(baseQuery, options);
+
+		const { data, error } = await query;
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
@@ -50,7 +36,7 @@ export class GenreRepository implements GenreRepositoryContract {
 		return { success: true, data: flatMapList(data, GenreMapper.map) };
 	}
 
-	/** {@inheritDoc GenreRepositoryContract.findById} */
+	/** @inheritDoc GenreRepositoryContract.findById */
 	async findById(id: string): Promise<RepoResult<Genre>> {
 		const { data, error } = await this.supabase
 			.from("genres")
@@ -65,7 +51,7 @@ export class GenreRepository implements GenreRepositoryContract {
 		return { success: true, data: GenreMapper.map(data) };
 	}
 
-	/** {@inheritDoc GenreRepositoryContract.create} */
+	/** @inheritDoc GenreRepositoryContract.create */
 	async create(genre: CreateGenre): Promise<RepoResult> {
 		const { error } = await this.supabase.from("genres").insert({
 			key: genre.key,
