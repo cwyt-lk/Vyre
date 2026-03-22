@@ -48,6 +48,7 @@ export const AlbumMapper = {
 	/** Map an album with related tracks (basic) */
 	mapWithRelations(row: AlbumAggregateDB): AlbumAggregate {
 		const album = AlbumMapper.map(row);
+
 		return {
 			...album,
 			tracks: flatMapList(row.album_tracks, (item) =>
@@ -61,6 +62,7 @@ export const AlbumMapper = {
 		row: AlbumFullAggregateDB,
 	): AlbumFullAggregate {
 		const album = AlbumMapper.map(row);
+
 		return {
 			...album,
 			tracks: flatMapList(row.album_tracks, (item) =>

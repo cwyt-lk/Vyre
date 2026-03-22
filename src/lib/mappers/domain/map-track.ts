@@ -42,8 +42,10 @@ export const TrackMapper = {
 
 	/** Map a track with related genre and artist information */
 	mapWithRelations(row: TrackAggregateDB): TrackAggregate {
+		const track = TrackMapper.map(row);
+
 		return {
-			...this.map(row),
+			...track,
 			genre: GenreMapper.map(row.genres),
 			artists: flatMapList(row.track_artists, (item) =>
 				ArtistMapper.map(item.artists),
