@@ -144,6 +144,7 @@ export class AuthRepository implements AuthRepositoryContract {
 	/** {@inheritDoc AuthRepositoryContract.signOut} */
 	async signOut(): Promise<RepoResult<void>> {
 		const { error } = await this.supabase.auth.signOut();
+
 		return error
 			? { success: false, error: mapAuthError(error) }
 			: { success: true };

@@ -76,6 +76,7 @@ export class StorageRepository implements StorageRepositoryContract {
 		const { data } = this.supabase.storage
 			.from(bucket)
 			.getPublicUrl(path);
+
 		return { success: true, data: data.publicUrl };
 	}
 
@@ -130,12 +131,14 @@ export class StorageRepository implements StorageRepositoryContract {
 		const { error: copyError } = await this.supabase.storage
 			.from(bucket)
 			.copy(oldPath, newPath);
+
 		if (copyError)
 			return { success: false, error: mapStorageError(copyError) };
 
 		const { error: removeError } = await this.supabase.storage
 			.from(bucket)
 			.remove([oldPath]);
+
 		if (removeError)
 			return { success: false, error: mapStorageError(removeError) };
 

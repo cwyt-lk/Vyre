@@ -9,6 +9,7 @@ import type {
 	CreateAlbum,
 	Track,
 	TrackAggregate,
+	UpdateAlbum,
 } from "@/types/domain";
 import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
@@ -99,6 +100,16 @@ export interface AlbumRepositoryContract {
 	 */
 	create(album: CreateAlbum): Promise<RepoResult<Album>>;
 
+	/** Delete an album
+	 * @param albumId - Album ID
+	 */
+	delete(albumId: string): Promise<RepoResult>;
+
+	/** Update an album
+	 * @param updateData - Album Data for updating (Partial)
+	 */
+	update(updateData: UpdateAlbum): Promise<RepoResult<Album>>;
+
 	/** Add a track to an album
 	 * @param albumId - Album ID
 	 * @param trackId - Track ID
@@ -110,10 +121,11 @@ export interface AlbumRepositoryContract {
 		order: number,
 	): Promise<RepoResult>;
 
-	/** Delete an album
+	/** Remove a track from an album
 	 * @param albumId - Album ID
+	 * @param trackIds - List of Track IDs
 	 */
-	delete(albumId: string): Promise<RepoResult>;
+	removeTracks(albumId: string, trackIds: string[]): Promise<RepoResult>;
 }
 
 /**
@@ -132,8 +144,11 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		const { data, error } = await this.supabase
 			.from("albums")
 			.select("*");
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return { success: true, data: flatMapList(data, AlbumMapper.map) };
 	}
 
@@ -144,8 +159,11 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			.select("*")
 			.eq("id", id)
 			.single();
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return { success: true, data: AlbumMapper.map(data) };
 	}
 
@@ -155,8 +173,11 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			.from("albums")
 			.select("*")
 			.ilike("title", `${title}%`);
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return { success: true, data: flatMapList(data, AlbumMapper.map) };
 	}
 
@@ -166,8 +187,11 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			.from("album_tracks")
 			.select("tracks (*)")
 			.eq("album_id", id);
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return {
 			success: true,
 			data: flatMapList(data, (item) =>
@@ -184,8 +208,11 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			.from("album_tracks")
 			.select(TRACK_RELATION_SELECT)
 			.eq("album_id", id);
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return {
 			success: true,
 			data: flatMapList(data, (item) =>
@@ -199,8 +226,11 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		const { data, error } = await this.supabase
 			.from("albums")
 			.select(ALBUM_RELATION_SELECT);
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return {
 			success: true,
 			data: flatMapList(data, AlbumMapper.mapWithDetailedRelations),
@@ -216,8 +246,11 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			.select(ALBUM_RELATION_SELECT)
 			.eq("id", id)
 			.single();
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return {
 			success: true,
 			data: AlbumMapper.mapWithDetailedRelations(data),
@@ -236,8 +269,46 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			})
 			.select()
 			.single();
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
+		return { success: true, data: AlbumMapper.map(data) };
+	}
+
+	/** {@inheritDoc AlbumRepositoryContract.delete} */
+	async delete(albumId: string): Promise<RepoResult> {
+		const { error } = await this.supabase
+			.from("albums")
+			.delete()
+			.eq("id", albumId);
+
+		if (error) {
+			return { success: false, error: mapPostgresError(error) };
+		}
+
+		return { success: true };
+	}
+
+	/** {@inheritDoc AlbumRepositoryContract.update} */
+	async update(updateData: UpdateAlbum): Promise<RepoResult<Album>> {
+		const { error, data } = await this.supabase
+			.from("albums")
+			.update({
+				title: updateData.title,
+				description: updateData.description,
+				release_date: updateData.releaseDate?.toISOString(),
+				cover_path: updateData.coverPath,
+			})
+			.eq("id", updateData.id)
+			.select()
+			.single();
+
+		if (error) {
+			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return { success: true, data: AlbumMapper.map(data) };
 	}
 
@@ -252,19 +323,29 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			track_id: trackId,
 			track_number: order,
 		});
-		if (error)
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return { success: true };
 	}
 
-	/** {@inheritDoc AlbumRepositoryContract.delete} */
-	async delete(albumId: string): Promise<RepoResult> {
+	/** {@inheritDoc AlbumRepositoryContract.removeTrack} */
+	async removeTracks(
+		albumId: string,
+		trackIds: string[],
+	): Promise<RepoResult> {
 		const { error } = await this.supabase
-			.from("albums")
+			.from("album_tracks")
 			.delete()
-			.eq("id", albumId);
-		if (error)
+			.eq("album_id", albumId)
+			.in("track_id", trackIds);
+
+		if (error) {
 			return { success: false, error: mapPostgresError(error) };
+		}
+
 		return { success: true };
 	}
 }
