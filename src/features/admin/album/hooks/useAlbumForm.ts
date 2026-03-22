@@ -3,6 +3,7 @@
 import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { createAlbumAction } from "@/features/admin/album/actions/createAlbum";
+import { updateAlbumAction } from "@/features/admin/album/actions/updateAlbum";
 import {
 	albumClientDefaultValues,
 	type CreateAlbumClientInput,
@@ -17,7 +18,6 @@ import {
 import { createRepositories } from "@/lib/factories/repository/client";
 import type { StorageRepositoryContract } from "@/lib/repositories";
 import { getHashedPath } from "@/lib/utils/hash";
-import { updateAlbumAction } from "@/features/admin/album/actions/updateAlbum";
 
 export type UseAlbumFormOptions =
 	| {

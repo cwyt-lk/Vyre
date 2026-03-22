@@ -60,6 +60,8 @@ export function FilePreview({ file, onRemove, layout }: FilePreviewProps) {
 								src={previewUrl}
 								alt={file.name}
 								fill
+								placeholder="blur"
+								blurDataURL="./placeholder.png"
 								className="object-cover"
 							/>
 						) : (
@@ -70,7 +72,7 @@ export function FilePreview({ file, onRemove, layout }: FilePreviewProps) {
 					</div>
 
 					<div className="flex flex-col gap-1 flex-1 min-w-0">
-						<span className="text-sm font-medium truncate">
+						<span className="text-sm font-medium">
 							{file.name}
 						</span>
 

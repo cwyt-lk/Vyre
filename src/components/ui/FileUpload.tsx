@@ -75,7 +75,7 @@ export function FileUpload({
 	const isSingle = !multiple;
 
 	return (
-		<div className={cn("grid gap-4 w-full", className)}>
+		<div className={cn("flex gap-4 w-full", className)}>
 			<div
 				{...getRootProps()}
 				className={cn(

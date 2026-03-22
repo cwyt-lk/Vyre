@@ -17,13 +17,10 @@ export const AlbumSearch = () => {
 	const { replace } = useRouter();
 
 	const [isPending, startTransition] = useTransition();
-	const [search, setSearch] = useState(
-		searchParams.get("query")?.toString() ?? "",
-	);
+	const [search, setSearch] = useState(searchParams.get("query") ?? "");
 
 	const handleSearch = useDebouncedCallback((term: string) => {
 		const params = new URLSearchParams(searchParams);
-		params.set("page", "1");
 
 		if (term) {
 			params.set("query", term);

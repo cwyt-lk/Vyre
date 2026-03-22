@@ -13,6 +13,8 @@ export const VyreLogo = ({ className }: VyreLogoProps) => {
 				alt="Vyre logo"
 				fill
 				priority
+				placeholder="blur"
+				blurDataURL="./placeholder.png"
 				className="object-cover"
 			/>
 		</div>

@@ -53,6 +53,8 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 						alt={`Cover art for ${album.title}`}
 						fill
 						priority
+						placeholder="blur"
+						blurDataURL="./placeholder.png"
 						className="object-cover"
 					/>
 				</div>

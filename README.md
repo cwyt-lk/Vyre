@@ -78,10 +78,10 @@ This step must be completed manually in Supabase.
 1. Open your **Supabase Dashboard**
 2. Navigate to **Storage**
 3. Click **New Bucket**
-4. Create the following buckets:
+4. Create the following buckets *(Make sure the buckets are public)*:
 
-- `cover-art`
-- `music`
+   - `cover-art`
+   - `music`
 
 ---
 

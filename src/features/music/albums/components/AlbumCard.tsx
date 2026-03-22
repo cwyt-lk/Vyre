@@ -22,6 +22,8 @@ export const AlbumCard = async ({ album }: AlbumCardProps) => {
 						alt={`${album.title} cover art`}
 						fill
 						priority
+						placeholder="blur"
+						blurDataURL="./placeholder.png"
 						className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
 					/>
 				</div>

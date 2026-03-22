@@ -18,7 +18,10 @@ export default async function CreateAlbumPage() {
 			<Container className="flex flex-col items-center justify-center py-8">
 				<Card className="w-full max-w-150">
 					<CardContent>
-						<AlbumForm tracks={res.data} />
+						<AlbumForm
+							tracks={res.data}
+							options={{ mode: "create" }}
+						/>
 					</CardContent>
 				</Card>
 			</Container>

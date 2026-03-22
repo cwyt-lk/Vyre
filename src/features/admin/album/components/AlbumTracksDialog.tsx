@@ -59,7 +59,7 @@ export function AlbumTracksDialog({
 
 						<CommandGroup
 							heading={`Tracks (${tracks.length})`}
-							className="max-h-[320px] overflow-auto"
+							className="max-h-80 overflow-auto"
 						>
 							{tracks.map((track) => {
 								const isSelected = selected.includes(
