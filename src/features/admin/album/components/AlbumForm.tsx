@@ -9,29 +9,39 @@ import {
 import { FormTextareaField } from "@/components/form/fields/FormTextareaField";
 import { FieldSet } from "@/components/ui/Field";
 import { Separator } from "@/components/ui/Separator";
-import { AlbumTracksField } from "@/features/admin/album/components/AlbumTracksField";
+import { AlbumTracksField } from "@/features/admin/album/components";
 import { MAX_IMAGE_SIZE } from "@/features/admin/album/config";
-import { useAlbumForm } from "@/features/admin/album/hooks/useAlbumForm";
+import {
+	type UseAlbumFormOptions,
+	useAlbumForm,
+} from "@/features/admin/album/hooks/useAlbumForm";
 import { AdminFormLayout } from "@/features/admin/components/AdminFormLayout";
 import { getHumanSize } from "@/lib/utils/file";
 import type { Track } from "@/types/domain";
 
-interface AddAlbumFormProps {
+interface AlbumFormProps {
 	tracks: Track[];
+	options: UseAlbumFormOptions;
 }
 
-export function AlbumForm({ tracks }: AddAlbumFormProps) {
-	const { form, isSubmitting } = useAlbumForm();
+export function AlbumForm({ tracks, options }: AlbumFormProps) {
+	const { form, isSubmitting } = useAlbumForm(options);
+
+	const isEdit = options.mode === "edit";
 
 	return (
 		<AdminFormLayout
-			title="Add New Album"
-			description="Create a new album and assign tracks."
+			title={isEdit ? "Edit Album" : "Add New Album"}
+			description={
+				isEdit
+					? "Update album details and tracks."
+					: "Create a new album and assign tracks."
+			}
 			isSubmitting={isSubmitting}
 			onSubmit={form.handleSubmit}
 			onReset={form.reset}
-			submitMessage="Create Album"
-			submittingMessage="Creating..."
+			submitMessage={isEdit ? "Save Changes" : "Create Album"}
+			submittingMessage={isEdit ? "Saving..." : "Creating..."}
 		>
 			<FieldSet className="space-y-4">
 				<div className="space-y-1">

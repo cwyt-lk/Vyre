@@ -50,7 +50,7 @@ export const AlbumRow = ({ album, onDelete }: AlbumRowProps) => {
 
 			{/* Action Buttons */}
 			<div className="flex items-center gap-2">
-				<Link href={`/admin/albums/${album.id}`}>
+				<Link href={`/admin/albums/update/${album.id}`}>
 					<Button
 						variant="ghost"
 						size="icon"

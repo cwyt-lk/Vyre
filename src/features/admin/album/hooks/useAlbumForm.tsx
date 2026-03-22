@@ -9,51 +9,129 @@ import {
 	type CreateAlbumServerInput,
 	createAlbumClientSchema,
 } from "@/features/admin/album/schemas/createSchema";
+import {
+	type UpdateAlbumClientInput,
+	type UpdateAlbumServerInput,
+	updateAlbumClientSchema,
+} from "@/features/admin/album/schemas/updateSchema";
 import { createRepositories } from "@/lib/factories/repository/client";
 import type { StorageRepositoryContract } from "@/lib/repositories";
 import { getHashedPath } from "@/lib/utils/hash";
+import { updateAlbumAction } from "@/features/admin/album/actions/updateAlbum";
 
-export function useAlbumForm() {
+export type UseAlbumFormOptions =
+	| {
+			mode: "create";
+	  }
+	| {
+			mode: "edit";
+			initialData: UpdateAlbumClientInput;
+	  };
+
+export function useAlbumForm(options: UseAlbumFormOptions) {
 	const { storage } = createRepositories();
 
+	const defaultValues =
+		options.mode === "create"
+			? albumClientDefaultValues
+			: {
+					...albumClientDefaultValues,
+					...options.initialData,
+				};
+
+	const schema =
+		options.mode === "create"
+			? createAlbumClientSchema
+			: updateAlbumClientSchema;
+
 	const form = useForm({
-		defaultValues: albumClientDefaultValues,
+		defaultValues: defaultValues,
 		validators: {
-			onSubmit: createAlbumClientSchema,
+			onSubmit: schema,
 		},
+
 		onSubmit: async ({ value }) => {
-			const { coverFile, ...albumData } =
-				value as CreateAlbumClientInput;
-
-			const uploadResult = await uploadCover(storage, coverFile);
-
-			if (!uploadResult.success) {
-				toast.error("Failed to upload cover image");
-
-				return;
-			}
-
-			const serverInput: CreateAlbumServerInput = {
-				...albumData,
-				coverPath: uploadResult.path,
-			};
-
-			const result = await createAlbumAction(serverInput);
-
-			if (!result.success) {
-				toast.error(result.error);
-
-				return;
+			if (options.mode === "create") {
+				await handleCreate(
+					value as CreateAlbumClientInput,
+					storage,
+				);
+			} else {
+				await handleUpdate(
+					value as UpdateAlbumClientInput,
+					storage,
+				);
 			}
 
 			form.reset();
-			toast.success(`Created album: ${serverInput.title}`);
 		},
 	});
 
 	const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
 
 	return { form, isSubmitting };
+}
+
+async function handleCreate(
+	value: CreateAlbumClientInput,
+	storage: StorageRepositoryContract,
+) {
+	const { coverFile, ...albumData } = value;
+
+	const uploadResult = await uploadCover(storage, coverFile);
+
+	if (!uploadResult.success) {
+		toast.error("Failed to upload cover image");
+		return;
+	}
+
+	const serverInput: CreateAlbumServerInput = {
+		...albumData,
+		coverPath: uploadResult.path,
+	};
+
+	const result = await createAlbumAction(serverInput);
+
+	if (!result.success) {
+		toast.error(result.error);
+		return;
+	}
+
+	toast.success(`Created album: ${serverInput.title}`);
+}
+
+async function handleUpdate(
+	value: UpdateAlbumClientInput,
+	storage: StorageRepositoryContract,
+) {
+	const { coverFile, ...albumData } = value;
+
+	let coverPath: string | undefined;
+
+	if (coverFile) {
+		const uploadResult = await uploadCover(storage, coverFile);
+
+		if (!uploadResult.success) {
+			toast.error("Failed to upload cover image");
+			return;
+		}
+
+		coverPath = uploadResult.path;
+	}
+
+	const serverInput: UpdateAlbumServerInput = {
+		...albumData,
+		coverPath: coverPath,
+	};
+
+	const result = await updateAlbumAction(serverInput);
+
+	if (!result.success) {
+		toast.error(result.error);
+		return;
+	}
+
+	toast.success(`Updated album: ${serverInput.title}`);
 }
 
 async function uploadCover(
