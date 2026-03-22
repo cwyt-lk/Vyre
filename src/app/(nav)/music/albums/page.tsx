@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
-import ErrorState from "@/components/layout/ErrorState";
+import { ErrorState } from "@/components/layout/ErrorState";
 import { AlbumCard } from "@/features/music/albums/components/AlbumCard";
 import { AlbumSearch } from "@/features/music/albums/components/AlbumSearch";
-import EmptyAlbumState from "@/features/music/albums/components/EmptyAlbumState";
+import { EmptyAlbumState } from "@/features/music/albums/components/EmptyAlbumState";
 import { createRepositories } from "@/lib/factories/repository/server";
 import { AlbumMapper, type AlbumWithCover } from "@/lib/mappers/domain";
 

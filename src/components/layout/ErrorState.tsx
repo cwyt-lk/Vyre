@@ -10,11 +10,11 @@ interface ErrorStateProps {
 	reset?: () => void;
 }
 
-export default function ErrorState({
+export const ErrorState = ({
 	message = "Something went wrong while loading the data.",
 	code = "500",
 	reset,
-}: ErrorStateProps) {
+}: ErrorStateProps) => {
 	const router = useRouter();
 
 	return (
@@ -68,4 +68,4 @@ export default function ErrorState({
 			</div>
 		</div>
 	);
-}
+};

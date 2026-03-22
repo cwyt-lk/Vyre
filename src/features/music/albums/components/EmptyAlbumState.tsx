@@ -4,7 +4,7 @@ import { Album, Home } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
-export default function EmptyAlbumState() {
+export const EmptyAlbumState = () => {
 	const router = useRouter();
 
 	return (
@@ -39,4 +39,4 @@ export default function EmptyAlbumState() {
 			</div>
 		</div>
 	);
-}
+};
