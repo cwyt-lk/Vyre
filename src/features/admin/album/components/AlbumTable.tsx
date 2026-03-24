@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ItemGroup } from "@/components/ui/Item";
 import { deleteAlbumAction } from "@/features/admin/album/actions/deleteAlbum";
-import { AlbumRow } from "@/features/admin/album/components";
+import { AdminItemRow } from "@/features/admin/components";
 import type { AlbumWithCover } from "@/lib/mappers/domain";
 
 interface AlbumTableProps {
@@ -12,6 +13,10 @@ interface AlbumTableProps {
 
 export const AlbumTable = ({ albumList }: AlbumTableProps) => {
 	const [albums, setAlbums] = useState(albumList);
+
+	useEffect(() => {
+		setAlbums(albumList);
+	}, [albumList]);
 
 	const onDelete = async (id: string) => {
 		const res = await deleteAlbumAction(id);
@@ -27,14 +32,25 @@ export const AlbumTable = ({ albumList }: AlbumTableProps) => {
 	};
 
 	return (
-		<div className="flex flex-col gap-4">
+		<ItemGroup>
 			{albums.map((album) => (
-				<AlbumRow
-					key={album.title + album.releaseDate.toString()}
-					album={album}
+				<AdminItemRow
+					key={album.id}
+					id={album.id}
+					title={album.title}
+					description={album.releaseDate.toLocaleDateString(
+						undefined,
+						{
+							year: "numeric",
+							month: "short",
+							day: "numeric",
+						},
+					)}
 					onDelete={onDelete}
+					editHref={`/admin/albums/update/${album.id}`}
+					imageUrl={album.coverUrl}
 				/>
 			))}
-		</div>
+		</ItemGroup>
 	);
 };
