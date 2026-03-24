@@ -26,7 +26,6 @@ interface AlbumFormProps {
 
 export function AlbumForm({ tracks, options }: AlbumFormProps) {
 	const { form, isSubmitting } = useAlbumForm(options);
-
 	const isEdit = options.mode === "edit";
 
 	return (

@@ -37,20 +37,21 @@ export const AlbumTrackList = ({ tracks }: AlbumTrackListProps) => {
 					<Item
 						key={track.id}
 						variant="card"
-						size="sm"
+						size="xs"
 						onClick={() => {
 							playByIndex(index);
 						}}
 						className={cn(
-							"transition duration-300 cursor-pointer hover:bg-muted",
+							"transition duration-300 ease-out",
+							"cursor-pointer hover:bg-muted",
 							isSelected && "ring-2 ring-primary",
 						)}
 					>
-						<ItemMedia className="text-sm text-muted-foreground">
-							{index + 1}
+						<ItemMedia className="py-2 pr-1 text-sm text-muted-foreground">
+							#{index + 1}
 						</ItemMedia>
 						<ItemContent>
-							<ItemTitle className="text-base font-semibold">
+							<ItemTitle className="text-base font-medium">
 								{track.title}
 							</ItemTitle>
 

@@ -4,10 +4,13 @@ import { EmptyAlbumState } from "@/features/music/albums/components/EmptyAlbumSt
 import { PaginationClient } from "@/features/pagination/PaginationClient";
 import { createRepositories } from "@/lib/factories/repository/server";
 import { AlbumMapper, type AlbumWithCover } from "@/lib/mappers/domain";
-import { getPagination } from "@/lib/utils/pagination";
+import {
+	getPagination,
+	type PaginationInput,
+} from "@/lib/utils/pagination";
 
 interface AdminAlbumsPageProps {
-	searchParams?: Promise<{ page?: string; pageSize?: string }>;
+	searchParams?: Promise<PaginationInput>;
 }
 
 export default async function AdminAlbumsPage({
