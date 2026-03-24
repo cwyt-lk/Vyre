@@ -198,6 +198,18 @@ WITH CHECK (
     check_role('admin')
 );
 
+CREATE POLICY track_artists_update_admin
+ON track_artists
+AS PERMISSIVE
+FOR UPDATE
+TO authenticated
+USING (
+    check_role('admin')
+)
+WITH CHECK (
+    check_role('admin')
+);
+
 CREATE POLICY track_artists_delete_admin
 ON track_artists
 AS PERMISSIVE
@@ -223,6 +235,18 @@ ON album_tracks
 AS PERMISSIVE
 FOR INSERT
 TO authenticated
+WITH CHECK (
+    check_role('admin')
+);
+
+CREATE POLICY album_tracks_update_admin
+ON album_tracks
+AS PERMISSIVE
+FOR UPDATE
+TO authenticated
+USING (
+    check_role('admin')
+)
 WITH CHECK (
     check_role('admin')
 );
