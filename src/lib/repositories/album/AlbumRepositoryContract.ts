@@ -11,99 +11,165 @@ import type {
 import type { RepoResult } from "@/types/results";
 
 /**
- * Repository contract for album persistence operations.
- * Abstracts database access and maps raw rows into domain models.
+ * Contract defining all operations for album persistence.
+ *
+ * Includes CRUD operations, bulk operations, track management,
+ * filtered queries, soft deletes, and relational fetching.
  */
 export interface AlbumRepositoryContract {
+	// -----------------------------
+	// Existence Checks
+	// -----------------------------
 	/**
-	 * Fetch all albums without related entities
-	 * @param options - Query Options
+	 * Check if an album exists.
+	 * @param id Album ID
+	 * @returns Repository result with boolean indicating existence.
+	 */
+	exists(id: string): Promise<RepoResult<boolean>>;
+
+	// -----------------------------
+	// Fetching / Querying
+	// -----------------------------
+	/**
+	 * Fetch all albums without any related entities.
+	 * @param options Optional query modifiers (pagination, filtering, etc.)
+	 * @returns Repository result containing an array of albums.
 	 */
 	findAll(options?: QueryOptions): Promise<RepoResult<Album[]>>;
 
-	/** Fetch a single album by its unique identifier
-	 * @param id - Album ID
+	/**
+	 * Fetch a single album by its unique identifier.
+	 * @param id Album ID
+	 * @returns Repository result with the album if found.
 	 */
 	findById(id: string): Promise<RepoResult<Album>>;
 
-	/** Search albums by title prefix (case-insensitive)
-	 * @param title - Album title prefix
-	 * @param options - Query Options
+	/**
+	 * Search albums by a case-insensitive title prefix.
+	 * @param title Title prefix to search
+	 * @param options Optional query modifiers
+	 * @returns Repository result containing matching albums.
 	 */
 	searchByTitle(
 		title: string,
 		options?: QueryOptions,
 	): Promise<RepoResult<Album[]>>;
 
-	/** Retrieve tracks belonging to an album (without relations)
-	 * @param id - Album ID
-	 * @param options - Query Options
+	/**
+	 * Find all albums by a specific artist.
+	 * @param artistId Artist ID
+	 * @param options Optional query modifiers
+	 * @returns Repository result with matching albums.
 	 */
-	findTracksByAlbumId(
-		id: string,
+	findByArtistId(
+		artistId: string,
 		options?: QueryOptions,
-	): Promise<RepoResult<Track[]>>;
-
-	/** Retrieve tracks for an album with their relations
-	 *
-	 * Includes:
-	 * - Genres
-	 * - Track artists
-	 * - Artist information
-	 *
-	 * @param id - Album ID
-	 * @param options - Query Options
-	 */
-	findTracksWithRelationsByAlbumId(
-		id: string,
-		options?: QueryOptions,
-	): Promise<RepoResult<TrackAggregate[]>>;
+	): Promise<RepoResult<Album[]>>;
 
 	/**
-	 * Fetch all albums with nested track relations
-	 * @param options - Query Options
+	 * Find all albums by a specific genre.
+	 * @param genreId Genre ID
+	 * @param options Optional query modifiers
+	 * @returns Repository result with matching albums.
+	 */
+	findByGenreId(
+		genreId: string,
+		options?: QueryOptions,
+	): Promise<RepoResult<Album[]>>;
+
+	/**
+	 * Fetch all albums including their nested track relations.
+	 * @param options Optional query modifiers
+	 * @returns Repository result with album aggregates.
 	 */
 	findAllWithRelations(
 		options?: QueryOptions,
 	): Promise<RepoResult<AlbumAggregate[]>>;
 
-	/** Fetch a single album with all nested relations
-	 *
-	 * Includes:
-	 * - Album metadata
-	 * - Album tracks
-	 * - Track relations (genres, artists)
-	 *
-	 * @param id - Album ID
+	/**
+	 * Fetch a single album with all nested relations (tracks, artist, genres, etc.)
+	 * @param id Album ID
+	 * @returns Repository result with full album aggregate.
 	 */
 	findWithRelationsById(
 		id: string,
 	): Promise<RepoResult<AlbumFullAggregate>>;
 
 	/**
-	 * Fetches the total number of rows
+	 * Retrieve tracks belonging to a specific album, without related entities.
+	 * @param id Album ID
+	 * @param options Optional query modifiers
+	 * @returns Repository result with the list of tracks.
 	 */
-	count(): Promise<RepoResult<number>>;
+	findTracksByAlbumId(
+		id: string,
+		options?: QueryOptions,
+	): Promise<RepoResult<Track[]>>;
 
-	/** Create a new album
-	 * @param album - Album creation data
+	/**
+	 * Retrieve tracks for an album, including their related entities.
+	 * @param id Album ID
+	 * @param options Optional query modifiers
+	 * @returns Repository result with track aggregates.
+	 */
+	findTracksWithRelationsByAlbumId(
+		id: string,
+		options?: QueryOptions,
+	): Promise<RepoResult<TrackAggregate[]>>;
+
+	// -----------------------------
+	// Creation
+	// -----------------------------
+	/**
+	 * Create a new album.
+	 * @param album Album data to create
+	 * @returns Repository result with the newly created album.
 	 */
 	create(album: CreateAlbum): Promise<RepoResult<Album>>;
 
-	/** Delete an album
-	 * @param id - Album ID
+	/**
+	 * Bulk create multiple albums.
+	 * @param albums Array of album creation data
+	 * @returns Repository result with the created albums.
 	 */
-	delete(id: string): Promise<RepoResult>;
+	createMany(albums: CreateAlbum[]): Promise<RepoResult<Album[]>>;
 
-	/** Update an album
-	 * @param updateData - Album Data for updating (Partial)
+	// -----------------------------
+	// Updates
+	// -----------------------------
+	/**
+	 * Update an existing album.
+	 * @param updateData Album update payload
+	 * @returns Repository result with the updated album.
 	 */
 	update(updateData: UpdateAlbum): Promise<RepoResult<Album>>;
 
-	/** Add a track to an album
-	 * @param albumId - Album ID
-	 * @param trackId - Track ID
-	 * @param order - Track position in the album
+	// -----------------------------
+	// Deletion
+	// -----------------------------
+	/**
+	 * Delete an album permanently.
+	 * @param id Album ID
+	 * @returns Repository result of the deletion operation.
+	 */
+	delete(id: string): Promise<RepoResult>;
+
+	/**
+	 * Bulk delete multiple albums permanently.
+	 * @param ids Array of album IDs
+	 * @returns Repository result of the deletion operation.
+	 */
+	deleteMany(ids: string[]): Promise<RepoResult>;
+
+	// -----------------------------
+	// Track Management
+	// -----------------------------
+	/**
+	 * Add a single track to an album at a specific order.
+	 * @param albumId Album ID
+	 * @param trackId Track ID
+	 * @param order Position of the track in the album
+	 * @returns Repository result of the addition operation
 	 */
 	addTrack(
 		albumId: string,
@@ -111,9 +177,61 @@ export interface AlbumRepositoryContract {
 		order: number,
 	): Promise<RepoResult>;
 
-	/** Remove a track from an album
-	 * @param albumId - Album ID
-	 * @param trackIds - List of Track IDs
+	/**
+	 * Add multiple tracks to an album with specified order positions.
+	 * @param albumId Album ID
+	 * @param trackIds Array of track Ids (Index Order is used to set the order)
+	 * @returns Repository result of the addition operation
+	 */
+	addTracks(albumId: string, tracksIds: string[]): Promise<RepoResult>;
+
+	/**
+	 * Remove a single track from an album.
+	 * @param albumId Album ID
+	 * @param trackId Track ID to remove
+	 * @returns Repository result of the removal operation
+	 */
+	removeTrack(albumId: string, trackId: string): Promise<RepoResult>;
+
+	/**
+	 * Remove multiple tracks from an album.
+	 * @param albumId Album ID
+	 * @param trackIds Array of track IDs to remove
+	 * @returns Repository result of the removal operation
 	 */
 	removeTracks(albumId: string, trackIds: string[]): Promise<RepoResult>;
+
+	/**
+	 * Reorder tracks in an album.
+	 * @param albumId Album ID
+	 * @param orderedTrackIds Array of track IDs in the new order
+	 * @returns Repository result of the reorder operation.
+	 */
+	reorderTracks(
+		albumId: string,
+		orderedTrackIds: string[],
+	): Promise<RepoResult>;
+
+	// -----------------------------
+	// Counts / Aggregates
+	// -----------------------------
+	/**
+	 * Fetch the total number of albums.
+	 * @returns Repository result with the album count.
+	 */
+	count(): Promise<RepoResult<number>>;
+
+	/**
+	 * Count albums by a specific artist.
+	 * @param artistId Artist ID
+	 * @returns Repository result with album count.
+	 */
+	countByArtist(artistId: string): Promise<RepoResult<number>>;
+
+	/**
+	 * Count albums by a specific genre.
+	 * @param genreId Genre ID
+	 * @returns Repository result with album count.
+	 */
+	countByGenre(genreId: string): Promise<RepoResult<number>>;
 }
