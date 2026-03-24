@@ -39,19 +39,16 @@ export async function createAlbumAction(
 
 	// Add tracks if any
 	if (albumTrackIds?.length) {
-		for (const [index, trackId] of albumTrackIds.entries()) {
-			const trackResult = await albums.addTrack(
-				albumId,
-				trackId,
-				index,
-			);
+		const tracksResult = await albums.addTracks(
+			albumId,
+			albumTrackIds,
+		);
 
-			if (!trackResult.success) {
-				return {
-					success: false,
-					error: "Failed to add tracks to album. Please try again.",
-				};
-			}
+		if (!tracksResult.success) {
+			return {
+				success: false,
+				error: "Failed to add tracks to album. Please try again.",
+			};
 		}
 	}
 

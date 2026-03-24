@@ -52,12 +52,9 @@ export async function updateAlbumAction(
 	);
 
 	// Handle Removing Tracks
-	const trackRemovalResult = await albums.removeTracks(
-		id,
-		existingTrackIds,
-	);
+	const removeResult = await albums.removeTracks(id, existingTrackIds);
 
-	if (!trackRemovalResult.success) {
+	if (!removeResult.success) {
 		return {
 			success: false,
 			error: "Failed to remove tracks from album.",
@@ -65,15 +62,13 @@ export async function updateAlbumAction(
 	}
 
 	// Handle Adding New Tracks
-	for (const [index, trackId] of newTrackIds.entries()) {
-		const addTrackResult = await albums.addTrack(id, trackId, index);
+	const addResult = await albums.addTracks(id, newTrackIds);
 
-		if (!addTrackResult.success) {
-			return {
-				success: false,
-				error: "Failed to add track to album.",
-			};
-		}
+	if (!addResult.success) {
+		return {
+			success: false,
+			error: "Failed to add tracks to album.",
+		};
 	}
 
 	return { success: true };

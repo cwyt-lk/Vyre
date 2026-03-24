@@ -10,7 +10,7 @@ export const AdminMenu = () => (
 	<NavigationMenuItem>
 		<NavigationMenuTrigger>Admin</NavigationMenuTrigger>
 		<NavigationMenuContent>
-			<div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+			<div className="grid w-100 gap-3 p-4 md:w-125 md:grid-cols-2 lg:w-150">
 				<ul className="flex flex-col gap-2">
 					<li className="mb-1 ml-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
 						Create

@@ -56,14 +56,14 @@ export function useAlbumForm(options: UseAlbumFormOptions) {
 					value as CreateAlbumClientInput,
 					storage,
 				);
+
+				form.reset();
 			} else {
 				await handleUpdate(
 					value as UpdateAlbumClientInput,
 					storage,
 				);
 			}
-
-			form.reset();
 		},
 	});
 

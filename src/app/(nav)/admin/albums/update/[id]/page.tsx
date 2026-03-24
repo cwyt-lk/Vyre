@@ -14,8 +14,10 @@ export default async function UpdateAlbumPage({
 	const { id } = await params;
 	const { tracks, albums } = await createRepositories();
 
-	const albumRes = await albums.findWithRelationsById(id);
-	const tracksRes = await tracks.findAll();
+	const [albumRes, tracksRes] = await Promise.all([
+		await albums.findWithRelationsById(id),
+		await tracks.findAll(),
+	]);
 
 	if (!albumRes.success || !tracksRes.success) {
 		return <ErrorState />;
