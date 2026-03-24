@@ -40,19 +40,13 @@ export async function createTrackAction(
 	const trackId = createResult.data.id;
 
 	// Associate artists
-	for (const [index, artistId] of trackArtistIds.entries()) {
-		const artistResult = await tracks.addArtist(
-			trackId,
-			artistId,
-			index,
-		);
+	const artistsResult = await tracks.addArtists(trackId, trackArtistIds);
 
-		if (!artistResult.success) {
-			return {
-				success: false,
-				error: "Failed to add artists to track. Please try again.",
-			};
-		}
+	if (!artistsResult.success) {
+		return {
+			success: false,
+			error: "Failed to add artists to track. Please try again.",
+		};
 	}
 
 	return { success: true };

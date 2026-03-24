@@ -2,51 +2,68 @@
 
 import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { createTrackAction } from "@/features/admin/track/actions/createTrack";
+import { createRepositories } from "@/lib/factories/repository/client";
+import type { StorageRepositoryContract } from "@/lib/repositories";
+import { getHashedPath } from "@/lib/utils/hash";
+import { createTrackAction } from "../actions/createTrack";
+import { updateTrackAction } from "../actions/updateTrack";
 import {
 	type CreateTrackClientInput,
 	type CreateTrackServerInput,
 	createTrackClientSchema,
 	trackClientDefaultValues,
-} from "@/features/admin/track/schemas/createSchema";
-import { createRepositories } from "@/lib/factories/repository/client";
-import type { StorageRepositoryContract } from "@/lib/repositories";
-import { getHashedPath } from "@/lib/utils/hash";
+} from "../schemas/createSchema";
+import {
+	type UpdateTrackClientInput,
+	type UpdateTrackServerInput,
+	updateTrackClientSchema,
+} from "../schemas/updateSchema";
 
-/**
- * Hook for the Add Track form
- */
-export function useTrackForm() {
+export type UseTrackFormOptions =
+	| {
+			mode: "create";
+	  }
+	| {
+			mode: "edit";
+			initialData: UpdateTrackClientInput;
+	  };
+
+export function useTrackForm(options: UseTrackFormOptions) {
 	const { storage } = createRepositories();
 
+	const defaultValues =
+		options.mode === "create"
+			? trackClientDefaultValues
+			: {
+					...trackClientDefaultValues,
+					...options.initialData,
+				};
+
+	const schema =
+		options.mode === "create"
+			? createTrackClientSchema
+			: updateTrackClientSchema;
+
 	const form = useForm({
-		defaultValues: trackClientDefaultValues,
-		validators: { onSubmit: createTrackClientSchema },
+		defaultValues: defaultValues,
+		validators: {
+			onSubmit: schema,
+		},
+
 		onSubmit: async ({ value }) => {
-			const { audioFile, ...trackData } =
-				value as CreateTrackClientInput;
+			if (options.mode === "create") {
+				await handleCreate(
+					value as CreateTrackClientInput,
+					storage,
+				);
 
-			const uploadResult = await uploadAudio(storage, audioFile);
-
-			if (!uploadResult.success) {
-				toast.error("Failed to upload audio file");
-				return;
+				form.reset();
+			} else {
+				await handleUpdate(
+					value as UpdateTrackClientInput,
+					storage,
+				);
 			}
-
-			const serverData: CreateTrackServerInput = {
-				...trackData,
-				audioPath: uploadResult.path,
-			};
-
-			const result = await createTrackAction(serverData);
-
-			if (!result.success) {
-				toast.error(result.error);
-				return;
-			}
-
-			form.reset();
-			toast.success(`Created track: ${serverData.title}`);
 		},
 	});
 
@@ -55,9 +72,68 @@ export function useTrackForm() {
 	return { form, isSubmitting };
 }
 
-/**
- * Upload audio file to storage
- */
+async function handleCreate(
+	value: CreateTrackClientInput,
+	storage: StorageRepositoryContract,
+) {
+	const { audioFile, ...trackData } = value;
+
+	const uploadResult = await uploadAudio(storage, audioFile);
+
+	if (!uploadResult.success) {
+		toast.error("Failed to upload cover image");
+		return;
+	}
+
+	const serverInput: CreateTrackServerInput = {
+		...trackData,
+		audioPath: uploadResult.path,
+	};
+
+	const result = await createTrackAction(serverInput);
+
+	if (!result.success) {
+		toast.error(result.error);
+		return;
+	}
+
+	toast.success(`Created track: ${serverInput.title}`);
+}
+
+async function handleUpdate(
+	value: UpdateTrackClientInput,
+	storage: StorageRepositoryContract,
+) {
+	const { audioFile, ...trackData } = value;
+
+	let audioPath: string | undefined;
+
+	if (audioFile) {
+		const uploadResult = await uploadAudio(storage, audioFile);
+
+		if (!uploadResult.success) {
+			toast.error("Failed to upload cover image");
+			return;
+		}
+
+		audioPath = uploadResult.path;
+	}
+
+	const serverInput: UpdateTrackServerInput = {
+		...trackData,
+		audioPath: audioPath,
+	};
+
+	const result = await updateTrackAction(serverInput);
+
+	if (!result.success) {
+		toast.error(result.error);
+		return;
+	}
+
+	toast.success(`Updated track: ${serverInput.title}`);
+}
+
 async function uploadAudio(
 	storage: StorageRepositoryContract,
 	file: File,
@@ -65,7 +141,12 @@ async function uploadAudio(
 	const hashedPath = await getHashedPath(file);
 	const result = await storage.uploadFile(file, "music", hashedPath);
 
-	if (!result.success) return { success: false as const };
+	if (!result.success) {
+		return { success: false as const };
+	}
 
-	return { success: true as const, path: result.data };
+	return {
+		success: true as const,
+		path: result.data,
+	};
 }

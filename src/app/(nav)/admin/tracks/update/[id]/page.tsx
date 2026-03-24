@@ -1,20 +1,31 @@
 import { Container } from "@/components/layout/Container";
 import { ErrorState } from "@/components/layout/ErrorState";
 import { Card, CardContent } from "@/components/ui/Card";
+import { AlbumForm } from "@/features/admin/album/components";
 import { TrackForm } from "@/features/admin/track/components/TrackForm";
 import { createRepositories } from "@/lib/factories/repository/server";
 
-export default async function AddTrackPage() {
-	const { genres, artists } = await createRepositories();
+interface TrackParamsType {
+	params: Promise<{ id: string }>;
+}
 
-	const [artistRes, genreRes] = await Promise.all([
+export default async function UpdateTrackPage({
+	params,
+}: TrackParamsType) {
+	const { id } = await params;
+	const { tracks, genres, artists } = await createRepositories();
+
+	const [trackRes, artistRes, genreRes] = await Promise.all([
+		tracks.findByIdWithRelations(id),
 		artists.findAll(),
 		genres.findAll(),
 	]);
 
-	if (!artistRes.success || !genreRes.success) {
+	if (!trackRes.success || !artistRes.success || !genreRes.success) {
 		return <ErrorState />;
 	}
+
+	const initialTrackArtists = trackRes.data.artists.map((it) => it.id);
 
 	return (
 		<div className="relative min-h-screen">
@@ -24,7 +35,13 @@ export default async function AddTrackPage() {
 						<TrackForm
 							genres={genreRes.data}
 							artists={artistRes.data}
-							options={{ mode: "create" }}
+							options={{
+								mode: "edit",
+								initialData: {
+									...trackRes.data,
+									artistIds: initialTrackArtists,
+								},
+							}}
 						/>
 					</CardContent>
 				</Card>

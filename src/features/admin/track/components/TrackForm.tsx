@@ -13,17 +13,26 @@ import { FieldSet } from "@/components/ui/Field";
 import { Separator } from "@/components/ui/Separator";
 import { AdminFormLayout } from "@/features/admin/components/AdminFormLayout";
 import { MAX_AUDIO_SIZE } from "@/features/admin/track/config";
-import { useTrackForm } from "@/features/admin/track/hooks/useTrackForm";
+import {
+	type UseTrackFormOptions,
+	useTrackForm,
+} from "@/features/admin/track/hooks/useTrackForm";
 import { getHumanSize } from "@/lib/utils/file";
 import type { Artist, Genre } from "@/types/domain";
 
 interface AddTrackFormProps {
 	genres: Genre[];
 	artists: Artist[];
+	options: UseTrackFormOptions;
 }
 
-export function TrackForm({ genres, artists }: AddTrackFormProps) {
-	const { form, isSubmitting } = useTrackForm();
+export function TrackForm({
+	genres,
+	artists,
+	options,
+}: AddTrackFormProps) {
+	const { form, isSubmitting } = useTrackForm(options);
+	const isEdit = options.mode === "edit";
 
 	const artistOptions: ComboboxOption[] = useMemo(
 		() => artists.map((a) => ({ label: a.name, value: a.id })),
@@ -37,13 +46,17 @@ export function TrackForm({ genres, artists }: AddTrackFormProps) {
 
 	return (
 		<AdminFormLayout
-			title="Add New Track"
-			description="Upload a new track and assign artists and genre."
+			title={isEdit ? "Edit Track" : "Add New Track"}
+			description={
+				isEdit
+					? "Update track details."
+					: "Create a new track and assign artists and genres."
+			}
 			isSubmitting={isSubmitting}
 			onSubmit={form.handleSubmit}
 			onReset={form.reset}
-			submitMessage="Create Track"
-			submittingMessage="Uploading..."
+			submitMessage={isEdit ? "Save Changes" : "Create Track"}
+			submittingMessage={isEdit ? "Saving..." : "Creating..."}
 		>
 			{/* Track Info */}
 			<FieldSet className="space-y-4">
