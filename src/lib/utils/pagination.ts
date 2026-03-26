@@ -30,3 +30,5 @@ export function getPagination(
 		to,
 	};
 }
+
+export const getPaginationTotalPages = (pageSize: number, totalItems: number) => Math.ceil(totalItems / pageSize);

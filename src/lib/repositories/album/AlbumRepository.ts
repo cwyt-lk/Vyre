@@ -15,7 +15,7 @@ import type {
 	TrackAggregate,
 	UpdateAlbum,
 } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 const TRACK_RELATION_SELECT = `
@@ -90,22 +90,28 @@ export class AlbumRepository implements AlbumRepositoryContract {
 	async searchByTitle(
 		title: string,
 		options?: QueryOptions,
-	): Promise<RepoResult<Album[]>> {
+	): Promise<RepoListResult<Album>> {
 		const query = applyQueryOptions(
 			this.supabase
 				.from("albums")
-				.select("*")
+				.select("*", { count: "exact" })
 				.ilike("title", `${title}%`),
 			options,
 		);
 
-		const { data, error } = await query;
+		const { count, data, error } = await query;
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
 		}
 
-		return { success: true, data: flatMapList(data, AlbumMapper.map) };
+		return {
+			success: true,
+			data: {
+				data: flatMapList(data, AlbumMapper.map),
+				count: count ?? 0,
+			},
+		};
 	}
 
 	async findByArtistId(

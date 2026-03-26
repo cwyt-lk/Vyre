@@ -8,7 +8,7 @@ import type {
 	TrackAggregate,
 	UpdateAlbum,
 } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 
 /**
  * Contract defining all operations for album persistence.
@@ -53,7 +53,7 @@ export interface AlbumRepositoryContract {
 	searchByTitle(
 		title: string,
 		options?: QueryOptions,
-	): Promise<RepoResult<Album[]>>;
+	): Promise<RepoListResult<Album>>;
 
 	/**
 	 * Find all albums by a specific artist.
