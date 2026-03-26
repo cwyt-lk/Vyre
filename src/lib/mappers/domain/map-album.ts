@@ -33,7 +33,11 @@ export type AlbumAggregateWithCover = AlbumAggregate & {
 };
 
 export const AlbumMapper = {
-	/** Map a basic album row from the database to domain Album */
+	/**
+	 * Map a basic album row from the database to domain Album.
+	 * @param row - The album database row.
+	 * @returns The mapped Album object.
+	 */
 	map(row: AlbumDB): Album {
 		return {
 			id: row.id,
@@ -45,7 +49,11 @@ export const AlbumMapper = {
 		};
 	},
 
-	/** Map an album with related tracks (basic) */
+	/**
+	 * Map an album with related tracks (basic).
+	 * @param row - The album aggregate database row.
+	 * @returns The mapped AlbumAggregate object.
+	 */
 	mapWithRelations(row: AlbumAggregateDB): AlbumAggregate {
 		const album = AlbumMapper.map(row);
 
@@ -57,7 +65,11 @@ export const AlbumMapper = {
 		};
 	},
 
-	/** Map an album with detailed track relations */
+	/**
+	 * Map an album with detailed track relations.
+	 * @param row - The album full aggregate database row.
+	 * @returns The mapped AlbumFullAggregate object.
+	 */
 	mapWithDetailedRelations(
 		row: AlbumFullAggregateDB,
 	): AlbumFullAggregate {
@@ -74,6 +86,9 @@ export const AlbumMapper = {
 	/**
 	 * Adds a public cover URL to an album.
 	 * Works with both Album and AlbumAggregate objects.
+	 * @param album - The album object to extend.
+	 * @param storage - The storage repository contract.
+	 * @returns The album object with coverUrl added.
 	 */
 	mapWithCover<T extends Album | AlbumAggregate>(
 		album: T,

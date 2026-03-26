@@ -12,6 +12,8 @@ import type { ElementType } from "react";
 
 /**
  * Converts bytes to a human-readable string.
+ * @param bytes - The number of bytes to convert.
+ * @returns A human-readable string representation of the size.
  */
 export function getHumanSize(bytes: number): string {
 	if (bytes <= 0) return "0 B";
@@ -43,6 +45,8 @@ const SPECIFIC_MAP: Record<string, ElementType> = {
 
 /**
  * Returns the appropriate Lucide icon component based on the file's MIME type.
+ * @param mimeType - The MIME type of the file.
+ * @returns The corresponding Lucide icon component.
  */
 export function getFileIconComponent(mimeType: string): ElementType {
 	if (SPECIFIC_MAP[mimeType]) return SPECIFIC_MAP[mimeType];

@@ -6,6 +6,11 @@ import {
 	VyreError,
 } from "@/types/errors";
 
+/**
+ * Maps a StorageError to a VyreError based on the status code.
+ * @param error - The StorageError to map.
+ * @returns The corresponding VyreError.
+ */
 export function mapStorageError(error: StorageError): VyreError {
 	const { status, message } = error;
 

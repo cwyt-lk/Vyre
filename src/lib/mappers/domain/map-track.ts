@@ -29,7 +29,11 @@ export type TrackAggregateWithAudio = TrackAggregate & {
 };
 
 export const TrackMapper = {
-	/** Map a basic database row to the domain Track type */
+	/**
+	 * Map a basic database row to the domain Track type.
+	 * @param row - The track database row.
+	 * @returns The mapped Track object.
+	 */
 	map(row: TrackDB): Track {
 		return {
 			id: row.id,
@@ -40,7 +44,11 @@ export const TrackMapper = {
 		};
 	},
 
-	/** Map a track with related genre and artist information */
+	/**
+	 * Map a track with related genre and artist information.
+	 * @param row - The track aggregate database row.
+	 * @returns The mapped TrackAggregate object.
+	 */
 	mapWithRelations(row: TrackAggregateDB): TrackAggregate {
 		const track = TrackMapper.map(row);
 
@@ -56,6 +64,9 @@ export const TrackMapper = {
 	/**
 	 * Adds a public audio URL to a track using the storage repository.
 	 * Works with either Track or TrackAggregate while preserving type.
+	 * @param track - The track object to extend.
+	 * @param storage - The storage repository contract.
+	 * @returns The track object with audioUrl added.
 	 */
 	mapWithAudio<T extends Track | TrackAggregate>(
 		track: T,

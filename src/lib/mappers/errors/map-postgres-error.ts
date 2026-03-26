@@ -7,6 +7,11 @@ import {
 	VyreError,
 } from "@/types/errors";
 
+/**
+ * Maps a PostgrestError to a VyreError based on the error code.
+ * @param error - The PostgrestError to map.
+ * @returns The corresponding VyreError.
+ */
 export function mapPostgresError(error: PostgrestError): VyreError {
 	const { code, message } = error;
 

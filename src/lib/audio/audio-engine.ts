@@ -8,27 +8,43 @@ import { Howl, type HowlOptions } from "howler";
  * Provides strong typing for all emitted events.
  */
 interface AudioEngineEvents {
-	// Loading lifecycle
+	/** Fired when audio starts loading */
 	loading: () => void;
+
+	/** Fired when audio is fully loaded */
 	loaded: () => void;
+
+	/** Fired when audio is unloaded */
 	unloaded: () => void;
 
-	// Playback state
+	/** Fired when playback starts */
 	play: () => void;
+
+	/** Fired when playback is paused */
 	pause: () => void;
+
+	/** Fired when playback is stopped */
 	stop: () => void;
+
+	/** Fired when playback reaches the end */
 	end: () => void;
 
-	// Timeline
+	/** Fired when seeking occurs */
 	seek: (time: number) => void;
+
+	/** Fired continuously during playback with current time (seconds) */
 	timeUpdate: (time: number) => void;
 
-	// Audio controls
+	/** Fired when volume changes */
 	volume: (volume: number) => void;
+
+	/** Fired when mute state changes */
 	mute: (isMuted: boolean) => void;
+
+	/** Fired when loop state changes */
 	loop: (isLooping: boolean) => void;
 
-	// Error handling
+	/** Fired when an error occurs */
 	error: (error: Error) => void;
 }
 
@@ -69,6 +85,12 @@ export interface AudioEngineLoadOptions {
  * - Manages playback state
  * - Emits time updates using requestAnimationFrame
  * - Centralizes audio control logic
+ *
+ * @example
+ * ```ts
+ * audioEngine.load({ src: "/audio.mp3", autoplay: true });
+ * audioEngine.on("play", () => console.log("Playing"));
+ * ```
  */
 class AudioEngine extends EventEmitter<AudioEngineEvents> {
 	/** Singleton instance */
@@ -83,7 +105,7 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 	/**
 	 * Returns the singleton instance of AudioEngine.
 	 */
-	static getInstance() {
+	static getInstance(): AudioEngine {
 		if (!AudioEngine.instance) {
 			AudioEngine.instance = new AudioEngine();
 		}
@@ -94,6 +116,8 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 	/**
 	 * Loads an audio source and initializes the Howl instance.
 	 * Automatically unloads any existing audio before loading a new one.
+	 *
+	 * @param options - Configuration for the audio instance
 	 */
 	load({
 		src,
@@ -104,7 +128,7 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 		preload = true,
 		loop = false,
 		howlOptions = {},
-	}: AudioEngineLoadOptions) {
+	}: AudioEngineLoadOptions): void {
 		// Ensure previous audio is cleaned up
 		this.unload();
 
@@ -118,7 +142,6 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 			loop,
 			...howlOptions,
 
-			// Playback events
 			onplay: () => {
 				this.emit("play");
 				this.startProgressLoop();
@@ -143,7 +166,6 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 				this.emit("seek", this.getCurrentTime());
 			},
 
-			// Loading events
 			onload: () => {
 				this.emit("loaded");
 			},
@@ -152,7 +174,6 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 				this.emit("error", error as Error);
 			},
 
-			// Audio property events
 			onvolume: () => {
 				this.emit("volume", this.getVolume());
 			},
@@ -168,7 +189,7 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 	/**
 	 * Stops and unloads the current audio instance.
 	 */
-	unload() {
+	unload(): void {
 		if (!this.howl) return;
 
 		this.howl.stop();
@@ -178,66 +199,79 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 		this.emit("unloaded");
 	}
 
-	/** Starts playback */
-	play() {
+	/**
+	 * Starts playback.
+	 */
+	play(): void {
 		if (!this.howl) return;
-
 		this.howl.play();
 	}
 
-	/** Pauses playback */
-	pause() {
+	/**
+	 * Pauses playback.
+	 */
+	pause(): void {
 		if (!this.howl) return;
-
 		this.howl.pause();
 	}
 
-	/** Stops playback */
-	stop() {
+	/**
+	 * Stops playback.
+	 */
+	stop(): void {
 		if (!this.howl) return;
-
 		this.howl.stop();
 	}
 
 	/**
-	 * Seeks to a specific time (in seconds).
+	 * Seeks to a specific time.
+	 *
+	 * @param time - Time in seconds
 	 */
-	seek(time: number) {
+	seek(time: number): void {
 		this.howl?.seek(time);
 	}
 
 	/**
-	 * Sets volume (0.0 - 1.0).
+	 * Sets volume.
+	 *
+	 * @param volume - Value between 0.0 and 1.0
 	 */
-	setVolume(volume: number) {
+	setVolume(volume: number): void {
 		this.howl?.volume(volume);
 	}
 
 	/**
-	 * Returns current volume.
+	 * Gets current volume.
+	 *
+	 * @returns Volume between 0.0 and 1.0
 	 */
-	getVolume() {
+	getVolume(): number {
 		return this.howl?.volume() ?? 1;
 	}
 
 	/**
-	 * Mutes or unmutes audio.
+	 * Sets mute state.
+	 *
+	 * @param muted - Whether audio should be muted
 	 */
-	setMuted(muted: boolean) {
+	setMuted(muted: boolean): void {
 		this.howl?.mute(muted);
 	}
 
 	/**
 	 * Returns mute state.
 	 */
-	isMuted() {
+	isMuted(): boolean {
 		return this.howl?.mute() ?? false;
 	}
 
 	/**
 	 * Enables or disables looping.
+	 *
+	 * @param isLooping - Whether playback should loop
 	 */
-	setLooping(isLooping: boolean) {
+	setLooping(isLooping: boolean): void {
 		if (!this.howl) return;
 
 		this.howl.loop(isLooping);
@@ -247,28 +281,32 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 	/**
 	 * Returns loop state.
 	 */
-	isLooping() {
+	isLooping(): boolean {
 		return this.howl?.loop() ?? false;
 	}
 
 	/**
 	 * Returns whether audio is currently playing.
 	 */
-	isPlaying() {
+	isPlaying(): boolean {
 		return this.howl?.playing() ?? false;
 	}
 
 	/**
-	 * Returns current playback time (seconds).
+	 * Returns current playback time.
+	 *
+	 * @returns Time in seconds
 	 */
-	getCurrentTime() {
+	getCurrentTime(): number {
 		return this.howl?.seek() ?? 0;
 	}
 
 	/**
-	 * Returns total duration of the loaded audio (seconds).
+	 * Returns total duration of the loaded audio.
+	 *
+	 * @returns Duration in seconds
 	 */
-	getDuration() {
+	getDuration(): number {
 		return this.howl?.duration() ?? 0;
 	}
 
@@ -276,7 +314,7 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 	 * Starts emitting `timeUpdate` events using requestAnimationFrame.
 	 * Runs only while audio is actively playing.
 	 */
-	private startProgressLoop() {
+	private startProgressLoop(): void {
 		const loop = () => {
 			if (!this.howl || !this.howl.playing()) return;
 
@@ -290,7 +328,7 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 	/**
 	 * Stops the requestAnimationFrame progress loop.
 	 */
-	private stopProgressLoop() {
+	private stopProgressLoop(): void {
 		if (this.timeRaf) {
 			cancelAnimationFrame(this.timeRaf);
 		}
@@ -300,7 +338,14 @@ class AudioEngine extends EventEmitter<AudioEngineEvents> {
 }
 
 /**
- * Exported singleton instance.
- * Use this throughout the app instead of instantiating manually.
+ * Singleton AudioEngine instance.
+ *
+ * Use this instead of creating new instances manually.
+ *
+ * @example
+ * ```ts
+ * audioEngine.play();
+ * audioEngine.setVolume(0.5);
+ * ```
  */
 export const audioEngine = AudioEngine.getInstance();

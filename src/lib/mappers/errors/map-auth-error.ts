@@ -6,6 +6,11 @@ import {
 	VyreError,
 } from "@/types/errors";
 
+/**
+ * Maps an AuthError to a VyreError based on the status code.
+ * @param error - The AuthError to map.
+ * @returns The corresponding VyreError.
+ */
 export function mapAuthError(error: AuthError): VyreError {
 	const { code, status, message } = error;
 
