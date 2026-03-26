@@ -6,13 +6,13 @@ import {
 	updateAlbumServerSchema,
 } from "@/features/admin/album/schemas/updateSchema";
 import { createRepositories } from "@/lib/factories/repository/server";
-import type { UpdateAlbum } from "@/types/domain";
+import type { AlbumRepositoryContract } from "@/lib/repositories";
+import type { Album, UpdateAlbum } from "@/types/domain";
 import type { ActionResult } from "@/types/results";
 
 export async function updateAlbumAction(
 	data: UpdateAlbumServerInput,
 ): Promise<ActionResult> {
-	// Validate input
 	const parsed = updateAlbumServerSchema.safeParse(data);
 
 	if (!parsed.success) {
@@ -22,52 +22,201 @@ export async function updateAlbumAction(
 		};
 	}
 
-	const updateData: UpdateAlbum = parsed.data;
-
+	const updateData = parsed.data as UpdateAlbum;
 	const { albums } = await createRepositories();
 
-	// Update Album
-	const updateResult = await albums.update(updateData);
+	const id = updateData.id;
+	const trackIds = parsed.data.trackIds;
 
-	if (!updateResult.success) {
+	const existing = await getExistingAlbum(albums, id);
+
+	if (!existing.success) {
+		return existing;
+	}
+
+	const { album, trackIds: existingTrackIds } = existing.data;
+
+	const albumUpdateResult = await maybeUpdateAlbum(
+		albums,
+		updateData,
+		album,
+	);
+
+	if (!albumUpdateResult.success) {
+		return albumUpdateResult;
+	}
+
+	const trackUpdateResult = await syncTracks(
+		albums,
+		id,
+		existingTrackIds,
+		trackIds,
+	);
+
+	if (!trackUpdateResult.success) {
+		return trackUpdateResult;
+	}
+
+	return { success: true };
+}
+
+//
+// -----------------------------
+// Helpers
+// -----------------------------
+//
+
+async function getExistingAlbum(
+	albums: AlbumRepositoryContract,
+	id: string,
+): Promise<
+	ActionResult<{
+		album: Album;
+		trackIds: string[];
+	}>
+> {
+	const result = await albums.findByIdWithRelations(id);
+
+	if (!result.success) {
+		return {
+			success: false,
+			error: "Failed to retrieve album.",
+		};
+	}
+
+	return {
+		success: true,
+		data: {
+			album: result.data,
+			trackIds: result.data.tracks.map((t) => t.id),
+		},
+	};
+}
+
+async function maybeUpdateAlbum(
+	albums: AlbumRepositoryContract,
+	updateData: UpdateAlbum,
+	existingAlbum: Album,
+): Promise<ActionResult> {
+	if (!hasAlbumChanges(updateData, existingAlbum)) {
+		return { success: true };
+	}
+
+	const result = await albums.update(updateData);
+
+	if (!result.success) {
 		return {
 			success: false,
 			error: "Failed to update album. Please try again.",
 		};
 	}
 
-	const id = updateData.id;
-	const newTrackIds = parsed.data.trackIds ?? [];
-	const existingTracksResult = await albums.findTracksByAlbumId(id);
+	return { success: true };
+}
 
-	if (!existingTracksResult.success) {
-		return {
-			success: false,
-			error: "Failed to fetch existing album tracks.",
-		};
+function hasAlbumChanges(
+	updateData: UpdateAlbum,
+	existing: Album,
+): boolean {
+	return (
+		updateData.title !== existing.title ||
+		updateData.description !== existing.description ||
+		updateData.releaseDate !== existing.releaseDate ||
+		updateData.coverPath !== existing.coverPath
+	);
+}
+
+async function syncTracks(
+	albums: AlbumRepositoryContract,
+	albumId: string,
+	existingTrackIds: string[],
+	incomingTrackIds?: string[],
+): Promise<ActionResult> {
+	if (!incomingTrackIds) {
+		return { success: true };
 	}
 
-	const existingTrackIds = existingTracksResult.data.map(
-		(track) => track.id,
+	const isSame = isSameOrder(existingTrackIds, incomingTrackIds);
+
+	if (isSame) {
+		return { success: true };
+	}
+
+	const { toAdd, toRemove } = diffTrackIds(
+		existingTrackIds,
+		incomingTrackIds,
 	);
 
-	// Handle Removing Tracks
-	const removeResult = await albums.removeTracks(id, existingTrackIds);
+	const mutationResult = await applyTrackMutations(
+		albums,
+		albumId,
+		toAdd,
+		toRemove,
+	);
 
-	if (!removeResult.success) {
-		return {
-			success: false,
-			error: "Failed to remove tracks from album.",
-		};
+	if (!mutationResult.success) {
+		return mutationResult;
 	}
 
-	// Handle Adding New Tracks
-	const addResult = await albums.addTracks(id, newTrackIds);
+	const shouldReorder = toAdd.length > 0 || !isSame;
 
-	if (!addResult.success) {
+	if (shouldReorder) {
+		const reorderResult = await albums.reorderTracks(
+			albumId,
+			incomingTrackIds,
+		);
+
+		if (!reorderResult.success) {
+			return {
+				success: false,
+				error: "Failed to reorder tracks.",
+			};
+		}
+	}
+
+	return { success: true };
+}
+
+function isSameOrder(a: string[], b: string[]): boolean {
+	return a.length === b.length && a.every((id, i) => id === b[i]);
+}
+
+function diffTrackIds(existing: string[], incoming: string[]) {
+	const existingSet = new Set(existing);
+	const incomingSet = new Set(incoming);
+
+	return {
+		toAdd: incoming.filter((id) => !existingSet.has(id)),
+		toRemove: existing.filter((id) => !incomingSet.has(id)),
+	};
+}
+
+async function applyTrackMutations(
+	albums: AlbumRepositoryContract,
+	albumId: string,
+	toAdd: string[],
+	toRemove: string[],
+): Promise<ActionResult> {
+	const promises = [];
+
+	if (toRemove.length) {
+		promises.push(albums.removeTracks(albumId, toRemove));
+	}
+
+	if (toAdd.length) {
+		promises.push(albums.addTracks(albumId, toAdd));
+	}
+
+	if (!promises.length) {
+		return { success: true };
+	}
+
+	const results = await Promise.all(promises);
+
+	if (results.some((r) => !r.success)) {
 		return {
 			success: false,
-			error: "Failed to add tracks to album.",
+			error: "Failed to update album tracks.",
 		};
 	}
 
