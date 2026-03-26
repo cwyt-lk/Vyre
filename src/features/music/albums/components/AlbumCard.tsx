@@ -7,6 +7,8 @@ import {
 	CardTitle,
 } from "@/components/ui/Card";
 import type { AlbumWithCover } from "@/lib/mappers/domain";
+import { placeholderSvg } from "@/lib/utils/placeholders";
+import { formatDate } from "@/lib/utils/time";
 
 interface AlbumCardProps {
 	album: AlbumWithCover;
@@ -14,7 +16,7 @@ interface AlbumCardProps {
 
 export const AlbumCard = async ({ album }: AlbumCardProps) => {
 	return (
-		<Card className="group h-full overflow-hidden border-none bg-card/50 transition-all hover:bg-muted">
+		<Card className="group overflow-hidden border-none bg-card/50 transition-all hover:bg-muted">
 			<CardHeader className="p-4">
 				<div className="relative aspect-square overflow-hidden rounded-xl">
 					<Image
@@ -23,7 +25,7 @@ export const AlbumCard = async ({ album }: AlbumCardProps) => {
 						fill
 						priority
 						placeholder="blur"
-						blurDataURL="./placeholder.png"
+						blurDataURL={placeholderSvg}
 						className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
 					/>
 				</div>
@@ -34,11 +36,9 @@ export const AlbumCard = async ({ album }: AlbumCardProps) => {
 					{album.title}
 				</CardTitle>
 
-				{album.description && (
-					<CardDescription className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-						{album.description}
-					</CardDescription>
-				)}
+				<CardDescription className="text-sm leading-relaxed text-muted-foreground">
+					{formatDate(album.releaseDate)}
+				</CardDescription>
 			</CardContent>
 		</Card>
 	);
