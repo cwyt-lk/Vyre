@@ -14,7 +14,7 @@ import type {
 	TrackAggregate,
 	UpdateTrack,
 } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 const TRACK_RELATION_SELECT = `
@@ -126,6 +126,33 @@ export class TrackRepository implements TrackRepositoryContract {
 		return {
 			success: true,
 			data: TrackMapper.mapWithRelations(data),
+		};
+	}
+
+	async searchByTitleWithRelations(
+		title: string,
+		options?: QueryOptions,
+	): Promise<RepoListResult<TrackAggregate>> {
+		const query = applyQueryOptions(
+			this.supabase
+				.from("tracks")
+				.select(TRACK_RELATION_SELECT, { count: "exact" })
+				.ilike("title", `${title}%`),
+			options,
+		);
+
+		const { count, data, error } = await query;
+
+		if (error) {
+			return { success: false, error: mapPostgresError(error) };
+		}
+
+		return {
+			success: true,
+			data: {
+				data: flatMapList(data, TrackMapper.mapWithRelations),
+				count: count ?? 0,
+			},
 		};
 	}
 

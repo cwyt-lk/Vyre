@@ -6,6 +6,7 @@ import { ItemGroup } from "@/components/ui/Item";
 import { deleteAlbumAction } from "@/features/admin/album/actions/deleteAlbum";
 import { AdminItemRow } from "@/features/admin/components";
 import type { AlbumWithCover } from "@/lib/mappers/domain";
+import { formatDate } from "@/lib/utils/time";
 
 interface AlbumTableProps {
 	albumList: AlbumWithCover[];
@@ -38,14 +39,7 @@ export const AlbumTable = ({ albumList }: AlbumTableProps) => {
 					key={album.id}
 					id={album.id}
 					title={album.title}
-					description={album.releaseDate.toLocaleDateString(
-						undefined,
-						{
-							year: "numeric",
-							month: "short",
-							day: "numeric",
-						},
-					)}
+					description={formatDate(album.releaseDate)}
 					onDelete={onDelete}
 					editHref={`/admin/albums/update/${album.id}`}
 					imageUrl={album.coverUrl}

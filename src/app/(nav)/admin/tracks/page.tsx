@@ -1,30 +1,74 @@
 import { ErrorState } from "@/components/layout/ErrorState";
+import { SearchBar } from "@/components/ui/SearchBar";
 import { TrackTable } from "@/features/admin/track/components/TrackTable";
 import { EmptyAlbumState } from "@/features/music/albums/components/EmptyAlbumState";
+import { PaginationClient } from "@/features/pagination/PaginationClient";
 import { createRepositories } from "@/lib/factories/repository/server";
+import {
+	getPagination,
+	getPaginationTotalPages,
+	type PaginationInput,
+} from "@/lib/utils/pagination";
 
-export default async function AdminTracksPage() {
+interface AdminTracksPageProps {
+	searchParams?: Promise<{ query?: string } & PaginationInput>;
+}
+
+export default async function AdminTracksPage({
+	searchParams,
+}: AdminTracksPageProps) {
 	const { tracks } = await createRepositories();
-	const res = await tracks.findAllWithRelations({
-		order: {
-			field: "title",
-			direction: "asc",
-		},
-	});
+	const resolvedParams = await searchParams;
 
-	if (!res.success) {
+	if (!resolvedParams) {
 		return <ErrorState />;
 	}
 
-	if (!res.data || res.data.length === 0) {
+	const { page, pageSize, from, to } = getPagination(resolvedParams);
+
+	const res = await tracks.searchByTitleWithRelations(
+		resolvedParams.query ?? "",
+		{
+			range: [from, to],
+			order: {
+				field: "title",
+				direction: "asc",
+			},
+		},
+	);
+
+	if (!res.success) {
+		return (
+			<ErrorState
+				message={res.error.message}
+				code={res.error.code}
+			/>
+		);
+	}
+
+	const { data, count } = res.data;
+	const totalPages = getPaginationTotalPages(pageSize, count);
+
+	if (!data || data.length === 0) {
 		return <EmptyAlbumState />;
 	}
 
 	return (
 		<div className="min-h-screen p-6">
-			<h1 className="text-3xl font-bold mb-6">Albums</h1>
+			<h1 className="text-3xl font-bold mb-6">Tracks</h1>
 
-			<TrackTable trackList={res.data} />
+			<search className="w-1/4 mb-4">
+				<SearchBar placeholder="Search by title" />
+			</search>
+
+			<div className="flex flex-col gap-8">
+				<TrackTable trackList={data} />
+
+				<PaginationClient
+					currentPage={page}
+					totalPages={totalPages}
+				/>
+			</div>
 		</div>
 	);
 }

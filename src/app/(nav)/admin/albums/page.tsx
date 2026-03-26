@@ -29,6 +29,10 @@ export default async function AdminAlbumsPage({
 
 	const res = await albums.searchByTitle(resolvedParams.query ?? "", {
 		range: [from, to],
+		order: {
+			field: "title",
+			direction: "asc",
+		},
 	});
 
 	if (!res.success) {
@@ -41,7 +45,6 @@ export default async function AdminAlbumsPage({
 	}
 
 	const { data, count } = res.data;
-
 	const totalPages = getPaginationTotalPages(pageSize, count);
 
 	const albumList: AlbumWithCover[] = data.map((it) =>

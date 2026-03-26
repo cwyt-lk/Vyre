@@ -13,6 +13,7 @@ import {
 	ItemTitle,
 } from "@/components/ui/Item";
 import { AdminDeleteButton } from "@/features/admin/components/AdminDeleteButton";
+import { placeholderSvg } from "@/lib/utils/placeholders";
 
 interface AlbumRowProps {
 	id: string;
@@ -35,23 +36,27 @@ export const AdminItemRow = ({
 	return (
 		<Item
 			variant="card"
+			size="sm"
 			className="group transition duration-300 hover:bg-muted"
 		>
 			{imageUrl && (
-				<ItemMedia variant="image" className="size-16">
+				<ItemMedia
+					variant="image"
+					className="group-data-[size=sm]/item:size-14"
+				>
 					<Image
 						src={imageUrl}
 						alt={title}
 						fill
 						placeholder="blur"
-						blurDataURL="/placeholder.png"
-						className="object-cover transition-transform group-hover:scale-105"
+						blurDataURL={placeholderSvg}
+						className="transition-transform group-hover:scale-105"
 					/>
 				</ItemMedia>
 			)}
 
-			<ItemContent className="gap-1">
-				<ItemTitle className="text-base font-semibold">
+			<ItemContent>
+				<ItemTitle className="w-3/4 text-base font-semibold truncate">
 					{title}
 				</ItemTitle>
 

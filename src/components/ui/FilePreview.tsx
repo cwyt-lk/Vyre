@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/lib/utils/cn";
 import { getFileIconComponent, getHumanSize } from "@/lib/utils/file";
+import { placeholderSvg } from "@/lib/utils/placeholders";
 
 const filePreviewVariants = cva(
 	"relative overflow-hidden transition-all duration-200",
@@ -61,7 +62,7 @@ export function FilePreview({ file, onRemove, layout }: FilePreviewProps) {
 								alt={file.name}
 								fill
 								placeholder="blur"
-								blurDataURL="./placeholder.png"
+								blurDataURL={placeholderSvg}
 								className="object-cover"
 							/>
 						) : (

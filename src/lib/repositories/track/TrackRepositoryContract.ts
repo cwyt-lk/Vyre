@@ -6,7 +6,7 @@ import type {
 	TrackAggregate,
 	UpdateTrack,
 } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 
 /**
  * Contract defining all operations for track persistence.
@@ -59,6 +59,17 @@ export interface TrackRepositoryContract {
 	 * @returns Repository result with track aggregate.
 	 */
 	findByIdWithRelations(id: string): Promise<RepoResult<TrackAggregate>>;
+
+	/**
+	 * Search tracks by a case-insensitive title prefix.
+	 * @param title Title prefix to search
+	 * @param options Optional query modifiers
+	 * @returns Repository result containing matching tracks with relations.
+	 */
+	searchByTitleWithRelations(
+		title: string,
+		options?: QueryOptions,
+	): Promise<RepoListResult<TrackAggregate>>;
 
 	// -----------------------------
 	// Creation

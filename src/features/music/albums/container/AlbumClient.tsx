@@ -10,6 +10,7 @@ import type {
 	AlbumWithCover,
 	TrackAggregateWithAudio,
 } from "@/lib/mappers/domain";
+import { placeholderSvg } from "@/lib/utils/placeholders";
 
 interface AlbumClientProps {
 	album: AlbumWithCover;
@@ -45,8 +46,8 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 	}, [setQueue, album, clearQueue, queue]);
 
 	return (
-		<section className="py-10 space-y-8 animate-in fade-in duration-500">
-			<header className="flex flex-col md:flex-row gap-8">
+		<section className="space-y-8 py-10 animate-in fade-in duration-500">
+			<header className="flex flex-col gap-8 md:flex-row">
 				<div className="relative size-64 shrink-0 overflow-hidden rounded-xl">
 					<Image
 						src={album.coverUrl ?? "/placeholder.png"}
@@ -54,48 +55,47 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 						fill
 						priority
 						placeholder="blur"
-						blurDataURL="./placeholder.png"
+						blurDataURL={placeholderSvg}
 						className="object-cover"
 					/>
 				</div>
 
-				<div className="flex flex-col gap-4 w-full">
-					<div className="space-y-1">
-						<span className="text-base uppercase tracking-wider text-muted-foreground">
-							Album
+				<div className="flex w-full flex-col justify-end gap-2">
+					<p className="text-base uppercase tracking-wider text-muted-foreground">
+						Album
+					</p>
+
+					<h1 className="w-3/4 pb-1 text-5xl font-bold tracking-tighter truncate">
+						{album.title}
+					</h1>
+
+					<p className="w-2/3 text-xl text-muted-foreground line-clamp-2 text-ellipsis">
+						<span className="font-medium">
+							{currentTrack?.title}
 						</span>
 
-						<h1 className="text-5xl font-bold tracking-tighter">
-							{album.title}
-						</h1>
+						<span> — {currentTrack?.artist}</span>
+					</p>
 
-						<h2 className="text-2xl text-muted-foreground font-medium">
-							{currentTrack?.title ?? ""}
-						</h2>
+					<time
+						dateTime={album.releaseDate.toISOString()}
+						className="text-sm text-muted-foreground"
+					>
+						{album.releaseDate.toLocaleDateString(undefined, {
+							year: "numeric",
+							month: "short",
+							day: "numeric",
+						})}
+					</time>
 
-						<time
-							dateTime={album.releaseDate.toISOString()}
-							className="mt-1 text-sm text-muted-foreground"
-						>
-							{album.releaseDate.toLocaleDateString(
-								undefined,
-								{
-									year: "numeric",
-									month: "short",
-									day: "numeric",
-								},
-							)}
-						</time>
-					</div>
-
-					<div className="pt-4">
+					<div className="mt-3">
 						<Player />
 					</div>
 				</div>
 			</header>
 
 			<section>
-				<h2 className="text-2xl font-semibold mb-4">Tracks</h2>
+				<h2 className="mb-4 text-2xl font-semibold">Tracks</h2>
 
 				<AlbumTrackList tracks={tracks} />
 			</section>

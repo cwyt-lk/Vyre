@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ItemGroup } from "@/components/ui/Item";
 import { AdminItemRow } from "@/features/admin/components/AdminItemRow";
@@ -13,6 +13,10 @@ interface TrackTableProps {
 
 export const TrackTable = ({ trackList }: TrackTableProps) => {
 	const [tracks, setTracks] = useState(trackList);
+
+	useEffect(() => {
+		setTracks(trackList);
+	}, [trackList]);
 
 	const onDelete = async (id: string) => {
 		const res = await deleteTrackAction(id);

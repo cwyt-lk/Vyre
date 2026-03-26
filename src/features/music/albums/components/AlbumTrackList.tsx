@@ -47,15 +47,15 @@ export const AlbumTrackList = ({ tracks }: AlbumTrackListProps) => {
 							isSelected && "ring-2 ring-primary",
 						)}
 					>
-						<ItemMedia className="py-2 pr-1 text-sm text-muted-foreground">
+						<ItemMedia className="p-2 text-sm text-muted-foreground">
 							#{index + 1}
 						</ItemMedia>
 						<ItemContent>
-							<ItemTitle className="text-base font-medium">
+							<ItemTitle className="text-base font-medium truncate">
 								{track.title}
 							</ItemTitle>
 
-							<ItemDescription>
+							<ItemDescription className="truncate">
 								{track.artists
 									.map((a) => a.name)
 									.join(", ")}
