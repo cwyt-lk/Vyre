@@ -96,6 +96,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 				.from("albums")
 				.select("*", { count: "exact" })
 				.ilike("title", `${title}%`),
+
 			options,
 		);
 
@@ -123,6 +124,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 				.from("albums")
 				.select("*")
 				.eq("artist_id", artistId),
+
 			options,
 		);
 
@@ -144,6 +146,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 				.from("albums")
 				.select("*")
 				.eq("genre_id", genreId),
+
 			options,
 		);
 
@@ -160,7 +163,14 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		options?: QueryOptions,
 	): Promise<RepoResult<AlbumFullAggregate[]>> {
 		const query = applyQueryOptions(
-			this.supabase.from("albums").select(ALBUM_RELATION_SELECT),
+			this.supabase
+				.from("albums")
+				.select(ALBUM_RELATION_SELECT)
+				.order("track_number", {
+					referencedTable: "album_tracks",
+					ascending: true,
+				}),
+
 			options,
 		);
 
@@ -176,12 +186,16 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	async findWithRelationsById(
+	async findByIdWithRelations(
 		id: string,
 	): Promise<RepoResult<AlbumFullAggregate>> {
 		const { data, error } = await this.supabase
 			.from("albums")
 			.select(ALBUM_RELATION_SELECT)
+			.order("track_number", {
+				referencedTable: "album_tracks",
+				ascending: true,
+			})
 			.eq("id", id)
 			.single();
 
@@ -203,7 +217,9 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			this.supabase
 				.from("album_tracks")
 				.select("tracks (*)")
-				.eq("album_id", id),
+				.eq("album_id", id)
+				.order("track_number", { ascending: true }),
+
 			options,
 		);
 
@@ -221,7 +237,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		};
 	}
 
-	async findTracksWithRelationsByAlbumId(
+	async findTracksByAlbumIdWithRelations(
 		id: string,
 		options?: QueryOptions,
 	): Promise<RepoResult<TrackAggregate[]>> {
@@ -229,7 +245,9 @@ export class AlbumRepository implements AlbumRepositoryContract {
 			this.supabase
 				.from("album_tracks")
 				.select(TRACK_RELATION_SELECT)
-				.eq("album_id", id),
+				.eq("album_id", id)
+				.order("track_number", { ascending: true }),
+
 			options,
 		);
 

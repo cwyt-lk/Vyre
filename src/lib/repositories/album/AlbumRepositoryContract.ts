@@ -91,7 +91,7 @@ export interface AlbumRepositoryContract {
 	 * @param id Album ID
 	 * @returns Repository result with full album aggregate.
 	 */
-	findWithRelationsById(
+	findByIdWithRelations(
 		id: string,
 	): Promise<RepoResult<AlbumFullAggregate>>;
 
@@ -112,7 +112,7 @@ export interface AlbumRepositoryContract {
 	 * @param options Optional query modifiers
 	 * @returns Repository result with track aggregates.
 	 */
-	findTracksWithRelationsByAlbumId(
+	findTracksByAlbumIdWithRelations(
 		id: string,
 		options?: QueryOptions,
 	): Promise<RepoResult<TrackAggregate[]>>;

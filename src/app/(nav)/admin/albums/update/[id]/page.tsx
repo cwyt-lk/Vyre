@@ -15,7 +15,7 @@ export default async function UpdateAlbumPage({
 	const { tracks, albums } = await createRepositories();
 
 	const [albumRes, tracksRes] = await Promise.all([
-		await albums.findWithRelationsById(id),
+		await albums.findByIdWithRelations(id),
 		await tracks.findAll(),
 	]);
 

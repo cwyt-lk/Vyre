@@ -17,7 +17,7 @@ export default async function AlbumPage({ params }: AlbumParamsType) {
 	const { id } = await params;
 
 	const { albums, storage } = await createRepositories();
-	const albumResult = await albums.findWithRelationsById(id);
+	const albumResult = await albums.findByIdWithRelations(id);
 
 	if (!albumResult.success) {
 		notFound();
