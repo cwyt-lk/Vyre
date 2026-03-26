@@ -2,8 +2,15 @@
 
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type ChangeEvent, useState, useTransition } from "react";
+import {
+	type ChangeEvent,
+	useCallback,
+	useEffect,
+	useState,
+	useTransition,
+} from "react";
 import { useDebouncedCallback } from "use-debounce";
+
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -13,32 +20,57 @@ import { Spinner } from "@/components/ui/Spinner";
 
 export interface SearchBarProps {
 	placeholder?: string;
+	queryField?: string;
+	debounceMs?: number;
 }
 
-export const SearchBar = ({ placeholder }: SearchBarProps) => {
+export const SearchBar = ({
+	placeholder = "Search...",
+	queryField = "query",
+	debounceMs = 400,
+}: SearchBarProps) => {
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const { replace } = useRouter();
 
 	const [isPending, startTransition] = useTransition();
-	const [search, setSearch] = useState(searchParams.get("query") ?? "");
 
-	const handleSearch = useDebouncedCallback((term: string) => {
-		const params = new URLSearchParams(searchParams);
+	const [search, setSearch] = useState(
+		searchParams.get(queryField) ?? "",
+	);
 
-		if (term) {
-			params.set("query", term);
-		} else {
-			params.delete("query");
-		}
+	// Sync input with URL query param
+	useEffect(() => {
+		setSearch(searchParams.get(queryField) ?? "");
+	}, [searchParams, queryField]);
 
-		startTransition(() => {
-			replace(`${pathname}?${params.toString()}`, { scroll: false });
-		});
-	}, 400);
+	// Update URL query param
+	const updateURL = useCallback(
+		(term: string) => {
+			const params = new URLSearchParams(searchParams.toString());
+
+			if (term) {
+				params.set(queryField, term);
+			} else {
+				params.delete(queryField);
+			}
+
+			startTransition(() => {
+				replace(`${pathname}?${params.toString()}`, {
+					scroll: false,
+				});
+			});
+		},
+		[pathname, queryField, replace, searchParams],
+	);
+
+	const debouncedUpdate = useDebouncedCallback(updateURL, debounceMs);
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		handleSearch(e.target.value);
+		const value = e.target.value;
+
+		setSearch(value);
+		debouncedUpdate(value);
 	};
 
 	return (
@@ -47,18 +79,20 @@ export const SearchBar = ({ placeholder }: SearchBarProps) => {
 				{isPending ? (
 					<Spinner />
 				) : (
-					<Search className="text-muted-foreground" />
+					<Search
+						className="text-muted-foreground"
+						aria-hidden="true"
+					/>
 				)}
 			</InputGroupAddon>
 
 			<InputGroupInput
 				value={search}
-				onChange={(e) => {
-					setSearch(e.target.value);
-					handleChange(e);
-				}}
+				onChange={handleChange}
 				placeholder={placeholder}
-				aria-label={placeholder}
+				aria-label={placeholder ?? "Search"}
+				type="search"
+				autoComplete="off"
 			/>
 		</InputGroup>
 	);
