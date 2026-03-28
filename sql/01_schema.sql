@@ -25,9 +25,10 @@ CREATE TABLE artists (
 -- Genres
 CREATE TABLE genres (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  key          TEXT UNIQUE NOT NULL, -- e.g. 'lo-fi'
+  key          TEXT UNIQUE NOT NULL,
   label        TEXT NOT NULL,
-  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Albums
@@ -36,7 +37,7 @@ CREATE TABLE albums (
   title        TEXT NOT NULL,
   description  TEXT,
   release_date DATE NOT NULL DEFAULT CURRENT_DATE,
-  cover_path   TEXT,
+  cover_path   TEXT NOT NULL,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -61,16 +62,17 @@ CREATE TABLE tracks (
 -- 4. JUNCTION TABLES (M:N)
 -- =========================================================
 
--- Track ↔ Artists
+-- Track <-> Artists
 CREATE TABLE track_artists (
   track_id     UUID REFERENCES tracks(id) ON DELETE CASCADE,
   artist_id    UUID REFERENCES artists(id) ON DELETE CASCADE,
-  artist_order INTEGER NOT NULL DEFAULT 0,
-  
+  artist_order INTEGER NOT NULL CHECK (artist_order > 0),
+
   PRIMARY KEY (track_id, artist_id)
+  CONSTRAINT unique_track_artist_pos UNIQUE (track_id, artist_order)
 );
 
--- Album ↔ Tracks
+-- Album <-> Tracks
 CREATE TABLE album_tracks (
   album_id     UUID REFERENCES albums(id) ON DELETE CASCADE,
   track_id     UUID REFERENCES tracks(id) ON DELETE CASCADE,
@@ -114,6 +116,10 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER set_artists_updated_at
 BEFORE UPDATE ON artists
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER set_genres_updated_at
+BEFORE UPDATE ON genres
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 CREATE TRIGGER set_albums_updated_at
