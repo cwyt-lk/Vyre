@@ -6,21 +6,21 @@
 -- 1. CREATE BUCKETS
 -- =========================================================
 
-insert into storage.buckets (id, name, public, allowed_mime_types)
-values 
+INSERT INTO storage.buckets (id, name, public, allowed_mime_types)
+VALUES
   (
-    'cover-art', 
-    'cover-art', 
-    true, 
-    array['image/*']
+    'cover-art',
+    'cover-art',
+    TRUE,
+    ARRAY['image/*']
   ),
   (
-    'music', 
-    'music', 
-    true, 
-    array['audio/*']
+    'music',
+    'music',
+    TRUE,
+    ARRAY['audio/*']
   )
-on conflict (id) do nothing;
+ON CONFLICT (id) DO NOTHING;
 
 
 -- =========================================================
@@ -31,13 +31,13 @@ on conflict (id) do nothing;
 -- PUBLIC READ (since buckets are public)
 -- ---------------------------------------------------------
 
-create policy "Public read cover-art"
-on storage.objects for select
-using (bucket_id = 'cover-art');
+CREATE POLICY "Public read cover-art"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'cover-art');
 
-create policy "Public read music"
-on storage.objects for select
-using (bucket_id = 'music');
+CREATE POLICY "Public read music"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'music');
 
 
 -- ---------------------------------------------------------
@@ -45,44 +45,50 @@ using (bucket_id = 'music');
 -- ---------------------------------------------------------
 
 -- Cover Art
-create policy "Authenticated upload cover-art"
-on storage.objects for insert
-to authenticated
-with check (
+CREATE POLICY "Authenticated upload cover-art"
+ON storage.objects FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (
   bucket_id = 'cover-art'
-  and auth.role() = 'authenticated'
+  AND AUTH.ROLE() = 'authenticated'
+  AND check_role('admin')
 );
 
-create policy "Authenticated update cover-art"
-on storage.objects for update
-to authenticated
-using (
+CREATE POLICY "Authenticated update cover-art"
+ON storage.objects FOR UPDATE
+TO AUTHENTICATED
+USING (
   bucket_id = 'cover-art'
-  and auth.role() = 'authenticated'
+  AND AUTH.ROLE() = 'authenticated'
+  AND check_role('admin')
 )
-with check (
+WITH CHECK (
   bucket_id = 'cover-art'
-  and auth.role() = 'authenticated'
+  AND AUTH.ROLE() = 'authenticated'
+  AND check_role('admin')
 );
 
 
 -- Music
-create policy "Authenticated upload music"
-on storage.objects for insert
-to authenticated
-with check (
+CREATE POLICY "Authenticated upload music"
+ON storage.objects FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (
   bucket_id = 'music'
-  and auth.role() = 'authenticated'
+  AND AUTH.ROLE() = 'authenticated'
+  AND check_role('admin')
 );
 
-create policy "Authenticated update music"
-on storage.objects for update
-to authenticated
-using (
+CREATE POLICY "Authenticated update music"
+ON storage.objects FOR UPDATE
+TO AUTHENTICATED
+USING (
   bucket_id = 'music'
-  and auth.role() = 'authenticated'
+  AND AUTH.ROLE() = 'authenticated'
+  AND check_role('admin')
 )
-with check (
+WITH CHECK (
   bucket_id = 'music'
-  and auth.role() = 'authenticated'
+  AND AUTH.ROLE() = 'authenticated'
+  AND check_role('admin')
 );

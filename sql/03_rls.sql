@@ -6,47 +6,47 @@
 -- ENABLE RLS
 -- =========================================================
 
-alter table artists        enable row level security;
-alter table genres         enable row level security;
-alter table albums         enable row level security;
-alter table tracks         enable row level security;
-alter table track_artists  enable row level security;
-alter table album_tracks   enable row level security;
+ALTER TABLE artists        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE genres         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE albums         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tracks         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE track_artists  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE album_tracks   ENABLE ROW LEVEL SECURITY;
 
 
 -- =========================================================
 -- 1. PUBLIC READ ACCESS
 -- =========================================================
 
-create policy artists_read_all
-on artists for select
-to public
-using (true);
+CREATE POLICY artists_read_all
+ON artists FOR SELECT
+TO PUBLIC
+USING (TRUE);
 
-create policy genres_read_all
-on genres for select
-to public
-using (true);
+CREATE POLICY genres_read_all
+ON genres FOR SELECT
+TO PUBLIC
+USING (TRUE);
 
-create policy albums_read_all
-on albums for select
-to public
-using (true);
+CREATE POLICY albums_read_all
+ON albums FOR SELECT
+TO PUBLIC
+USING (TRUE);
 
-create policy tracks_read_all
-on tracks for select
-to public
-using (true);
+CREATE POLICY tracks_read_all
+ON tracks FOR SELECT
+TO PUBLIC
+USING (TRUE);
 
-create policy track_artists_read_all
-on track_artists for select
-to public
-using (true);
+CREATE POLICY track_artists_read_all
+ON track_artists FOR SELECT
+TO PUBLIC
+USING (TRUE);
 
-create policy album_tracks_read_all
-on album_tracks for select
-to public
-using (true);
+CREATE POLICY album_tracks_read_all
+ON album_tracks FOR SELECT
+TO PUBLIC
+USING (TRUE);
 
 
 -- =========================================================
@@ -54,108 +54,108 @@ using (true);
 -- =========================================================
 
 -- Artists
-create policy artists_insert_admin
-on artists for insert
-to authenticated
-with check (public.check_role('admin'));
+CREATE POLICY artists_insert_admin
+ON artists FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (public.check_role('admin'));
 
-create policy artists_update_admin
-on artists for update
-to authenticated
-using (public.check_role('admin'))
-with check (public.check_role('admin'));
+CREATE POLICY artists_update_admin
+ON artists FOR UPDATE
+TO AUTHENTICATED
+USING (public.check_role('admin'))
+WITH CHECK (public.check_role('admin'));
 
-create policy artists_delete_admin
-on artists for delete
-to authenticated
-using (public.check_role('admin'));
+CREATE POLICY artists_delete_admin
+ON artists FOR DELETE
+TO AUTHENTICATED
+USING (public.check_role('admin'));
 
 
 -- Genres
-create policy genres_insert_admin
-on genres for insert
-to authenticated
-with check (public.check_role('admin'));
+CREATE POLICY genres_insert_admin
+ON genres FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (public.check_role('admin'));
 
-create policy genres_update_admin
-on genres for update
-to authenticated
-using (public.check_role('admin'))
-with check (public.check_role('admin'));
+CREATE POLICY genres_update_admin
+ON genres FOR UPDATE
+TO AUTHENTICATED
+USING (public.check_role('admin'))
+WITH CHECK (public.check_role('admin'));
 
-create policy genres_delete_admin
-on genres for delete
-to authenticated
-using (public.check_role('admin'));
+CREATE POLICY genres_delete_admin
+ON genres FOR DELETE
+TO AUTHENTICATED
+USING (public.check_role('admin'));
 
 
 -- Albums
-create policy albums_insert_admin
-on albums for insert
-to authenticated
-with check (public.check_role('admin'));
+CREATE POLICY albums_insert_admin
+ON albums FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (public.check_role('admin'));
 
-create policy albums_update_admin
-on albums for update
-to authenticated
-using (public.check_role('admin'))
-with check (public.check_role('admin'));
+CREATE POLICY albums_update_admin
+ON albums FOR UPDATE
+TO AUTHENTICATED
+USING (public.check_role('admin'))
+WITH CHECK (public.check_role('admin'));
 
-create policy albums_delete_admin
-on albums for delete
-to authenticated
-using (public.check_role('admin'));
+CREATE POLICY albums_delete_admin
+ON albums FOR DELETE
+TO AUTHENTICATED
+USING (public.check_role('admin'));
 
 
 -- Tracks
-create policy tracks_insert_admin
-on tracks for insert
-to authenticated
-with check (public.check_role('admin'));
+CREATE POLICY tracks_insert_admin
+ON tracks FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (public.check_role('admin'));
 
-create policy tracks_update_admin
-on tracks for update
-to authenticated
-using (public.check_role('admin'))
-with check (public.check_role('admin'));
+CREATE POLICY tracks_update_admin
+ON tracks FOR UPDATE
+TO AUTHENTICATED
+USING (public.check_role('admin'))
+WITH CHECK (public.check_role('admin'));
 
-create policy tracks_delete_admin
-on tracks for delete
-to authenticated
-using (public.check_role('admin'));
+CREATE POLICY tracks_delete_admin
+ON tracks FOR DELETE
+TO AUTHENTICATED
+USING (public.check_role('admin'));
 
 
 -- Track <-> Artists
-create policy track_artists_insert_admin
-on track_artists for insert
-to authenticated
-with check (public.check_role('admin'));
+CREATE POLICY track_artists_insert_admin
+ON track_artists FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (public.check_role('admin'));
 
-create policy track_artists_update_admin
-on track_artists for update
-to authenticated
-using (public.check_role('admin'))
-with check (public.check_role('admin'));
+CREATE POLICY track_artists_update_admin
+ON track_artists FOR UPDATE
+TO AUTHENTICATED
+USING (public.check_role('admin'))
+WITH CHECK (public.check_role('admin'));
 
-create policy track_artists_delete_admin
-on track_artists for delete
-to authenticated
-using (public.check_role('admin'));
+CREATE POLICY track_artists_delete_admin
+ON track_artists FOR DELETE
+TO AUTHENTICATED
+USING (public.check_role('admin'));
 
 
 -- Album <-> Tracks
-create policy album_tracks_insert_admin
-on album_tracks for insert
-to authenticated
-with check (public.check_role('admin'));
+CREATE POLICY album_tracks_insert_admin
+ON album_tracks FOR INSERT
+TO AUTHENTICATED
+WITH CHECK (public.check_role('admin'));
 
-create policy album_tracks_update_admin
-on album_tracks for update
-to authenticated
-using (public.check_role('admin'))
-with check (public.check_role('admin'));
+CREATE POLICY album_tracks_update_admin
+ON album_tracks FOR UPDATE
+TO AUTHENTICATED
+USING (public.check_role('admin'))
+WITH CHECK (public.check_role('admin'));
 
-create policy album_tracks_delete_admin
-on album_tracks for delete
-to authenticated
-using (public.check_role('admin'));
+CREATE POLICY album_tracks_delete_admin
+ON album_tracks FOR DELETE
+TO AUTHENTICATED
+USING (public.check_role('admin'));
