@@ -18,8 +18,8 @@ import { placeholderSvg } from "@/lib/utils/placeholders";
 interface AlbumRowProps {
 	id: string;
 	title: string;
-	description: string;
 	editHref: string;
+	description?: string;
 	imageUrl?: string;
 
 	onDelete?: (id: string) => Promise<void>;
@@ -60,7 +60,9 @@ export const AdminItemRow = ({
 					{title}
 				</ItemTitle>
 
-				<ItemDescription>{description}</ItemDescription>
+				{description && (
+					<ItemDescription>{description}</ItemDescription>
+				)}
 			</ItemContent>
 
 			<ItemActions>
