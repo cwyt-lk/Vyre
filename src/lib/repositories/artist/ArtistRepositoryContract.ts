@@ -49,13 +49,6 @@ export interface ArtistRepositoryContract {
 	 */
 	create(data: CreateArtist): Promise<RepoResult<Artist>>;
 
-	/**
-	 * Bulk create multiple artists.
-	 * @param data Array of artist creation data
-	 * @returns Repository result with created artists.
-	 */
-	createMany(data: CreateArtist[]): Promise<RepoResult<Artist[]>>;
-
 	// -----------------------------
 	// Updates
 	// -----------------------------
@@ -77,13 +70,6 @@ export interface ArtistRepositoryContract {
 	 * @returns Repository result of the deletion operation.
 	 */
 	delete(id: string): Promise<RepoResult>;
-
-	/**
-	 * Permanently delete multiple artists.
-	 * @param ids Array of artist IDs
-	 * @returns Repository result of the deletion operation.
-	 */
-	deleteMany(ids: string[]): Promise<RepoResult>;
 
 	// -----------------------------
 	// Counts / Aggregates

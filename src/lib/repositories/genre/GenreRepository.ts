@@ -83,24 +83,6 @@ export class GenreRepository implements GenreRepositoryContract {
 		return { success: true, data: GenreMapper.map(data) };
 	}
 
-	async createMany(genres: CreateGenre[]): Promise<RepoResult<Genre[]>> {
-		const rows = genres.map((g) => ({
-			key: g.key,
-			label: g.label,
-		}));
-
-		const { data, error } = await this.supabase
-			.from("genres")
-			.insert(rows)
-			.select();
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true, data: flatMapList(data, GenreMapper.map) };
-	}
-
 	// -----------------------------
 	// Updates
 	// -----------------------------
@@ -132,19 +114,6 @@ export class GenreRepository implements GenreRepositoryContract {
 			.from("genres")
 			.delete()
 			.eq("id", id);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true };
-	}
-
-	async deleteMany(ids: string[]): Promise<RepoResult> {
-		const { error } = await this.supabase
-			.from("genres")
-			.delete()
-			.in("id", ids);
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };

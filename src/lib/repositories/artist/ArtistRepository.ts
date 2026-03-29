@@ -85,22 +85,6 @@ export class ArtistRepository implements ArtistRepositoryContract {
 		return { success: true, data: ArtistMapper.map(insertedData) };
 	}
 
-	async createMany(data: CreateArtist[]): Promise<RepoResult<Artist[]>> {
-		const { data: inserted, error } = await this.supabase
-			.from("artists")
-			.insert(data)
-			.select();
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return {
-			success: true,
-			data: flatMapList(inserted, ArtistMapper.map),
-		};
-	}
-
 	// -----------------------------\
 	// Updates
 	// -----------------------------\
@@ -129,19 +113,6 @@ export class ArtistRepository implements ArtistRepositoryContract {
 			.from("artists")
 			.delete()
 			.eq("id", id);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true };
-	}
-
-	async deleteMany(ids: string[]): Promise<RepoResult> {
-		const { error } = await this.supabase
-			.from("artists")
-			.delete()
-			.in("id", ids);
 
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };

@@ -49,13 +49,6 @@ export interface GenreRepositoryContract {
 	 */
 	create(genre: CreateGenre): Promise<RepoResult<Genre>>;
 
-	/**
-	 * Bulk create multiple genres.
-	 * @param genres Array of genre creation data
-	 * @returns Repository result with created genres.
-	 */
-	createMany(genres: CreateGenre[]): Promise<RepoResult<Genre[]>>;
-
 	// -----------------------------
 	// Updates
 	// -----------------------------
@@ -77,13 +70,6 @@ export interface GenreRepositoryContract {
 	 * @returns Repository result of the deletion operation.
 	 */
 	delete(id: string): Promise<RepoResult>;
-
-	/**
-	 * Permanently delete multiple genres.
-	 * @param ids Array of genre IDs
-	 * @returns Repository result of the deletion operation.
-	 */
-	deleteMany(ids: string[]): Promise<RepoResult>;
 
 	// -----------------------------
 	// Counts / Aggregates
