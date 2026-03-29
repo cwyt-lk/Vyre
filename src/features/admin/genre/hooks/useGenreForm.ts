@@ -2,33 +2,79 @@
 
 import { useForm, useStore } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { createGenreAction } from "@/features/admin/genre/actions/createGenre";
+import { createGenreAction } from "../actions/createGenre";
+import { updateGenreAction } from "../actions/updateGenre";
 import {
+	type CreateGenreInput,
 	createGenreSchema,
 	genreDefaultValues,
-} from "@/features/admin/genre/schemas/createSchema";
+} from "../schemas/createSchema";
+import {
+	type UpdateGenreInput,
+	updateGenreSchema,
+} from "../schemas/updateSchema";
 
-/**
- * Hook for the Add Genre form
- */
-export function useGenreForm() {
+export type UseGenreFormOptions =
+	| {
+			mode: "create";
+	  }
+	| {
+			mode: "edit";
+			initialData: UpdateGenreInput;
+	  };
+
+export function useGenreForm(options: UseGenreFormOptions) {
+	const defaultValues =
+		options.mode === "create"
+			? genreDefaultValues
+			: {
+					...genreDefaultValues,
+					...options.initialData,
+				};
+
+	const schema =
+		options.mode === "create" ? createGenreSchema : updateGenreSchema;
+
 	const form = useForm({
-		defaultValues: genreDefaultValues,
-		validators: { onSubmit: createGenreSchema },
+		defaultValues: defaultValues,
+		validators: {
+			onSubmit: schema,
+		},
+
 		onSubmit: async ({ value }) => {
-			const result = await createGenreAction(value);
+			if (options.mode === "create") {
+				await handleCreate(value as CreateGenreInput);
 
-			if (!result.success) {
-				toast.error(result.error);
-				return;
+				form.reset();
+			} else {
+				await handleUpdate(value as UpdateGenreInput);
 			}
-
-			form.reset();
-			toast.success(`Created Genre: ${value.label}`);
 		},
 	});
 
 	const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
 
 	return { form, isSubmitting };
+}
+
+async function handleCreate(value: CreateGenreInput) {
+	const result = await createGenreAction(value);
+
+	if (!result.success) {
+		toast.error(result.error);
+		return;
+	}
+
+	toast.success("Successfully Created Genre");
+}
+
+async function handleUpdate(value: UpdateGenreInput) {
+	const result = await updateGenreAction(value);
+
+	if (!result.success) {
+		toast.error(result.error);
+		return;
+	}
+
+	toast.success("Successfully Updated Genre");
 }

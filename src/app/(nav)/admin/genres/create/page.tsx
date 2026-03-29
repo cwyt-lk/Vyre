@@ -8,7 +8,7 @@ export default async function AddGenrePage() {
 			<Container className="flex flex-col items-center justify-center py-8">
 				<Card className="w-full max-w-150">
 					<CardContent>
-						<GenreForm />
+						<GenreForm options={{ mode: "create" }} />
 					</CardContent>
 				</Card>
 			</Container>

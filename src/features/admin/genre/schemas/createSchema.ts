@@ -28,7 +28,7 @@ export const createGenreSchema = z.object({
 
 export type CreateGenreInput = z.infer<typeof createGenreSchema>;
 
-export const genreDefaultValues: CreateGenreInput = {
+export const genreDefaultValues: Partial<CreateGenreInput> = {
 	key: "",
 	label: "",
 };

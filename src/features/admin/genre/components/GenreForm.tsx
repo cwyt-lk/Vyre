@@ -4,21 +4,34 @@ import { Edit, Key } from "lucide-react";
 import { FormInputField } from "@/components/form/fields/FormInputField";
 import { FieldSet } from "@/components/ui/Field";
 import { AdminFormLayout } from "@/features/admin/components/AdminFormLayout";
-import { useGenreForm } from "@/features/admin/genre/hooks/useGenreForm";
+import {
+	type UseGenreFormOptions,
+	useGenreForm,
+} from "@/features/admin/genre/hooks/useGenreForm";
 import { slugify } from "@/lib/utils/string";
 
-export function GenreForm() {
-	const { form, isSubmitting } = useGenreForm();
+interface GenreFormProps {
+	options: UseGenreFormOptions;
+}
+
+export function GenreForm({ options }: GenreFormProps) {
+	const { form, isSubmitting } = useGenreForm(options);
+
+	const isEdit = options.mode === "edit";
 
 	return (
 		<AdminFormLayout
-			title="Add New Genre"
-			description="Create a new genre and assign a unique key for URLs."
+			title={isEdit ? "Edit Genre" : "Add New Genre"}
+			description={
+				isEdit
+					? "Update Genre Details"
+					: "Create a new genre and assign a unique key for URLs."
+			}
 			isSubmitting={isSubmitting}
 			onSubmit={form.handleSubmit}
 			onReset={form.reset}
-			submitMessage="Create Genre"
-			submittingMessage="Creating..."
+			submitMessage={isEdit ? "Update Genre" : "Create Genre"}
+			submittingMessage={isEdit ? "Updating..." : "Creating..."}
 		>
 			{/* Genre Info */}
 			<FieldSet className="space-y-6">
