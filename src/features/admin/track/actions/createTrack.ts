@@ -15,8 +15,8 @@ import type { ActionResult } from "@/types/results";
 export async function createTrackAction(
 	data: CreateTrackServerInput,
 ): Promise<ActionResult> {
-	// Validate input
 	const parsed = createTrackServerSchema.safeParse(data);
+
 	if (!parsed.success) {
 		return {
 			success: false,
@@ -24,28 +24,15 @@ export async function createTrackAction(
 		};
 	}
 
-	const trackData = parsed.data as CreateTrack;
-	const trackArtistIds = parsed.data.artistIds;
+	const createData = parsed.data as CreateTrack;
 
-	// Create track
 	const { tracks } = await createRepositories();
-	const createResult = await tracks.create(trackData);
+	const createResult = await tracks.createTrackWithArtists(createData);
+
 	if (!createResult.success) {
 		return {
 			success: false,
 			error: "Failed to add track. Please try again.",
-		};
-	}
-
-	const trackId = createResult.data.id;
-
-	// Associate artists
-	const artistsResult = await tracks.addArtists(trackId, trackArtistIds);
-
-	if (!artistsResult.success) {
-		return {
-			success: false,
-			error: "Failed to add artists to track. Please try again.",
 		};
 	}
 

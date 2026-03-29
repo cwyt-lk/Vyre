@@ -5,7 +5,7 @@ export interface Album {
 	title: string;
 	description: string;
 	releaseDate: Date;
-	coverPath: string | null;
+	coverPath: string;
 	createdAt: Date;
 }
 
@@ -17,5 +17,8 @@ export type AlbumFullAggregate = Album & {
 	tracks: TrackAggregate[];
 };
 
-export type CreateAlbum = Omit<Album, "id" | "createdAt">;
+export type CreateAlbum = Omit<Album, "id" | "createdAt"> & {
+	trackIds: string[];
+};
+
 export type UpdateAlbum = Partial<CreateAlbum> & Pick<Album, "id">;

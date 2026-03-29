@@ -1,5 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { AlbumMapper, TrackMapper } from "@/lib/mappers/domain";
+import {
+	type AlbumDB,
+	AlbumMapper,
+	TrackMapper,
+} from "@/lib/mappers/domain";
 import { mapPostgresError } from "@/lib/mappers/errors";
 import type { AlbumRepositoryContract } from "@/lib/repositories/album";
 import {
@@ -15,7 +19,12 @@ import type {
 	TrackAggregate,
 	UpdateAlbum,
 } from "@/types/domain";
-import type { RepoListResult, RepoResult } from "@/types/results";
+import { VyreError } from "@/types/errors";
+import type {
+	ActionResult,
+	RepoListResult,
+	RepoResult,
+} from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 const TRACK_RELATION_SELECT = `
@@ -42,6 +51,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 	// -----------------------------
 	// Existence Checks
 	// -----------------------------
+
 	async exists(id: string): Promise<RepoResult<boolean>> {
 		const { count, error } = await this.supabase
 			.from("albums")
@@ -58,6 +68,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 	// -----------------------------
 	// Fetching / Querying
 	// -----------------------------
+
 	async findAll(options?: QueryOptions): Promise<RepoResult<Album[]>> {
 		const query = applyQueryOptions(
 			this.supabase.from("albums").select("*"),
@@ -113,50 +124,6 @@ export class AlbumRepository implements AlbumRepositoryContract {
 				count: count ?? 0,
 			},
 		};
-	}
-
-	async findByArtistId(
-		artistId: string,
-		options?: QueryOptions,
-	): Promise<RepoResult<Album[]>> {
-		const query = applyQueryOptions(
-			this.supabase
-				.from("albums")
-				.select("*")
-				.eq("artist_id", artistId),
-
-			options,
-		);
-
-		const { data, error } = await query;
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true, data: flatMapList(data, AlbumMapper.map) };
-	}
-
-	async findByGenreId(
-		genreId: string,
-		options?: QueryOptions,
-	): Promise<RepoResult<Album[]>> {
-		const query = applyQueryOptions(
-			this.supabase
-				.from("albums")
-				.select("*")
-				.eq("genre_id", genreId),
-
-			options,
-		);
-
-		const { data, error } = await query;
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true, data: flatMapList(data, AlbumMapper.map) };
 	}
 
 	async findAllWithRelations(
@@ -268,6 +235,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 	// -----------------------------
 	// Creation
 	// -----------------------------
+
 	async create(album: CreateAlbum): Promise<RepoResult<Album>> {
 		const { data, error } = await this.supabase
 			.from("albums")
@@ -287,29 +255,46 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true, data: AlbumMapper.map(data) };
 	}
 
-	async createMany(albums: CreateAlbum[]): Promise<RepoResult<Album[]>> {
-		const payload = albums.map((a) => ({
-			title: a.title,
-			description: a.description,
-			release_date: a.releaseDate.toISOString(),
-			cover_path: a.coverPath,
-		}));
-
-		const { data, error } = await this.supabase
-			.from("albums")
-			.insert(payload)
-			.select();
+	async createAlbumWithTracks(
+		createData: CreateAlbum,
+	): Promise<RepoResult<Album>> {
+		const { data, error } = await this.supabase.rpc(
+			"create_album_with_tracks",
+			{
+				p_title: createData.title,
+				p_description: createData.description,
+				p_release_date: createData.releaseDate.toISOString(),
+				p_cover_path: createData.coverPath,
+				p_track_ids: createData.trackIds,
+			},
+		);
 
 		if (error) {
-			return { success: false, error: mapPostgresError(error) };
+			return {
+				success: false,
+				error: mapPostgresError(error),
+			};
 		}
 
-		return { success: true, data: flatMapList(data, AlbumMapper.map) };
+		const albumData = data as ActionResult<AlbumDB>;
+
+		if (!albumData.success) {
+			return {
+				success: false,
+				error: new VyreError(albumData.error, "RPC_ERROR"),
+			};
+		}
+
+		return {
+			success: true,
+			data: AlbumMapper.map(albumData.data),
+		};
 	}
 
 	// -----------------------------
 	// Updates
 	// -----------------------------
+
 	async update(updateData: UpdateAlbum): Promise<RepoResult<Album>> {
 		const { data, error } = await this.supabase
 			.from("albums")
@@ -330,9 +315,44 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true, data: AlbumMapper.map(data) };
 	}
 
+	async updateAlbumWithTracks(
+		updateData: UpdateAlbum,
+	): Promise<RepoResult> {
+		const { data, error } = await this.supabase.rpc(
+			"update_album_with_tracks",
+			{
+				p_id: updateData.id,
+				p_title: updateData.title,
+				p_description: updateData.description,
+				p_release_date: updateData.releaseDate?.toISOString(),
+				p_cover_path: updateData.coverPath,
+				p_track_ids: updateData.trackIds,
+			},
+		);
+
+		if (error) {
+			return {
+				success: false,
+				error: mapPostgresError(error),
+			};
+		}
+
+		const albumData = data as ActionResult<AlbumDB>;
+
+		if (!albumData.success) {
+			return {
+				success: false,
+				error: new VyreError(albumData.error, "RPC_ERROR"),
+			};
+		}
+
+		return { success: true };
+	}
+
 	// -----------------------------
 	// Deletion
 	// -----------------------------
+
 	async delete(id: string): Promise<RepoResult> {
 		const { error } = await this.supabase
 			.from("albums")
@@ -346,109 +366,10 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return { success: true };
 	}
 
-	async deleteMany(ids: string[]): Promise<RepoResult> {
-		const { error } = await this.supabase
-			.from("albums")
-			.delete()
-			.in("id", ids);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true };
-	}
-
-	// -----------------------------
-	// Track Management
-	// -----------------------------
-	async addTrack(
-		albumId: string,
-		trackId: string,
-		order: number,
-	): Promise<RepoResult> {
-		const { error } = await this.supabase.from("album_tracks").insert({
-			album_id: albumId,
-			track_id: trackId,
-			track_number: order,
-		});
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true };
-	}
-
-	async addTracks(
-		albumId: string,
-		tracksIds: string[],
-	): Promise<RepoResult> {
-		const payload = tracksIds.map((id, idx) => ({
-			album_id: albumId,
-			track_id: id,
-			track_number: idx + 1,
-		}));
-
-		const { error } = await this.supabase
-			.from("album_tracks")
-			.insert(payload);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true };
-	}
-
-	async removeTrack(
-		albumId: string,
-		trackId: string,
-	): Promise<RepoResult> {
-		return this.removeTracks(albumId, [trackId]);
-	}
-
-	async removeTracks(
-		albumId: string,
-		trackIds: string[],
-	): Promise<RepoResult> {
-		const { error } = await this.supabase
-			.from("album_tracks")
-			.delete()
-			.eq("album_id", albumId)
-			.in("track_id", trackIds);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true };
-	}
-
-	async reorderTracks(
-		albumId: string,
-		orderedTrackIds: string[],
-	): Promise<RepoResult> {
-		const payload = orderedTrackIds.map((trackId, idx) => ({
-			album_id: albumId,
-			track_id: trackId,
-			track_number: idx + 1,
-		}));
-
-		const { error } = await this.supabase
-			.from("album_tracks")
-			.upsert(payload);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true };
-	}
-
 	// -----------------------------
 	// Counts / Aggregates
 	// -----------------------------
+
 	async count(): Promise<RepoResult<number>> {
 		const { count, error } = await this.supabase
 			.from("albums")
@@ -459,31 +380,5 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		}
 
 		return { success: true, data: count ?? -1 };
-	}
-
-	async countByArtist(artistId: string): Promise<RepoResult<number>> {
-		const { count, error } = await this.supabase
-			.from("albums")
-			.select("id", { count: "exact", head: true })
-			.eq("artist_id", artistId);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true, data: count ?? 0 };
-	}
-
-	async countByGenre(genreId: string): Promise<RepoResult<number>> {
-		const { count, error } = await this.supabase
-			.from("albums")
-			.select("id", { count: "exact", head: true })
-			.eq("genre_id", genreId);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
-		}
-
-		return { success: true, data: count ?? 0 };
 	}
 }

@@ -1,5 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { ArtistMapper, TrackMapper } from "@/lib/mappers/domain";
+import {
+	ArtistMapper,
+	type TrackDB,
+	TrackMapper,
+} from "@/lib/mappers/domain";
 import { mapPostgresError } from "@/lib/mappers/errors";
 import {
 	applyQueryOptions,
@@ -14,7 +18,12 @@ import type {
 	TrackAggregate,
 	UpdateTrack,
 } from "@/types/domain";
-import type { RepoListResult, RepoResult } from "@/types/results";
+import { VyreError } from "@/types/errors";
+import type {
+	ActionResult,
+	RepoListResult,
+	RepoResult,
+} from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 const TRACK_RELATION_SELECT = `
@@ -156,122 +165,6 @@ export class TrackRepository implements TrackRepositoryContract {
 		};
 	}
 
-	// -----------------------------
-	// Creation
-	// -----------------------------
-
-	async create(track: CreateTrack): Promise<RepoResult<Track>> {
-		const { data, error } = await this.supabase
-			.from("tracks")
-			.insert({
-				title: track.title,
-				genre_id: track.genreId,
-				audio_path: track.audioPath,
-			})
-			.select()
-			.single();
-
-		if (error) {
-			return {
-				success: false,
-				error: mapPostgresError(error),
-			};
-		}
-
-		return { success: true, data: TrackMapper.map(data) };
-	}
-
-	async createMany(tracks: CreateTrack[]): Promise<RepoResult<Track[]>> {
-		const rows = tracks.map((t) => ({
-			title: t.title,
-			genre_id: t.genreId,
-			audio_path: t.audioPath,
-		}));
-
-		const { data, error } = await this.supabase
-			.from("tracks")
-			.insert(rows)
-			.select();
-
-		if (error) {
-			return {
-				success: false,
-				error: mapPostgresError(error),
-			};
-		}
-
-		return {
-			success: true,
-			data: flatMapList(data, TrackMapper.map),
-		};
-	}
-
-	// -----------------------------
-	// Updates
-	// -----------------------------
-
-	async update(updateData: UpdateTrack): Promise<RepoResult<Track>> {
-		const { error, data } = await this.supabase
-			.from("tracks")
-			.update({
-				title: updateData.title,
-				genre_id: updateData.genreId,
-				audio_path: updateData.audioPath,
-			})
-			.eq("id", updateData.id)
-			.select()
-			.single();
-
-		if (error) {
-			return {
-				success: false,
-				error: mapPostgresError(error),
-			};
-		}
-
-		return { success: true, data: TrackMapper.map(data) };
-	}
-
-	// -----------------------------
-	// Deletion
-	// -----------------------------
-
-	async delete(id: string): Promise<RepoResult> {
-		const { error } = await this.supabase
-			.from("tracks")
-			.delete()
-			.eq("id", id);
-
-		if (error) {
-			return {
-				success: false,
-				error: mapPostgresError(error),
-			};
-		}
-
-		return { success: true };
-	}
-
-	async deleteMany(ids: string[]): Promise<RepoResult> {
-		const { error } = await this.supabase
-			.from("tracks")
-			.delete()
-			.in("id", ids);
-
-		if (error) {
-			return {
-				success: false,
-				error: mapPostgresError(error),
-			};
-		}
-
-		return { success: true };
-	}
-
-	// -----------------------------
-	// Artist Management
-	// -----------------------------
-
 	async findArtists(
 		trackId: string,
 		options?: QueryOptions,
@@ -301,18 +194,20 @@ export class TrackRepository implements TrackRepositoryContract {
 		};
 	}
 
-	async addArtist(
-		trackId: string,
-		artistId: string,
-		order: number,
-	): Promise<RepoResult> {
-		const { error } = await this.supabase
-			.from("track_artists")
+	// -----------------------------
+	// Creation
+	// -----------------------------
+
+	async create(track: CreateTrack): Promise<RepoResult<Track>> {
+		const { data, error } = await this.supabase
+			.from("tracks")
 			.insert({
-				track_id: trackId,
-				artist_id: artistId,
-				artist_order: order,
-			});
+				title: track.title,
+				genre_id: track.genreId,
+				audio_path: track.audioPath,
+			})
+			.select()
+			.single();
 
 		if (error) {
 			return {
@@ -321,22 +216,21 @@ export class TrackRepository implements TrackRepositoryContract {
 			};
 		}
 
-		return { success: true };
+		return { success: true, data: TrackMapper.map(data) };
 	}
 
-	async addArtists(
-		trackId: string,
-		artistIds: string[],
-	): Promise<RepoResult> {
-		const rows = artistIds.map((id, idx) => ({
-			track_id: trackId,
-			artist_id: id,
-			artist_order: idx + 1,
-		}));
-
-		const { error } = await this.supabase
-			.from("track_artists")
-			.insert(rows);
+	async createTrackWithArtists(
+		createData: CreateTrack,
+	): Promise<RepoResult<Track>> {
+		const { data, error } = await this.supabase.rpc(
+			"create_track_with_artists",
+			{
+				p_title: createData.title,
+				p_genre_id: createData.genreId,
+				p_audio_path: createData.audioPath,
+				p_artist_ids: createData.artistIds,
+			},
+		);
 
 		if (error) {
 			return {
@@ -345,52 +239,95 @@ export class TrackRepository implements TrackRepositoryContract {
 			};
 		}
 
+		const trackData = data as ActionResult<TrackDB>;
+
+		if (!trackData.success) {
+			return {
+				success: false,
+				error: new VyreError(trackData.error, "RPC_ERROR"),
+			};
+		}
+
+		return {
+			success: true,
+			data: TrackMapper.map(trackData.data),
+		};
+	}
+
+	// -----------------------------
+	// Updates
+	// -----------------------------
+
+	async update(updateData: UpdateTrack): Promise<RepoResult<Track>> {
+		const { error, data } = await this.supabase
+			.from("tracks")
+			.update({
+				title: updateData.title,
+				genre_id: updateData.genreId,
+				audio_path: updateData.audioPath,
+			})
+			.eq("id", updateData.id)
+			.select()
+			.single();
+
+		if (error) {
+			return {
+				success: false,
+				error: mapPostgresError(error),
+			};
+		}
+
+		return { success: true, data: TrackMapper.map(data) };
+	}
+
+	async updateTrackWithArtists(
+		updateData: UpdateTrack,
+	): Promise<RepoResult> {
+		const { data, error } = await this.supabase.rpc(
+			"update_track_with_artists",
+			{
+				p_id: updateData.id,
+				p_title: updateData.title,
+				p_genre_id: updateData.genreId,
+				p_audio_path: updateData.audioPath,
+				p_artist_ids: updateData.artistIds,
+			},
+		);
+
+		if (error) {
+			return {
+				success: false,
+				error: mapPostgresError(error),
+			};
+		}
+
+		const trackData = data as ActionResult<TrackDB>;
+
+		if (!trackData.success) {
+			return {
+				success: false,
+				error: new VyreError(trackData.error, "RPC_ERROR"),
+			};
+		}
+
 		return { success: true };
 	}
 
-	async removeArtist(
-		trackId: string,
-		artistId: string,
-	): Promise<RepoResult> {
-		return this.removeArtists(trackId, [artistId]);
-	}
+	// -----------------------------
+	// Deletion
+	// -----------------------------
 
-	async removeArtists(
-		trackId: string,
-		artistIds: string[],
-	): Promise<RepoResult> {
+	async delete(id: string): Promise<RepoResult> {
 		const { error } = await this.supabase
-			.from("track_artists")
+			.from("tracks")
 			.delete()
-			.eq("track_id", trackId)
-			.in("artist_id", artistIds);
+			.eq("id", id);
 
 		if (error) {
 			return {
 				success: false,
 				error: mapPostgresError(error),
 			};
-		}
-
-		return { success: true };
-	}
-
-	async reorderArtists(
-		trackId: string,
-		orderedArtistIds: string[],
-	): Promise<RepoResult> {
-		const payload = orderedArtistIds.map((artistId, idx) => ({
-			track_id: trackId,
-			artist_id: artistId,
-			artist_order: idx + 1,
-		}));
-
-		const { error } = await this.supabase
-			.from("track_artists")
-			.upsert(payload);
-
-		if (error) {
-			return { success: false, error: mapPostgresError(error) };
 		}
 
 		return { success: true };

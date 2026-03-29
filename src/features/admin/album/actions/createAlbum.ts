@@ -12,8 +12,8 @@ import type { ActionResult } from "@/types/results";
 export async function createAlbumAction(
 	data: CreateAlbumServerInput,
 ): Promise<ActionResult> {
-	// Validate input
 	const parsed = createAlbumServerSchema.safeParse(data);
+
 	if (!parsed.success) {
 		return {
 			success: false,
@@ -21,35 +21,16 @@ export async function createAlbumAction(
 		};
 	}
 
-	const albumData = parsed.data as CreateAlbum;
-	const albumTrackIds = parsed.data.trackIds;
+	const createData = parsed.data as CreateAlbum;
 
-	// Create album
 	const { albums } = await createRepositories();
-	const createResult = await albums.create(albumData);
+	const result = await albums.createAlbumWithTracks(createData);
 
-	if (!createResult.success) {
+	if (!result.success) {
 		return {
 			success: false,
 			error: "Failed to add album. Please try again.",
 		};
-	}
-
-	const albumId = createResult.data.id;
-
-	// Add tracks if any
-	if (albumTrackIds?.length) {
-		const tracksResult = await albums.addTracks(
-			albumId,
-			albumTrackIds,
-		);
-
-		if (!tracksResult.success) {
-			return {
-				success: false,
-				error: "Failed to add tracks to album. Please try again.",
-			};
-		}
 	}
 
 	return { success: true };

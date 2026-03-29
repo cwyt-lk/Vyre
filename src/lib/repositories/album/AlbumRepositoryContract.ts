@@ -20,6 +20,7 @@ export interface AlbumRepositoryContract {
 	// -----------------------------
 	// Existence Checks
 	// -----------------------------
+
 	/**
 	 * Check if an album exists.
 	 * @param id Album ID
@@ -30,6 +31,7 @@ export interface AlbumRepositoryContract {
 	// -----------------------------
 	// Fetching / Querying
 	// -----------------------------
+
 	/**
 	 * Fetch all albums without any related entities.
 	 * @param options Optional query modifiers (pagination, filtering, etc.)
@@ -54,28 +56,6 @@ export interface AlbumRepositoryContract {
 		title: string,
 		options?: QueryOptions,
 	): Promise<RepoListResult<Album>>;
-
-	/**
-	 * Find all albums by a specific artist.
-	 * @param artistId Artist ID
-	 * @param options Optional query modifiers
-	 * @returns Repository result with matching albums.
-	 */
-	findByArtistId(
-		artistId: string,
-		options?: QueryOptions,
-	): Promise<RepoResult<Album[]>>;
-
-	/**
-	 * Find all albums by a specific genre.
-	 * @param genreId Genre ID
-	 * @param options Optional query modifiers
-	 * @returns Repository result with matching albums.
-	 */
-	findByGenreId(
-		genreId: string,
-		options?: QueryOptions,
-	): Promise<RepoResult<Album[]>>;
 
 	/**
 	 * Fetch all albums including their nested track relations.
@@ -120,6 +100,7 @@ export interface AlbumRepositoryContract {
 	// -----------------------------
 	// Creation
 	// -----------------------------
+
 	/**
 	 * Create a new album.
 	 * @param album Album data to create
@@ -128,15 +109,19 @@ export interface AlbumRepositoryContract {
 	create(album: CreateAlbum): Promise<RepoResult<Album>>;
 
 	/**
-	 * Bulk create multiple albums.
-	 * @param albums Array of album creation data
-	 * @returns Repository result with the created albums.
+	 * Creates a new album along with its associated tracks.
+	 *
+	 * @param createData - The album and track data required to create the album.
+	 * @returns A promise that resolves to a RepoResult containing the created Album.
 	 */
-	createMany(albums: CreateAlbum[]): Promise<RepoResult<Album[]>>;
+	createAlbumWithTracks(
+		createData: CreateAlbum,
+	): Promise<RepoResult<Album>>;
 
 	// -----------------------------
 	// Updates
 	// -----------------------------
+
 	/**
 	 * Update an existing album.
 	 * @param updateData Album update payload
@@ -144,9 +129,18 @@ export interface AlbumRepositoryContract {
 	 */
 	update(updateData: UpdateAlbum): Promise<RepoResult<Album>>;
 
+	/**
+	 * Updates an existing album and its associated tracks.
+	 *
+	 * @param updateData - The updated album and track data.
+	 * @returns A promise that resolves to a RepoResult indicating the success or failure of the operation.
+	 */
+	updateAlbumWithTracks(updateData: UpdateAlbum): Promise<RepoResult>;
+
 	// -----------------------------
 	// Deletion
 	// -----------------------------
+
 	/**
 	 * Delete an album permanently.
 	 * @param id Album ID
@@ -154,84 +148,13 @@ export interface AlbumRepositoryContract {
 	 */
 	delete(id: string): Promise<RepoResult>;
 
-	/**
-	 * Bulk delete multiple albums permanently.
-	 * @param ids Array of album IDs
-	 * @returns Repository result of the deletion operation.
-	 */
-	deleteMany(ids: string[]): Promise<RepoResult>;
-
-	// -----------------------------
-	// Track Management
-	// -----------------------------
-	/**
-	 * Add a single track to an album at a specific order.
-	 * @param albumId Album ID
-	 * @param trackId Track ID
-	 * @param order Position of the track in the album
-	 * @returns Repository result of the addition operation
-	 */
-	addTrack(
-		albumId: string,
-		trackId: string,
-		order: number,
-	): Promise<RepoResult>;
-
-	/**
-	 * Add multiple tracks to an album with specified order positions.
-	 * @param albumId Album ID
-	 * @param trackIds Array of track Ids (Index Order is used to set the order)
-	 * @returns Repository result of the addition operation
-	 */
-	addTracks(albumId: string, tracksIds: string[]): Promise<RepoResult>;
-
-	/**
-	 * Remove a single track from an album.
-	 * @param albumId Album ID
-	 * @param trackId Track ID to remove
-	 * @returns Repository result of the removal operation
-	 */
-	removeTrack(albumId: string, trackId: string): Promise<RepoResult>;
-
-	/**
-	 * Remove multiple tracks from an album.
-	 * @param albumId Album ID
-	 * @param trackIds Array of track IDs to remove
-	 * @returns Repository result of the removal operation
-	 */
-	removeTracks(albumId: string, trackIds: string[]): Promise<RepoResult>;
-
-	/**
-	 * Reorder tracks in an album.
-	 * @param albumId Album ID
-	 * @param orderedTrackIds Array of track IDs in the new order
-	 * @returns Repository result of the reorder operation.
-	 */
-	reorderTracks(
-		albumId: string,
-		orderedTrackIds: string[],
-	): Promise<RepoResult>;
-
 	// -----------------------------
 	// Counts / Aggregates
 	// -----------------------------
+
 	/**
 	 * Fetch the total number of albums.
 	 * @returns Repository result with the album count.
 	 */
 	count(): Promise<RepoResult<number>>;
-
-	/**
-	 * Count albums by a specific artist.
-	 * @param artistId Artist ID
-	 * @returns Repository result with album count.
-	 */
-	countByArtist(artistId: string): Promise<RepoResult<number>>;
-
-	/**
-	 * Count albums by a specific genre.
-	 * @param genreId Genre ID
-	 * @returns Repository result with album count.
-	 */
-	countByGenre(genreId: string): Promise<RepoResult<number>>;
 }

@@ -71,6 +71,16 @@ export interface TrackRepositoryContract {
 		options?: QueryOptions,
 	): Promise<RepoListResult<TrackAggregate>>;
 
+	/**
+	 * Finds all artists under a track.
+	 * @param trackId Track ID
+	 * @param options Query Options (ordering, ranges, etc.)
+	 */
+	findArtists(
+		trackId: string,
+		options?: QueryOptions,
+	): Promise<RepoResult<Artist[]>>;
+
 	// -----------------------------
 	// Creation
 	// -----------------------------
@@ -83,11 +93,14 @@ export interface TrackRepositoryContract {
 	create(track: CreateTrack): Promise<RepoResult<Track>>;
 
 	/**
-	 * Bulk create multiple tracks.
-	 * @param tracks Array of track creation data
-	 * @returns Repository result with created tracks.
+	 * Creates a new track along with its associated artists.
+	 *
+	 * @param createData - The track and artist data required to create the track.
+	 * @returns A promise that resolves to a RepoResult containing the created Track.
 	 */
-	createMany(tracks: CreateTrack[]): Promise<RepoResult<Track[]>>;
+	createTrackWithArtists(
+		createData: CreateTrack,
+	): Promise<RepoResult<Track>>;
 
 	// -----------------------------
 	// Updates
@@ -100,6 +113,14 @@ export interface TrackRepositoryContract {
 	 */
 	update(updateData: UpdateTrack): Promise<RepoResult<Track>>;
 
+	/**
+	 * Updates an existing track and its associated artists.
+	 *
+	 * @param updateData - The updated track and artist data.
+	 * @returns A promise that resolves to a RepoResult indicating the success or failure of the operation.
+	 */
+	updateTrackWithArtists(updateData: UpdateTrack): Promise<RepoResult>;
+
 	// -----------------------------
 	// Deletion
 	// -----------------------------
@@ -110,78 +131,6 @@ export interface TrackRepositoryContract {
 	 * @returns Repository result of the deletion operation.
 	 */
 	delete(id: string): Promise<RepoResult>;
-
-	/**
-	 * Permanently delete multiple tracks.
-	 * @param ids Array of track IDs
-	 * @returns Repository result of the deletion operation.
-	 */
-	deleteMany(ids: string[]): Promise<RepoResult>;
-
-	// -----------------------------
-	// Artist Management
-	// -----------------------------
-
-	/**
-	 * Finds all artists under a track.
-	 * @param trackId Track ID
-	 * @param options Query Options (ordering, ranges, etc.)
-	 */
-	findArtists(
-		trackId: string,
-		options?: QueryOptions,
-	): Promise<RepoResult<Artist[]>>;
-
-	/**
-	 * Add a single artist to a track.
-	 * @param trackId Track ID
-	 * @param artistId Artist ID
-	 * @param order - Artist's Order
-	 * @returns Repository result of the addition operation.
-	 */
-	addArtist(
-		trackId: string,
-		artistId: string,
-		order: number,
-	): Promise<RepoResult>;
-
-	/**
-	 * Add multiple artists to a track.
-	 * @param trackId Track ID
-	 * @param artistIds Array of artist IDs
-	 * @returns Repository result of the addition operation.
-	 */
-	addArtists(trackId: string, artistIds: string[]): Promise<RepoResult>;
-
-	/**
-	 * Remove a single artist from a track.
-	 * @param trackId Track ID
-	 * @param artistId Artist ID
-	 * @returns Repository result of the removal operation.
-	 */
-	removeArtist(trackId: string, artistId: string): Promise<RepoResult>;
-
-	/**
-	 * Remove multiple artists from a track.
-	 * @param trackId Track ID
-	 * @param artistIds Array of artist IDs
-	 * @returns Repository result of the removal operation.
-	 */
-	removeArtists(
-		trackId: string,
-		artistIds: string[],
-	): Promise<RepoResult>;
-
-	/**
-	 * Reorder artists in a track.
-	 * @param trackId Track ID
-	 * @param orderedArtistIds Array of artist IDs in the new order
-	 * @returns Repository result of the reorder operation.
-	 */
-	reorderArtists(
-		trackId: string,
-		orderedArtistIds: string[],
-	): Promise<RepoResult>;
 
 	// -----------------------------
 	// Counts / Aggregates

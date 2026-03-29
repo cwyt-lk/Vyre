@@ -13,5 +13,8 @@ export type TrackAggregate = Track & {
 	genre: Genre | null;
 };
 
-export type CreateTrack = Omit<Track, "id" | "createdAt">;
+export type CreateTrack = Omit<Track, "id" | "createdAt"> & {
+	artistIds: string[];
+};
+
 export type UpdateTrack = Partial<CreateTrack> & Pick<Track, "id">;
