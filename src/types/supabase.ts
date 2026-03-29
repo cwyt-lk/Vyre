@@ -7,10 +7,30 @@ export type Json =
 	| Json[];
 
 export type Database = {
-	// Allows to automatically instantiate createClient with right options
-	// instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-	__InternalSupabase: {
-		PostgrestVersion: "14.1";
+	graphql_public: {
+		Tables: {
+			[_ in never]: never;
+		};
+		Views: {
+			[_ in never]: never;
+		};
+		Functions: {
+			graphql: {
+				Args: {
+					extensions?: Json;
+					operationName?: string;
+					query?: string;
+					variables?: Json;
+				};
+				Returns: Json;
+			};
+		};
+		Enums: {
+			[_ in never]: never;
+		};
+		CompositeTypes: {
+			[_ in never]: never;
+		};
 	};
 	public: {
 		Tables: {
@@ -49,28 +69,31 @@ export type Database = {
 			};
 			albums: {
 				Row: {
-					cover_path: string | null;
+					cover_path: string;
 					created_at: string;
 					description: string | null;
 					id: string;
 					release_date: string;
 					title: string;
+					updated_at: string;
 				};
 				Insert: {
-					cover_path?: string | null;
+					cover_path: string;
 					created_at?: string;
 					description?: string | null;
 					id?: string;
 					release_date?: string;
 					title: string;
+					updated_at?: string;
 				};
 				Update: {
-					cover_path?: string | null;
+					cover_path?: string;
 					created_at?: string;
 					description?: string | null;
 					id?: string;
 					release_date?: string;
 					title?: string;
+					updated_at?: string;
 				};
 				Relationships: [];
 			};
@@ -80,18 +103,21 @@ export type Database = {
 					created_at: string;
 					id: string;
 					name: string;
+					updated_at: string;
 				};
 				Insert: {
 					bio?: string | null;
 					created_at?: string;
 					id?: string;
 					name: string;
+					updated_at?: string;
 				};
 				Update: {
 					bio?: string | null;
 					created_at?: string;
 					id?: string;
 					name?: string;
+					updated_at?: string;
 				};
 				Relationships: [];
 			};
@@ -156,6 +182,7 @@ export type Database = {
 					genre_id: string;
 					id: string;
 					title: string;
+					updated_at: string;
 				};
 				Insert: {
 					audio_path: string;
@@ -163,6 +190,7 @@ export type Database = {
 					genre_id: string;
 					id?: string;
 					title: string;
+					updated_at?: string;
 				};
 				Update: {
 					audio_path?: string;
@@ -170,6 +198,7 @@ export type Database = {
 					genre_id?: string;
 					id?: string;
 					title?: string;
+					updated_at?: string;
 				};
 				Relationships: [
 					{
@@ -204,11 +233,38 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
+			_sync_album_tracks: {
+				Args: { p_album_id: string; p_track_ids: string[] };
+				Returns: undefined;
+			};
+			_sync_track_artists: {
+				Args: { p_artist_ids: string[]; p_track_id: string };
+				Returns: undefined;
+			};
 			check_role: {
 				Args: {
 					target_role: Database["public"]["Enums"]["app_role"];
 				};
 				Returns: boolean;
+			};
+			create_album_with_tracks: {
+				Args: {
+					p_cover_path: string;
+					p_description?: string;
+					p_release_date?: string;
+					p_title: string;
+					p_track_ids?: string[];
+				};
+				Returns: Json;
+			};
+			create_track_with_artists: {
+				Args: {
+					p_artist_ids: string[];
+					p_audio_path: string;
+					p_genre_id: string;
+					p_title: string;
+				};
+				Returns: Json;
 			};
 			custom_access_token_hook: {
 				Args: { event: Json };
@@ -216,22 +272,30 @@ export type Database = {
 			};
 			show_limit: { Args: never; Returns: number };
 			show_trgm: { Args: { "": string }; Returns: string[] };
+			update_album_with_tracks: {
+				Args: {
+					p_cover_path?: string;
+					p_description?: string;
+					p_id: string;
+					p_release_date?: string;
+					p_title?: string;
+					p_track_ids?: string[];
+				};
+				Returns: Json;
+			};
+			update_track_with_artists: {
+				Args: {
+					p_artist_ids?: string[];
+					p_audio_path?: string;
+					p_genre_id?: string;
+					p_id: string;
+					p_title?: string;
+				};
+				Returns: Json;
+			};
 		};
 		Enums: {
 			app_role: "admin" | "user";
-			"Audio Formats":
-				| "mp3"
-				| "wav"
-				| "flac"
-				| "aac"
-				| "ogg"
-				| "opus"
-				| "alac"
-				| "wma"
-				| "aiff"
-				| "m4a"
-				| "amr"
-				| "caf";
 		};
 		CompositeTypes: {
 			[_ in never]: never;
@@ -360,23 +424,12 @@ export type CompositeTypes<
 		: never;
 
 export const Constants = {
+	graphql_public: {
+		Enums: {},
+	},
 	public: {
 		Enums: {
 			app_role: ["admin", "user"],
-			"Audio Formats": [
-				"mp3",
-				"wav",
-				"flac",
-				"aac",
-				"ogg",
-				"opus",
-				"alac",
-				"wma",
-				"aiff",
-				"m4a",
-				"amr",
-				"caf",
-			],
 		},
 	},
 } as const;

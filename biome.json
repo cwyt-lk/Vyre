@@ -13,7 +13,8 @@
 		"enabled": true,
 		"indentStyle": "tab",
 		"indentWidth": 4,
-		"lineWidth": 75
+		"lineWidth": 75,
+		"lineEnding": "crlf"
 	},
 	"linter": {
 		"enabled": true,
