@@ -9,6 +9,7 @@ import {
 	getPaginationTotalPages,
 	type PaginationInput,
 } from "@/lib/utils/pagination";
+import { slugify } from "@/lib/utils/string";
 
 interface AdminGenresPageProps {
 	searchParams?: Promise<{ query?: string } & PaginationInput>;
@@ -26,13 +27,16 @@ export default async function AdminGenresPage({
 
 	const { page, pageSize, from, to } = getPagination(resolvedParams);
 
-	const res = await genres.findAll({
-		range: [from, to],
-		order: {
-			field: "label",
-			direction: "asc",
+	const res = await genres.searchByKey(
+		slugify(resolvedParams.query ?? ""),
+		{
+			range: [from, to],
+			order: {
+				field: "label",
+				direction: "asc",
+			},
 		},
-	});
+	);
 
 	if (!res.success) {
 		return (
@@ -43,8 +47,8 @@ export default async function AdminGenresPage({
 		);
 	}
 
-	const { data: genreList } = res;
-	const totalPages = getPaginationTotalPages(pageSize, genreList.length);
+	const { items: genreList, count } = res.data;
+	const totalPages = getPaginationTotalPages(pageSize, count);
 
 	if (genreList.length === 0) {
 		return <EmptyAlbumState />;
@@ -52,7 +56,7 @@ export default async function AdminGenresPage({
 
 	return (
 		<div className="min-h-screen p-6 space-y-2">
-			<h1 className="text-3xl font-bold mb-6">Albums</h1>
+			<h1 className="text-3xl font-bold mb-6">Genres</h1>
 
 			<search className="w-1/4 mb-4">
 				<SearchBar placeholder="Search by title" />

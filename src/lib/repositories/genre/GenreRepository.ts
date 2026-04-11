@@ -8,7 +8,7 @@ import {
 } from "@/lib/repositories/query-options";
 import { flatMapList } from "@/lib/utils/array";
 import type { CreateGenre, Genre, UpdateGenre } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 export class GenreRepository implements GenreRepositoryContract {
@@ -60,6 +60,37 @@ export class GenreRepository implements GenreRepositoryContract {
 		}
 
 		return { success: true, data: GenreMapper.map(data) };
+	}
+
+	async searchByKey(
+		key: string,
+		options?: QueryOptions,
+	): Promise<RepoListResult<Genre>> {
+		const query = applyQueryOptions(
+			this.supabase
+				.from("genres")
+				.select("*", { count: "exact" })
+				.ilike("key", `${key}%`),
+
+			options,
+		);
+
+		const { data, count, error } = await query;
+
+		if (error) {
+			return {
+				success: false,
+				error: mapPostgresError(error),
+			};
+		}
+
+		return {
+			success: true,
+			data: {
+				items: flatMapList(data, GenreMapper.map),
+				count: count ?? 0,
+			},
+		};
 	}
 
 	// -----------------------------

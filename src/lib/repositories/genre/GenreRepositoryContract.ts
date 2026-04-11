@@ -1,6 +1,6 @@
 import type { QueryOptions } from "@/lib/repositories/query-options";
 import type { CreateGenre, Genre, UpdateGenre } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 
 /**
  * Contract defining all operations for genre persistence.
@@ -37,6 +37,17 @@ export interface GenreRepositoryContract {
 	 * @returns Repository result with the genre if found.
 	 */
 	findById(id: string): Promise<RepoResult<Genre>>;
+
+	/**
+	 * Searches for a genre by its url key.
+	 * @param key Genre URL Key
+	 * @param options Optional query modifiers (pagination, filtering, etc.)
+	 * @returns Repository result with the genres found.
+	 */
+	searchByKey(
+		key: string,
+		options?: QueryOptions,
+	): Promise<RepoListResult<Genre>>;
 
 	// -----------------------------
 	// Creation
