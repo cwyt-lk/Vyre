@@ -7,17 +7,30 @@ CREATE OR REPLACE FUNCTION _sync_album_tracks(
 )
 RETURNS VOID AS $$
 BEGIN
-  -- 1. Remove tracks no longer in the list
-  DELETE FROM album_tracks
-  WHERE album_id = p_album_id
-    AND track_id != ALL(p_track_ids);
+  -- Fast exit for NULL
+  IF p_track_ids IS NULL THEN
+    RETURN;
+  END IF;
 
-  -- 2. Insert new tracks or update order (using your ordinality logic)
+  WITH input AS (
+    SELECT DISTINCT unnest_id, idx::int AS track_number
+    FROM unnest(p_track_ids) WITH ORDINALITY AS t(unnest_id, idx)
+  )
+  -- 1. Delete removed tracks
+  DELETE FROM album_tracks at
+  WHERE at.album_id = p_album_id
+    AND NOT EXISTS (
+      SELECT 1 FROM input i WHERE i.unnest_id = at.track_id
+    );
+
+  -- 2. Upsert only when needed
   INSERT INTO album_tracks (album_id, track_id, track_number)
-  SELECT p_album_id, unnest_id, idx::int
-  FROM unnest(p_track_ids) WITH ORDINALITY AS t(unnest_id, idx)
+  SELECT p_album_id, i.unnest_id, i.track_number
+  FROM input i
   ON CONFLICT (album_id, track_id) DO UPDATE
-  SET track_number = EXCLUDED.track_number;
+  SET track_number = EXCLUDED.track_number
+  WHERE album_tracks.track_number IS DISTINCT FROM EXCLUDED.track_number;
+
 END;
 $$ LANGUAGE plpgsql;
 
@@ -27,22 +40,33 @@ CREATE OR REPLACE FUNCTION _sync_track_artists(
 )
 RETURNS VOID AS $$
 BEGIN
-  -- 1. Validation: Ensure the array isn't empty (Business Rule)
   IF p_artist_ids IS NULL OR array_length(p_artist_ids, 1) = 0 THEN
     RAISE EXCEPTION 'A track must have at least one artist.';
   END IF;
 
-  -- 2. Remove artists no longer associated
-  DELETE FROM track_artists
-  WHERE track_id = p_track_id
-    AND artist_id != ALL(p_artist_ids);
+  -- 1. Delete removed artists
+  WITH input AS (
+    SELECT DISTINCT unnest_id
+    FROM unnest(p_artist_ids) AS t(unnest_id)
+  )
+  DELETE FROM track_artists ta
+  WHERE ta.track_id = p_track_id
+    AND NOT EXISTS (
+      SELECT 1 FROM input i WHERE i.unnest_id = ta.artist_id
+    );
 
-  -- 3. Upsert associations with correct ordering
+  -- 2. Upsert
+  WITH input AS (
+    SELECT DISTINCT unnest_id, (idx - 1)::int AS artist_order
+    FROM unnest(p_artist_ids) WITH ORDINALITY AS t(unnest_id, idx)
+  )
   INSERT INTO track_artists (track_id, artist_id, artist_order)
-  SELECT p_track_id, unnest_id, (idx - 1)
-  FROM unnest(p_artist_ids) WITH ORDINALITY AS t(unnest_id, idx)
+  SELECT p_track_id, i.unnest_id, i.artist_order
+  FROM input i
   ON CONFLICT (track_id, artist_id) DO UPDATE
-  SET artist_order = EXCLUDED.artist_order;
+  SET artist_order = EXCLUDED.artist_order
+  WHERE track_artists.artist_order IS DISTINCT FROM EXCLUDED.artist_order;
+
 END;
 $$ LANGUAGE plpgsql;
 
