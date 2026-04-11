@@ -1,3 +1,4 @@
+import { parseSupabaseDate } from "@/lib/utils/time";
 import type { Artist } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
@@ -14,7 +15,7 @@ export const ArtistMapper = {
 			id: row.id,
 			name: row.name,
 			bio: row.bio,
-			createdAt: new Date(row.created_at),
+			createdAt: parseSupabaseDate(row.created_at),
 		};
 	},
 };

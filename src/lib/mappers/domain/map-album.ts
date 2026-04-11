@@ -6,6 +6,7 @@ import {
 import type { StorageRepositoryContract } from "@/lib/repositories";
 import { flatMapList } from "@/lib/utils/array";
 import { resolvePublicFileUrl } from "@/lib/utils/storage";
+import { parseSupabaseDate } from "@/lib/utils/time";
 import type {
 	Album,
 	AlbumAggregate,
@@ -44,8 +45,8 @@ export const AlbumMapper = {
 			title: row.title,
 			description: "",
 			coverPath: row.cover_path,
-			releaseDate: new Date(row.release_date),
-			createdAt: new Date(row.created_at),
+			releaseDate: parseSupabaseDate(row.release_date),
+			createdAt: parseSupabaseDate(row.created_at),
 		};
 	},
 

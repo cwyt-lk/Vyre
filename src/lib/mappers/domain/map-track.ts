@@ -7,6 +7,7 @@ import {
 import type { StorageRepositoryContract } from "@/lib/repositories";
 import { flatMapList } from "@/lib/utils/array";
 import { resolvePublicFileUrl } from "@/lib/utils/storage";
+import { parseSupabaseDate } from "@/lib/utils/time";
 import type { Track, TrackAggregate } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
@@ -40,7 +41,7 @@ export const TrackMapper = {
 			title: row.title,
 			genreId: row.genre_id,
 			audioPath: row.audio_path,
-			createdAt: new Date(row.created_at),
+			createdAt: parseSupabaseDate(row.created_at),
 		};
 	},
 

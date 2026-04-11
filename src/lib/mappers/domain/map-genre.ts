@@ -1,3 +1,4 @@
+import { parseSupabaseDate } from "@/lib/utils/time";
 import type { Genre } from "@/types/domain";
 import type { Database } from "@/types/supabase";
 
@@ -14,7 +15,7 @@ export const GenreMapper = {
 			id: row.id,
 			key: row.key,
 			label: row.label,
-			createdAt: new Date(row.created_at),
+			createdAt: parseSupabaseDate(row.created_at),
 		};
 	},
 };

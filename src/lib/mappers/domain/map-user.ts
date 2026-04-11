@@ -1,4 +1,5 @@
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { parseSupabaseDate } from "@/lib/utils/time";
 import type { User } from "@/types/domain";
 
 /**
@@ -12,6 +13,6 @@ export function mapUser(user: SupabaseUser): User {
 		email: user.email ?? "",
 		fullName: user.user_metadata?.full_name,
 		avatarUrl: user.user_metadata?.avatar_url,
-		createdAt: new Date(user.created_at),
+		createdAt: parseSupabaseDate(user.created_at),
 	};
 }
