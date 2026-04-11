@@ -120,7 +120,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 		return {
 			success: true,
 			data: {
-				data: flatMapList(data, AlbumMapper.map),
+				items: flatMapList(data, AlbumMapper.map),
 				count: count ?? 0,
 			},
 		};

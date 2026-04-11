@@ -4,7 +4,7 @@ import type { OperationResult } from "@/types/results";
 export type RepoResult<T = void> = OperationResult<T, VyreError>;
 
 export type ListResult<T> = {
-	data: T[];
+	items: T[];
 	count: number;
 };
 

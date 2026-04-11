@@ -159,7 +159,7 @@ export class TrackRepository implements TrackRepositoryContract {
 		return {
 			success: true,
 			data: {
-				data: flatMapList(data, TrackMapper.mapWithRelations),
+				items: flatMapList(data, TrackMapper.mapWithRelations),
 				count: count ?? 0,
 			},
 		};

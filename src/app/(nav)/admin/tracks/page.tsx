@@ -46,10 +46,10 @@ export default async function AdminTracksPage({
 		);
 	}
 
-	const { data, count } = res.data;
+	const { items, count } = res.data;
 	const totalPages = getPaginationTotalPages(pageSize, count);
 
-	if (!data || data.length === 0) {
+	if (!items || items.length === 0) {
 		return <EmptyAlbumState />;
 	}
 
@@ -62,7 +62,7 @@ export default async function AdminTracksPage({
 			</search>
 
 			<div className="flex flex-col gap-8">
-				<TrackTable trackList={data} />
+				<TrackTable trackList={items} />
 
 				<PaginationClient
 					currentPage={page}

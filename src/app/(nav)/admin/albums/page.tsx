@@ -44,10 +44,10 @@ export default async function AdminAlbumsPage({
 		);
 	}
 
-	const { data, count } = res.data;
+	const { items, count } = res.data;
 	const totalPages = getPaginationTotalPages(pageSize, count);
 
-	const albumList: AlbumWithCover[] = data.map((it) =>
+	const albumList: AlbumWithCover[] = items.map((it) =>
 		AlbumMapper.mapWithCover(it, storage),
 	);
 
