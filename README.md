@@ -2,117 +2,105 @@
 
 **Vyre** is a modern music web application built with **Next.js**, designed to deliver a fast, responsive, and immersive listening experience directly in the browser.
 
-## 🚀 Introduction
-
 Vyre is a lightweight and scalable music platform that allows users to discover, stream, and enjoy music seamlessly. Built with the power of **Next.js**, it focuses on performance, smooth UI interactions, and a clean developer-friendly architecture.
 
----
-
-# 🛠️ How to Setup
+## 🛠️ Setup Instructions
 
 Follow these steps to run **Vyre** locally.
 
----
+### Prerequisites
+- Node.js (version 18 or later)
+- pnpm package manager
+- Git (for cloning the repository)
+- Docker Desktop (required for local Supabase setup)
 
-## 1. Clone or Download the Repository
-
-Clone the repository using Git, or download the project ZIP and extract it to your desired location.
+### 1. Clone the Repository
+Clone the repository and navigate to the project directory:
 
 ```bash
 git clone https://github.com/your-username/vyre.git
 cd vyre
 ```
 
----
-
-## 2. Install Dependencies
-
-This project uses **pnpm** as the package manager.
+### 2. Install Dependencies
+Install the project dependencies using pnpm:
 
 ```bash
 pnpm install
 ```
 
----
+### 3. Set Up Supabase Backend
+Vyre requires a Supabase backend for authentication, database relations, and media storage. Choose between cloud or local setup.
 
-## 3. Setup a Supabase Backend
+#### Create Project & Credentials
+- **Cloud Setup:**
+  1. Go to [supabase.com](https://supabase.com) and create a new project.
+  2. Navigate to **Project Settings > API**.
+  3. Copy the **Project URL** and the **anon (public) key**.
 
-Vyre requires a **Supabase Cloud backend** for authentication, database, and file storage.
+- **Local Setup:**
+  1. Install the [Supabase CLI](https://supabase.com/docs/guides/cli).
+  2. Run `supabase init` in the project root.
+  3. Run `supabase start` to launch Docker containers.
+  4. Use the local URL and keys from the terminal output.
 
-You must create **your own Supabase project** instead of using a shared backend. This is important because the platform may store **user-uploaded or copyrighted music**, so each deployment should operate on its own backend and storage for legal and security reasons.
+#### Initialize Database
+Initialize the database schema by running the provided SQL scripts in order:
 
-Steps:
+1. Open the **SQL Editor** (Dashboard for cloud, or `localhost:54323` for local).
+2. Execute scripts `01_schema.sql` through `05_functions.sql` sequentially.
+3. Ensure each script completes without errors before proceeding.
 
-1. Go to https://supabase.com
-2. Create a new project
-3. Open your project dashboard
-4. Copy the **Project URL**
-5. Copy the **Publishable (anon) key**
+#### Enable Auth Hook (Custom JWT)
+Vyre uses a `custom_access_token_hook` to inject custom claims into user tokens.
 
----
+- **Cloud Setup:**
+  1. Navigate to **Authentication → Hooks**.
+  2. Click **Add Hook** and select **Customize Access Token (JWT) Claims**.
+  3. Set **Hook Type** to `Postgres`.
+  4. Set **Postgres Schema** to `public`.
+  5. Select the `custom_access_token_hook` function.
+  6. Click **Create Hook**.
 
-## 4. Configure the Database (SQL Setup)
+- **Local Setup:**
+  Add/update the following in `supabase/config.toml`:
 
-After creating your Supabase project, you must initialize the database schema.
-You can find the relevant SQL scripts under the SQL folder.
+  ```toml
+  [auth.hook.custom_access_token]
+  enabled = true
+  uri = "pg-functions://postgres/public/custom_access_token_hook"
+  ```
 
-1. Open your **Supabase Dashboard**
-2. Navigate to **SQL Editor**
-3. Create a **New Query**
-4. Use the scripts under the **SQL** folder. Make sure to run them in order.
-5. For Script #1, you need to enable the hook function **custom_access_token_hook** under **Authentication → (Auth) Hooks** → **Add Hook**. 
-   1. Select **Add Customize Access Token (JWT) Claims hook**
-   2. Hook Type: **Postgres**
-   3. Postgres Schema: **Public**
-   4. Under Postgres Function select the new function.
-   5. Click Create Hook
+#### (Optional) Set Up OAuth Providers
+Enable social login (Google, GitHub, Discord, etc.) for passwordless signup.
 
----
+- **Cloud Setup:**
+  1. Go to **Authentication → Providers**.
+  2. Choose a provider and obtain credentials from its developer portal (e.g., [Google Cloud Console](https://console.cloud.google.com/)).
+  3. Enable the provider in Supabase and enter the **Client ID** and **Secret**.
+  4. Add Supabase's **Callback URL** to the provider's authorized redirect URIs.
 
-## 5. Set Up Storage Buckets
+- **Local Setup:**
+  Update `supabase/config.toml`:
 
-This step must be completed manually in Supabase.
+  ```toml
+  [auth.external.google]
+  enabled = true
+  client_id = "your-client-id.apps.googleusercontent.com"
+  secret = "your-client-secret"
+  redirect_uri = "http://localhost:3000/auth/callback"
+  ```
 
-### 5.1. Create the Buckets
+#### (Optional) Disable Email Confirmation (Cloud Only)
+To skip email verification for development:
 
-1. Open your **Supabase Dashboard**
-2. Navigate to **Storage**
-3. Click **New Bucket**
-4. Create the following buckets *(Make sure the buckets are public)*:
+1. Open the Supabase Dashboard.
+2. Navigate to **Authentication → Configuration → Auth Settings**.
+3. In **Email Settings**, toggle **Confirm email** to **Off**.
+4. Save changes.
 
-   - `cover-art`
-   - `music`
-
----
-
-### 5.2. Configure Bucket Policies
-
-1. Go to the **Policies** tab
-2. Click **New Policy**
-3. Select **For Full Customization**
-4. Enable the following permissions:
-   - `Select`
-   - `Insert`
-   - `Update`
-5. Under **Policy Definition**, enter the following SQL:
-
-Replace bucket-id with the name of the bucket (for example, music or cover-art).
-
-```sql
-((bucket_id = 'bucket-id'::text) AND (auth.role() = 'authenticated'::text))
-```
-
----
-
-## 6. Create Environment Variables
-
-Create a file in the root of the project called:
-
-```
-.env.local
-```
-
-Add the following configuration:
+### 4. Configure Environment Variables
+Create a `.env.local` file in the project root with the following:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
@@ -120,42 +108,37 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUB_KEY
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-Replace:
+Replace placeholders with your Supabase project URL and publishable key. In production, update `NEXT_PUBLIC_SITE_URL` to your domain.
 
-* `YOUR_SUPABASE_URL` with your Supabase project URL
-* `YOUR_PUB_KEY` with your Supabase publishable key
-
-⚠️ In production, replace `NEXT_PUBLIC_SITE_URL` with your actual website domain.
-
----
-
-## 7. (Optional) Generate TypeScript Types
-
-You can generate database types directly from Supabase. This allows your queries to be fully type-safe. You will need to link your supabase project with the CLI.
+### 5. (Optional) Generate TypeScript Types
+Generate type-safe database types:
 
 ```bash
-pnpm run supabase-types
+# Cloud Only
+pnpm supabase:types
+
+# Local Only
+pnpm supabase:types:local
 ```
 
+This creates TypeScript types for better autocomplete and type safety.
 
-This will generate TypeScript types for your database schema.
-
-You can then import them in your project for better autocomplete and type safety when working with Supabase.
-
----
-
-## 8. Start the Development Server
-
+### 6. Start the Development Server
 Run the development server:
 
 ```bash
 pnpm dev
 ```
 
-Then open your browser and visit:
+Open your browser and visit `http://localhost:3000` to view the application.
 
-```
-http://localhost:3000
-```
+### Running with Docker (Local Setup)
+If you're using the local Supabase setup, manage the Docker containers with these commands:
 
----
+```bash
+# Start Supabase services
+pnpm supabase:start
+
+# Stop Supabase services
+pnpm supabase:stop
+```
