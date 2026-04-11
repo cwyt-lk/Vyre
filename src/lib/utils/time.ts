@@ -52,3 +52,35 @@ export function parseDate(value: string): Date | undefined {
 
 	return Number.isNaN(d.getTime()) ? undefined : d;
 }
+
+/**
+ * Parses a Supabase/Postgres date or timestamp string into a JavaScript Date object.
+ *
+ * Supports:
+ * - ISO timestamp strings (e.g. "2026-04-11T12:34:56.789Z")
+ * - Date-only strings (e.g. "2026-04-11")
+ *
+ * Behavior:
+ * - If the string includes a time component (`T`), it is parsed directly using the Date constructor (treated as UTC if `Z` is present).
+ * - If the string is date-only, it is parsed as a local date to avoid timezone shifting issues.
+ *
+ * @param dateString - The date string returned from Supabase.
+ * @returns A JavaScript Date object representing the given date.
+ *
+ * @example
+ * parseSupabaseDate("2026-04-11T12:34:56.789Z")
+ * // => Date (UTC timestamp)
+ *
+ * @example
+ * parseSupabaseDate("2026-04-11")
+ * // => Date (local midnight)
+ */
+export function parseSupabaseDate(dateString: string): Date {
+	if (dateString.includes("T")) {
+		return new Date(dateString);
+	}
+
+	const [year, month, day] = dateString.split("-");
+
+	return new Date(Number(year), Number(month) - 1, Number(day));
+}
