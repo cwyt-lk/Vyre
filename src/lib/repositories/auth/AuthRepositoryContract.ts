@@ -40,7 +40,7 @@ export interface AuthRepositoryContract {
 	 * Returns a URL that the client should redirect the user to
 	 * in order to authenticate with the selected provider.
 	 *
-	 * @param provider - OAuth provider (e.g., google, github)
+	 * @param provider - OAuth provider (e.g., Google, GitHub)
 	 * @param redirectUrl - URL to redirect back to after authentication
 	 */
 	signInWithOAuth(

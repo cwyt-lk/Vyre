@@ -1,7 +1,6 @@
 import { Container } from "@/components/layout/Container";
 import { ErrorState } from "@/components/layout/ErrorState";
 import { Card, CardContent } from "@/components/ui/Card";
-import { AlbumForm } from "@/features/admin/album/components";
 import { TrackForm } from "@/features/admin/track/components/TrackForm";
 import { createRepositories } from "@/lib/factories/repository/server";
 

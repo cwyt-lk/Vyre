@@ -26,9 +26,6 @@ export async function updateTrackAction(
 	const { tracks } = await createRepositories();
 	const updateResult = await tracks.updateTrackWithArtists(updateData);
 
-	console.log(updateResult);
-	console.log(updateData);
-
 	if (!updateResult.success) {
 		return {
 			success: false,

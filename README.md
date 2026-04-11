@@ -54,13 +54,13 @@ Steps:
 ## 4. Configure the Database (SQL Setup)
 
 After creating your Supabase project, you must initialize the database schema.
-You can find the relevant sql scripts under the sql folder.
+You can find the relevant SQL scripts under the SQL folder.
 
 1. Open your **Supabase Dashboard**
 2. Navigate to **SQL Editor**
 3. Create a **New Query**
 4. Use the scripts under the **SQL** folder. Make sure to run them in order.
-5. For Script #1, you need to enable the hook function **custom_access_token_hook** under **Authentication -> (Auth) Hooks** -> **Add Hook**. 
+5. For Script #1, you need to enable the hook function **custom_access_token_hook** under **Authentication → (Auth) Hooks** → **Add Hook**. 
    1. Select **Add Customize Access Token (JWT) Claims hook**
    2. Hook Type: **Postgres**
    3. Postgres Schema: **Public**
