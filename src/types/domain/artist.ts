@@ -1,7 +1,7 @@
 export interface Artist {
 	id: string;
 	name: string;
-	bio: string | null;
+	bio?: string;
 	createdAt: Date;
 }
 
