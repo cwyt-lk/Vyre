@@ -75,7 +75,7 @@ $$ LANGUAGE plpgsql;
 -- =========================================
 CREATE OR REPLACE FUNCTION create_album_with_tracks(
   p_title TEXT,
-  p_cover_path TEXT,
+  p_cover_path TEXT DEFAULT NULL,
   p_description TEXT DEFAULT NULL,
   p_release_date DATE DEFAULT NULL,
   p_track_ids UUID[] DEFAULT '{}'
