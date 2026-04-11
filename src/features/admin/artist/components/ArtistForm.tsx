@@ -4,21 +4,34 @@ import { User } from "lucide-react";
 import { FormInputField } from "@/components/form/fields/FormInputField";
 import { FormTextareaField } from "@/components/form/fields/FormTextareaField";
 import { FieldSet } from "@/components/ui/Field";
-import { useArtistForm } from "@/features/admin/artist/hooks/useArtistForm";
+import {
+	type UseArtistFormOptions,
+	useArtistForm,
+} from "@/features/admin/artist/hooks/useArtistForm";
 import { AdminFormLayout } from "@/features/admin/components/AdminFormLayout";
 
-export function ArtistForm() {
-	const { form, isSubmitting } = useArtistForm();
+interface ArtistFormProps {
+	options: UseArtistFormOptions;
+}
+
+export function ArtistForm({ options }: ArtistFormProps) {
+	const { form, isSubmitting } = useArtistForm(options);
+
+	const isEdit = options.mode === "edit";
 
 	return (
 		<AdminFormLayout
-			title="Add New Artist"
-			description="Add a new artist and provide a short biography."
+			title={isEdit ? "Edit Artist" : "Add New Artist"}
+			description={
+				isEdit
+					? "Update Artist Details"
+					: "Add a new artist and provide a short biography."
+			}
 			isSubmitting={isSubmitting}
 			onSubmit={form.handleSubmit}
 			onReset={form.reset}
-			submitMessage="Create Artist"
-			submittingMessage="Creating..."
+			submitMessage={isEdit ? "Update Artist" : "Create Artist"}
+			submittingMessage={isEdit ? "Updating..." : "Creating..."}
 		>
 			{/* Artist Info */}
 			<FieldSet className="space-y-6">

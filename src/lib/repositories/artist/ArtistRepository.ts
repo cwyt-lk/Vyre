@@ -8,7 +8,7 @@ import {
 } from "@/lib/repositories/query-options";
 import { flatMapList } from "@/lib/utils/array";
 import type { Artist, CreateArtist, UpdateArtist } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
 
 /**
@@ -43,6 +43,7 @@ export class ArtistRepository implements ArtistRepositoryContract {
 		const query = applyQueryOptions(baseQuery, options);
 
 		const { data, error } = await query;
+
 		if (error) {
 			return { success: false, error: mapPostgresError(error) };
 		}
@@ -65,6 +66,34 @@ export class ArtistRepository implements ArtistRepositoryContract {
 		}
 
 		return { success: true, data: ArtistMapper.map(data) };
+	}
+
+	async searchByName(
+		name: string,
+		options?: QueryOptions,
+	): Promise<RepoListResult<Artist>> {
+		const query = applyQueryOptions(
+			this.supabase
+				.from("artists")
+				.select("*", { count: "exact" })
+				.ilike("name", `${name}%`),
+
+			options,
+		);
+
+		const { data, count, error } = await query;
+
+		if (error) {
+			return { success: false, error: mapPostgresError(error) };
+		}
+
+		return {
+			success: true,
+			data: {
+				items: flatMapList(data, ArtistMapper.map),
+				count: count ?? 0,
+			},
+		};
 	}
 
 	// -----------------------------\

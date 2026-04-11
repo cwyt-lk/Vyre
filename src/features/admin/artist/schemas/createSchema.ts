@@ -18,7 +18,7 @@ export const createArtistSchema = z.object({
 
 export type CreateArtistInput = z.infer<typeof createArtistSchema>;
 
-export const artistDefaultValues: CreateArtistInput = {
+export const artistDefaultValues: Partial<CreateArtistInput> = {
 	name: "",
 	bio: "",
 };

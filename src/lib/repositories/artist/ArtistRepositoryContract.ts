@@ -1,6 +1,6 @@
 import type { QueryOptions } from "@/lib/repositories/query-options";
 import type { Artist, CreateArtist, UpdateArtist } from "@/types/domain";
-import type { RepoResult } from "@/types/results";
+import type { RepoListResult, RepoResult } from "@/types/results";
 
 /**
  * Contract defining all operations for artist persistence.
@@ -37,6 +37,17 @@ export interface ArtistRepositoryContract {
 	 * @returns Repository result with the artist if found.
 	 */
 	findById(id: string): Promise<RepoResult<Artist>>;
+
+	/**
+	 * Searches for an artist by their name.
+	 * @param name Artist name
+	 * @param options Optional query modifiers (pagination, filtering, etc.)
+	 * @returns Repository result with the artists if found.
+	 */
+	searchByName(
+		name: string,
+		options?: QueryOptions,
+	): Promise<RepoListResult<Artist>>;
 
 	// -----------------------------
 	// Creation
