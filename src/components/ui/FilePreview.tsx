@@ -61,6 +61,7 @@ export function FilePreview({ file, onRemove, layout }: FilePreviewProps) {
 								src={previewUrl}
 								alt={file.name}
 								fill
+								sizes="(max-width: 640px) 48px, 64px"
 								placeholder="blur"
 								blurDataURL={placeholderSvg}
 								className="object-cover"

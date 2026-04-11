@@ -23,6 +23,7 @@ export const AlbumCard = async ({ album }: AlbumCardProps) => {
 						src={album.coverUrl ?? "/placeholder.png"}
 						alt={`${album.title} cover art`}
 						fill
+						sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
 						priority
 						placeholder="blur"
 						blurDataURL={placeholderSvg}

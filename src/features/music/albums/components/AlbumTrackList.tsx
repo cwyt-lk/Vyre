@@ -47,8 +47,8 @@ export const AlbumTrackList = ({ tracks }: AlbumTrackListProps) => {
 							isSelected && "ring-2 ring-primary",
 						)}
 					>
-						<ItemMedia className="p-2 text-sm text-muted-foreground">
-							#{index + 1}
+						<ItemMedia className="py-1.5 px-3 text-base text-muted-foreground">
+							{index + 1}
 						</ItemMedia>
 						<ItemContent>
 							<ItemTitle className="text-base font-medium truncate">

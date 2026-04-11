@@ -39,11 +39,8 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 
 	useEffect(() => {
 		setQueue(queue, album.id);
-
-		return () => {
-			clearQueue();
-		};
-	}, [setQueue, album, clearQueue, queue]);
+		return () => clearQueue();
+	}, [album.id, queue, setQueue, clearQueue]);
 
 	return (
 		<section className="space-y-8 py-10 animate-in fade-in duration-500">
@@ -53,6 +50,7 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 						src={album.coverUrl ?? "/placeholder.png"}
 						alt={`Cover art for ${album.title}`}
 						fill
+						sizes="256px"
 						priority
 						placeholder="blur"
 						blurDataURL={placeholderSvg}

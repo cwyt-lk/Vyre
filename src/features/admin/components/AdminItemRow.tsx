@@ -47,6 +47,7 @@ export const AdminItemRow = ({
 					<Image
 						src={imageUrl}
 						alt={title}
+						sizes="(max-width: 640px) 56px, 80px"
 						fill
 						placeholder="blur"
 						blurDataURL={placeholderSvg}
