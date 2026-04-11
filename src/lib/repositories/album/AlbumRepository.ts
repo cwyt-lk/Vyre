@@ -264,7 +264,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 				p_title: createData.title,
 				p_description: createData.description,
 				p_release_date: createData.releaseDate.toISOString(),
-				p_cover_path: createData.coverPath,
+				p_cover_path: createData.coverPath ?? undefined,
 				p_track_ids: createData.trackIds,
 			},
 		);
@@ -325,7 +325,7 @@ export class AlbumRepository implements AlbumRepositoryContract {
 				p_title: updateData.title,
 				p_description: updateData.description,
 				p_release_date: updateData.releaseDate?.toISOString(),
-				p_cover_path: updateData.coverPath,
+				p_cover_path: updateData.coverPath ?? undefined,
 				p_track_ids: updateData.trackIds,
 			},
 		);
