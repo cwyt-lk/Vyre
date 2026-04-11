@@ -7,30 +7,10 @@ export type Json =
 	| Json[];
 
 export type Database = {
-	graphql_public: {
-		Tables: {
-			[_ in never]: never;
-		};
-		Views: {
-			[_ in never]: never;
-		};
-		Functions: {
-			graphql: {
-				Args: {
-					extensions?: Json;
-					operationName?: string;
-					query?: string;
-					variables?: Json;
-				};
-				Returns: Json;
-			};
-		};
-		Enums: {
-			[_ in never]: never;
-		};
-		CompositeTypes: {
-			[_ in never]: never;
-		};
+	// Allows to automatically instantiate createClient with right options
+	// instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+	__InternalSupabase: {
+		PostgrestVersion: "14.4";
 	};
 	public: {
 		Tables: {
@@ -69,7 +49,7 @@ export type Database = {
 			};
 			albums: {
 				Row: {
-					cover_path: string;
+					cover_path: string | null;
 					created_at: string;
 					description: string | null;
 					id: string;
@@ -78,7 +58,7 @@ export type Database = {
 					updated_at: string;
 				};
 				Insert: {
-					cover_path: string;
+					cover_path?: string | null;
 					created_at?: string;
 					description?: string | null;
 					id?: string;
@@ -87,7 +67,7 @@ export type Database = {
 					updated_at?: string;
 				};
 				Update: {
-					cover_path?: string;
+					cover_path?: string | null;
 					created_at?: string;
 					description?: string | null;
 					id?: string;
@@ -249,7 +229,7 @@ export type Database = {
 			};
 			create_album_with_tracks: {
 				Args: {
-					p_cover_path: string;
+					p_cover_path?: string;
 					p_description?: string;
 					p_release_date?: string;
 					p_title: string;
@@ -290,6 +270,27 @@ export type Database = {
 					p_genre_id?: string;
 					p_id: string;
 					p_title?: string;
+				};
+				Returns: Json;
+			};
+			upsert_album_with_tracks: {
+				Args: {
+					p_cover_path: string;
+					p_description: string;
+					p_id: string;
+					p_release_date: string;
+					p_title: string;
+					p_track_ids: string[];
+				};
+				Returns: Json;
+			};
+			upsert_tracks_with_artists: {
+				Args: {
+					p_artist_ids: string[];
+					p_audio_path: string;
+					p_genre_id: string;
+					p_id: string;
+					p_title: string;
 				};
 				Returns: Json;
 			};
@@ -424,9 +425,6 @@ export type CompositeTypes<
 		: never;
 
 export const Constants = {
-	graphql_public: {
-		Enums: {},
-	},
 	public: {
 		Enums: {
 			app_role: ["admin", "user"],
