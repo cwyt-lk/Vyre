@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
 	Card,
 	CardContent,
@@ -6,8 +5,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/Card";
+import { SmartImage } from "@/components/ui/SmartImage";
 import type { AlbumWithCover } from "@/lib/mappers/domain";
-import { placeholderSvg } from "@/lib/utils/placeholders";
 import { formatDate } from "@/lib/utils/time";
 
 interface AlbumCardProps {
@@ -19,14 +18,11 @@ export const AlbumCard = async ({ album }: AlbumCardProps) => {
 		<Card className="group overflow-hidden border-none bg-card/50 transition-all hover:bg-muted">
 			<CardHeader className="p-4">
 				<div className="relative aspect-square overflow-hidden rounded-xl">
-					<Image
+					<SmartImage
 						src={album.coverUrl ?? "/placeholder.png"}
 						alt={`${album.title} cover art`}
 						fill
 						sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-						priority
-						placeholder="blur"
-						blurDataURL={placeholderSvg}
 						className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
 					/>
 				</div>

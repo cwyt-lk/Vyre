@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { AlbumTrackList } from "@/features/music/albums/components/AlbumTrackList";
 import { Player } from "@/features/music/player/Player";
 import { useAudioPlayerStore } from "@/lib/audio/useAudioPlayerStore";
@@ -10,7 +10,6 @@ import type {
 	AlbumWithCover,
 	TrackAggregateWithAudio,
 } from "@/lib/mappers/domain";
-import { placeholderSvg } from "@/lib/utils/placeholders";
 
 interface AlbumClientProps {
 	album: AlbumWithCover;
@@ -46,14 +45,11 @@ export const AlbumClient = ({ album, tracks }: AlbumClientProps) => {
 		<section className="space-y-8 py-10 animate-in fade-in duration-500">
 			<header className="flex flex-col gap-8 md:flex-row">
 				<div className="relative size-64 shrink-0 overflow-hidden rounded-xl">
-					<Image
+					<SmartImage
 						src={album.coverUrl ?? "/placeholder.png"}
 						alt={`Cover art for ${album.title}`}
 						fill
 						sizes="256px"
-						priority
-						placeholder="blur"
-						blurDataURL={placeholderSvg}
 						className="object-cover"
 					/>
 				</div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { Edit } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import {
@@ -12,8 +11,8 @@ import {
 	ItemMedia,
 	ItemTitle,
 } from "@/components/ui/Item";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { AdminDeleteButton } from "@/features/admin/components/AdminDeleteButton";
-import { placeholderSvg } from "@/lib/utils/placeholders";
 
 interface AlbumRowProps {
 	id: string;
@@ -44,13 +43,11 @@ export const AdminItemRow = ({
 					variant="image"
 					className="group-data-[size=sm]/item:size-14"
 				>
-					<Image
+					<SmartImage
 						src={imageUrl}
 						alt={title}
 						sizes="(max-width: 640px) 56px, 80px"
 						fill
-						placeholder="blur"
-						blurDataURL={placeholderSvg}
 						className="transition-transform group-hover:scale-105"
 					/>
 				</ItemMedia>
