@@ -20,18 +20,22 @@ interface AlbumTracksDialogProps {
 	tracks: Track[];
 	selected: string[];
 	onAdd: (id: string) => void;
+	onRemove: (id: string) => void;
 }
 
 export function AlbumTracksDialog({
 	tracks,
 	selected,
 	onAdd,
+	onRemove,
 }: AlbumTracksDialogProps) {
 	const [open, setOpen] = useState(false);
 
 	function handleSelect(trackId: string) {
 		if (!selected.includes(trackId)) {
 			onAdd(trackId);
+		} else {
+			onRemove(trackId);
 		}
 	}
 

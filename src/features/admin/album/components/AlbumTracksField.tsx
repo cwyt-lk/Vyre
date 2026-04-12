@@ -1,7 +1,6 @@
 "use client";
 
 import { Music, X } from "lucide-react";
-
 import { Button } from "@/components/ui/Button";
 import { AlbumTracksDialog } from "@/features/admin/album/components";
 import type { Track } from "@/types/domain";
@@ -17,10 +16,13 @@ export function AlbumTracksField({
 	value,
 	onChange,
 }: AlbumTracksFieldProps) {
-	const selectedTracks = tracks.filter((t) => value.includes(t.id));
+	const selectedTracks = value
+		.map((id) => tracks.find((t) => t.id === id))
+		.filter(Boolean) as Track[];
 
 	const addTrack = (trackId: string) => {
 		if (value.includes(trackId)) return;
+
 		onChange([...value, trackId]);
 	};
 
@@ -35,6 +37,7 @@ export function AlbumTracksField({
 					tracks={tracks}
 					selected={value}
 					onAdd={addTrack}
+					onRemove={removeTrack}
 				/>
 			</div>
 
