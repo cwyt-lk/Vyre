@@ -15,7 +15,7 @@ import { getHumanSize } from "@/lib/utils/file";
  * -------------------------------------------------------------------------- */
 
 const dropzoneStyles = cva(
-	"w-full rounded-xl border-2 border-dashed p-6 transition-all outline-none",
+	"flex flex-col justify-center items-center w-full rounded-xl border-2 border-dashed min-h-[160px] p-6 transition-all outline-none",
 	{
 		variants: {
 			isActive: {
@@ -213,7 +213,6 @@ export function FileUpload({
 		singleFile ? (
 			<FilePreview
 				file={singleFile}
-				layout="single"
 				onRemove={(e) => {
 					e.stopPropagation();
 					onValueChange?.([]);
@@ -262,11 +261,15 @@ export function FileUpload({
 
 				<div className="grid gap-2">
 					{files.map((file, i) => (
-						<FilePreview
+						<div
 							key={`${file.name}-${i}`}
-							file={file}
-							onRemove={() => removeAtIndex(i)}
-						/>
+							className="relative transition-all duration-200"
+						>
+							<FilePreview
+								file={file}
+								onRemove={() => removeAtIndex(i)}
+							/>
+						</div>
 					))}
 				</div>
 			</div>
