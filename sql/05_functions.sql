@@ -16,14 +16,18 @@ BEGIN
     SELECT DISTINCT unnest_id, idx::int AS track_number
     FROM unnest(p_track_ids) WITH ORDINALITY AS t(unnest_id, idx)
   )
-  -- 1. Delete removed tracks
+
   DELETE FROM album_tracks at
   WHERE at.album_id = p_album_id
     AND NOT EXISTS (
       SELECT 1 FROM input i WHERE i.unnest_id = at.track_id
     );
 
-  -- 2. Upsert only when needed
+  WITH input AS (
+    SELECT DISTINCT unnest_id, idx::int AS track_number
+    FROM unnest(p_track_ids) WITH ORDINALITY AS t(unnest_id, idx)
+  )
+
   INSERT INTO album_tracks (album_id, track_id, track_number)
   SELECT p_album_id, i.unnest_id, i.track_number
   FROM input i
@@ -44,22 +48,22 @@ BEGIN
     RAISE EXCEPTION 'A track must have at least one artist.';
   END IF;
 
-  -- 1. Delete removed artists
   WITH input AS (
     SELECT DISTINCT unnest_id
     FROM unnest(p_artist_ids) AS t(unnest_id)
   )
+  
   DELETE FROM track_artists ta
   WHERE ta.track_id = p_track_id
     AND NOT EXISTS (
       SELECT 1 FROM input i WHERE i.unnest_id = ta.artist_id
     );
 
-  -- 2. Upsert
   WITH input AS (
     SELECT DISTINCT unnest_id, (idx - 1)::int AS artist_order
     FROM unnest(p_artist_ids) WITH ORDINALITY AS t(unnest_id, idx)
   )
+
   INSERT INTO track_artists (track_id, artist_id, artist_order)
   SELECT p_track_id, i.unnest_id, i.artist_order
   FROM input i
