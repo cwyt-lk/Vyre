@@ -28,7 +28,10 @@ export default async function UpdateArtistsPage({
 						<ArtistForm
 							options={{
 								mode: "edit",
-								initialData: res.data,
+								initialData: {
+									...res.data,
+									bio: res.data.bio ?? undefined,
+								},
 							}}
 						/>
 					</CardContent>
