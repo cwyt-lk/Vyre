@@ -32,7 +32,7 @@ export const FormFileUploadField = ({
 			)}
 
 			<FileUpload
-				value={[field.state.value]}
+				value={field.state.value ? [field.state.value] : []}
 				onValueChange={(files) => field.handleChange(files[0])}
 				multiple={multiple}
 				invalid={isInvalid}

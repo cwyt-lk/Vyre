@@ -2,26 +2,34 @@
 
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
-import Image from "next/image";
 import { type MouseEvent, useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
+
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/lib/utils/cn";
 import { getFileIconComponent, getHumanSize } from "@/lib/utils/file";
-import { placeholderSvg } from "@/lib/utils/placeholders";
 
-const filePreviewVariants = cva(
-	"relative overflow-hidden transition-all duration-200",
-	{
-		variants: {
-			layout: {
-				single: "w-full border-none bg-transparent shadow-none",
-				list: "w-full border-muted hover:shadow-md bg-card",
-			},
+import { Button } from "./Button";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemMedia,
+	ItemTitle,
+} from "./Item";
+import { SmartImage } from "./SmartImage";
+
+const filePreviewVariants = cva("relative transition-all duration-200", {
+	variants: {
+		layout: {
+			single: "border-none bg-transparent shadow-none",
+			list: "border-muted hover:shadow-md bg-card",
 		},
-		defaultVariants: { layout: "list" },
 	},
-);
+	defaultVariants: {
+		layout: "list",
+	},
+});
 
 interface FilePreviewProps
 	extends VariantProps<typeof filePreviewVariants> {
@@ -31,7 +39,12 @@ interface FilePreviewProps
 
 export function FilePreview({ file, onRemove, layout }: FilePreviewProps) {
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
 	const isImage = file.type.startsWith("image/");
+	const fileExtension =
+		file.name.split(".").pop()?.toUpperCase() ?? "FILE";
+
+	const Icon = getFileIconComponent(file.type);
 
 	useEffect(() => {
 		if (!isImage) return;
@@ -42,28 +55,22 @@ export function FilePreview({ file, onRemove, layout }: FilePreviewProps) {
 		return () => URL.revokeObjectURL(url);
 	}, [file, isImage]);
 
-	const Icon = getFileIconComponent(file.type);
-
 	return (
 		<Card className={cn(filePreviewVariants({ layout }))}>
 			<CardContent
-				className={cn("p-3", layout === "single" && "px-0")}
+				className={cn("p-2", layout === "single" && "px-0")}
 			>
-				<div className="flex items-center gap-4">
-					<div
-						className={cn(
-							"relative shrink-0 overflow-hidden rounded-md border bg-muted flex items-center justify-center",
-							layout === "single" ? "size-16" : "size-12",
-						)}
+				<Item>
+					<ItemMedia
+						variant={isImage ? "image" : "icon"}
+						className="size-12"
 					>
 						{isImage && previewUrl ? (
-							<Image
+							<SmartImage
 								src={previewUrl}
 								alt={file.name}
 								fill
 								sizes="(max-width: 640px) 48px, 64px"
-								placeholder="blur"
-								blurDataURL={placeholderSvg}
 								className="object-cover"
 							/>
 						) : (
@@ -71,28 +78,32 @@ export function FilePreview({ file, onRemove, layout }: FilePreviewProps) {
 								<Icon className="size-5" />
 							</div>
 						)}
-					</div>
+					</ItemMedia>
 
-					<div className="flex flex-col gap-1 flex-1 min-w-0">
-						<span className="text-sm font-medium">
-							{file.name}
-						</span>
+					<ItemContent>
+						<ItemTitle>
+							<p className="max-w-50 truncate">
+								{file.name}
+							</p>
+						</ItemTitle>
+						<ItemDescription>
+							{getHumanSize(file.size)} • {fileExtension}
+						</ItemDescription>
+					</ItemContent>
 
-						<span className="text-xs text-muted-foreground">
-							{getHumanSize(file.size)}
-						</span>
-					</div>
-
-					<Button
-						type="button"
-						variant="ghost"
-						size="icon"
-						className="size-8 shrink-0 rounded-full hover:bg-destructive hover:text-destructive-foreground"
-						onClick={onRemove}
-					>
-						<X className="size-4" />
-					</Button>
-				</div>
+					<ItemActions>
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon"
+							className="size-8 shrink-0 rounded-full hover:bg-destructive hover:text-destructive-foreground"
+							onClick={onRemove}
+							aria-label={`Remove ${file.name}`}
+						>
+							<X className="size-4" />
+						</Button>
+					</ItemActions>
+				</Item>
 			</CardContent>
 		</Card>
 	);
