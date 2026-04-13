@@ -52,12 +52,12 @@ export function useAlbumForm(options: UseAlbumFormOptions) {
 
 		onSubmit: async ({ value }) => {
 			if (options.mode === "create") {
-				await handleCreate(
+				const success = await handleCreate(
 					value as CreateAlbumClientInput,
 					storage,
 				);
 
-				form.reset();
+				if (success) form.reset();
 			} else {
 				await handleUpdate(
 					value as UpdateAlbumClientInput,
@@ -82,7 +82,8 @@ async function handleCreate(
 
 	if (!uploadResult.success) {
 		toast.error("Failed to upload cover image");
-		return;
+
+		return false;
 	}
 
 	const serverInput: CreateAlbumServerInput = {
@@ -94,10 +95,13 @@ async function handleCreate(
 
 	if (!result.success) {
 		toast.error(result.error);
-		return;
+
+		return false;
 	}
 
 	toast.success(`Created album: ${serverInput.title}`);
+
+	return true;
 }
 
 async function handleUpdate(
@@ -113,7 +117,8 @@ async function handleUpdate(
 
 		if (!uploadResult.success) {
 			toast.error("Failed to upload cover image");
-			return;
+
+			return false;
 		}
 
 		coverPath = uploadResult.path;
@@ -128,10 +133,13 @@ async function handleUpdate(
 
 	if (!result.success) {
 		toast.error(result.error);
-		return;
+
+		return false;
 	}
 
 	toast.success(`Updated album: ${serverInput.title}`);
+
+	return true;
 }
 
 async function uploadCover(

@@ -52,12 +52,12 @@ export function useTrackForm(options: UseTrackFormOptions) {
 
 		onSubmit: async ({ value }) => {
 			if (options.mode === "create") {
-				await handleCreate(
+				const success = await handleCreate(
 					value as CreateTrackClientInput,
 					storage,
 				);
 
-				form.reset();
+				if (success) form.reset();
 			} else {
 				await handleUpdate(
 					value as UpdateTrackClientInput,
@@ -82,7 +82,8 @@ async function handleCreate(
 
 	if (!uploadResult.success) {
 		toast.error("Failed to upload cover image");
-		return;
+
+		return false;
 	}
 
 	const serverInput: CreateTrackServerInput = {
@@ -94,10 +95,13 @@ async function handleCreate(
 
 	if (!result.success) {
 		toast.error(result.error);
-		return;
+
+		return false;
 	}
 
 	toast.success(`Created track: ${serverInput.title}`);
+
+	return true;
 }
 
 async function handleUpdate(
@@ -113,7 +117,8 @@ async function handleUpdate(
 
 		if (!uploadResult.success) {
 			toast.error("Failed to upload cover image");
-			return;
+
+			return false;
 		}
 
 		audioPath = uploadResult.path;
@@ -128,10 +133,13 @@ async function handleUpdate(
 
 	if (!result.success) {
 		toast.error(result.error);
-		return;
+
+		return false;
 	}
 
 	toast.success(`Updated track: ${serverInput.title}`);
+
+	return true;
 }
 
 async function uploadAudio(

@@ -43,9 +43,11 @@ export function useArtistForm(options: UseArtistFormOptions) {
 
 		onSubmit: async ({ value }) => {
 			if (options.mode === "create") {
-				await handleCreate(value as CreateArtistInput);
+				const success = await handleCreate(
+					value as CreateArtistInput,
+				);
 
-				form.reset();
+				if (success) form.reset();
 			} else {
 				await handleUpdate(value as UpdateArtistInput);
 			}
@@ -63,10 +65,12 @@ async function handleCreate(value: CreateArtistInput) {
 	if (!result.success) {
 		toast.error(result.error);
 
-		return;
+		return false;
 	}
 
 	toast.success("Successfully Created Artist");
+
+	return true;
 }
 
 async function handleUpdate(value: UpdateArtistInput) {
@@ -75,8 +79,10 @@ async function handleUpdate(value: UpdateArtistInput) {
 	if (!result.success) {
 		toast.error(result.error);
 
-		return;
+		return false;
 	}
 
 	toast.success("Successfully Updated Artist");
+
+	return true;
 }

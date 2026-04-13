@@ -43,9 +43,11 @@ export function useGenreForm(options: UseGenreFormOptions) {
 
 		onSubmit: async ({ value }) => {
 			if (options.mode === "create") {
-				await handleCreate(value as CreateGenreInput);
+				const success = await handleCreate(
+					value as CreateGenreInput,
+				);
 
-				form.reset();
+				if (success) form.reset();
 			} else {
 				await handleUpdate(value as UpdateGenreInput);
 			}
@@ -62,10 +64,13 @@ async function handleCreate(value: CreateGenreInput) {
 
 	if (!result.success) {
 		toast.error(result.error);
-		return;
+
+		return false;
 	}
 
 	toast.success("Successfully Created Genre");
+
+	return true;
 }
 
 async function handleUpdate(value: UpdateGenreInput) {
@@ -73,8 +78,11 @@ async function handleUpdate(value: UpdateGenreInput) {
 
 	if (!result.success) {
 		toast.error(result.error);
-		return;
+
+		return false;
 	}
 
 	toast.success("Successfully Updated Genre");
+
+	return true;
 }
