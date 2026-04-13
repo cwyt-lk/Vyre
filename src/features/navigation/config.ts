@@ -1,6 +1,7 @@
 export const MENU_ITEMS = [
 	{ href: "/home", label: "Home" },
 	{ href: "/music/albums", label: "Albums" },
+	{ href: "/credits", label: "Credits" },
 ] as const;
 
 export const ADMIN_SECTIONS = {
@@ -8,12 +9,12 @@ export const ADMIN_SECTIONS = {
 		{
 			href: "/admin/albums/create",
 			title: "Add Album",
-			description: "Create a new album collection.",
+			description: "Create a new album.",
 		},
 		{
 			href: "/admin/tracks/create",
 			title: "Add Track",
-			description: "Upload new tracks and metadata.",
+			description: "Upload new tracks.",
 		},
 		{
 			href: "/admin/genres/create",
@@ -23,7 +24,7 @@ export const ADMIN_SECTIONS = {
 		{
 			href: "/admin/artists/create",
 			title: "Add Artist",
-			description: "Add a new artist profile.",
+			description: "Add a new artist.",
 		},
 	],
 	view: [
@@ -38,14 +39,14 @@ export const ADMIN_SECTIONS = {
 			description: "Edit uploaded tracks.",
 		},
 		{
-			href: "/admin/artists",
-			title: "View Artists",
-			description: "Manage artist profiles.",
-		},
-		{
 			href: "/admin/genres",
 			title: "View Genres",
 			description: "Review categories.",
+		},
+		{
+			href: "/admin/artists",
+			title: "View Artists",
+			description: "Manage artist profiles.",
 		},
 	],
 } as const;
