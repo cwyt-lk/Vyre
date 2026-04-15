@@ -8,10 +8,7 @@ import { SignInActions } from "@/features/auth/sign-in/components/SignInActions"
 import { SignInFooter } from "@/features/auth/sign-in/components/SignInFooter";
 import { SignInHeader } from "@/features/auth/sign-in/components/SignInHeader";
 import { useSignInForm } from "@/features/auth/sign-in/hooks/useSignInForm";
-import {
-	GithubSocialButton,
-	GoogleSocialButton,
-} from "@/features/auth/social-auth";
+import { GithubSocialButton } from "@/features/auth/social-auth";
 
 export function SignInForm() {
 	const { form, isSubmitting } = useSignInForm();
@@ -60,7 +57,7 @@ export function SignInForm() {
 					onReset={() => form.reset()}
 				/>
 
-				<div className="relative my-4">
+				<div className="relative my-2">
 					<div className="absolute inset-0 flex items-center">
 						<Separator />
 					</div>
@@ -72,8 +69,7 @@ export function SignInForm() {
 					</div>
 				</div>
 
-				<div className="grid grid-cols-2 gap-4">
-					<GoogleSocialButton />
+				<div className="flex flex-col gap-4">
 					<GithubSocialButton />
 				</div>
 
