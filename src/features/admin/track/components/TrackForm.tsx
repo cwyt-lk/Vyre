@@ -94,7 +94,7 @@ export function TrackForm({
 							field={field}
 							options={genreOptions}
 							label="Genre"
-							placeholder="Select a genre (optional)"
+							placeholder="Select a genre"
 						/>
 					)}
 				</form.Field>

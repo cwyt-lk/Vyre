@@ -8,9 +8,11 @@ export default async function AddArtistPage() {
 			<Container className="flex flex-col items-center justify-center py-8">
 				<Card className="w-full max-w-150">
 					<CardContent>
-						<ArtistForm options={{
-							mode: "create"
-						}} />
+						<ArtistForm
+							options={{
+								mode: "create",
+							}}
+						/>
 					</CardContent>
 				</Card>
 			</Container>

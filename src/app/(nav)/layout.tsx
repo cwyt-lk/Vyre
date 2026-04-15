@@ -18,6 +18,7 @@ export default async function NavLayout({
 	children: ReactNode;
 }) {
 	const { auth } = await createRepositories();
+
 	const [userResult, roleResult] = await Promise.all([
 		auth.getCurrentUser(),
 		auth.getCurrentRole(),
