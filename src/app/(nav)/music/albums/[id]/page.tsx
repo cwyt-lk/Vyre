@@ -17,18 +17,18 @@ export default async function AlbumPage({ params }: AlbumParamsType) {
 	const { id } = await params;
 
 	const { albums, storage } = await createRepositories();
-	const albumResult = await albums.findByIdWithRelations(id);
+	const result = await albums.findByIdWithRelations(id);
 
-	if (!albumResult.success) {
+	if (!result.success) {
 		notFound();
 	}
 
 	const album: AlbumWithCover = AlbumMapper.mapWithCover(
-		albumResult.data,
+		result.data,
 		storage,
 	);
 
-	const tracks: TrackAggregateWithAudio[] = albumResult.data.tracks.map(
+	const tracks: TrackAggregateWithAudio[] = result.data.tracks.map(
 		(it) => TrackMapper.mapWithAudio(it, storage),
 	);
 
