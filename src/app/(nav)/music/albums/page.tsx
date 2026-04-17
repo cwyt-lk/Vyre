@@ -27,20 +27,23 @@ export default async function AlbumsPage({
 
 	const { page, pageSize, from, to } = getPagination(resolvedParams);
 
-	const res = await albums.searchByTitle(resolvedParams?.query ?? "", {
-		range: [from, to],
-	});
+	const result = await albums.searchByTitle(
+		resolvedParams?.query ?? "",
+		{
+			range: [from, to],
+		},
+	);
 
-	if (!res.success) {
+	if (!result.success) {
 		return (
 			<ErrorState
-				message={res.error.message}
-				code={res.error.code}
+				message={result.error.message}
+				code={result.error.code}
 			/>
 		);
 	}
 
-	const { items, count } = res.data;
+	const { items, count } = result.data;
 	const totalPages = getPaginationTotalPages(pageSize, count);
 
 	const albumsList: AlbumWithCover[] = items.map((it) =>
@@ -53,35 +56,46 @@ export default async function AlbumsPage({
 
 	return (
 		<Container>
-			<section className="py-6 animate-in fade-in duration-500">
-				<header className="sticky flex flex-col justify-center items-center gap-4 pb-6">
-					<h1 className="text-3xl font-bold tracking-tight">
-						Albums
-					</h1>
+			<section className="animate-in fade-in space-y-8 py-8 duration-500">
+				<header className="space-y-6">
+					<div className="space-y-2">
+						<h1 className="text-4xl font-bold tracking-tight">
+							Albums
+						</h1>
 
-					<search className="w-1/4">
+						<p className="text-sm text-muted-foreground">
+							Discover and explore your music library
+						</p>
+					</div>
+
+					<search className="max-w-sm">
 						<SearchBar placeholder="Search by title" />
 					</search>
 				</header>
 
-				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{albumsList.map((album) => (
 						<Link
 							key={album.id}
 							href={`/music/albums/${album.id}`}
-							className="transition-transform hover:scale-[1.02] active:scale-[0.98]"
+							className="group rounded-xl
+								transition-transform duration-500 ease-out hover:scale-[1.03]
+								focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50
+							"
 						>
 							<AlbumCard album={album} />
 						</Link>
 					))}
 				</div>
 
-				<div className="mt-6">
-					<PaginationClient
-						currentPage={page}
-						totalPages={totalPages}
-					/>
-				</div>
+				{albumsList.length > 0 && (
+					<div className="pt-4">
+						<PaginationClient
+							currentPage={page}
+							totalPages={totalPages}
+						/>
+					</div>
+				)}
 			</section>
 		</Container>
 	);
