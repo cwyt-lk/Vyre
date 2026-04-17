@@ -31,7 +31,7 @@ export const VolumeBar = ({ className, disabled }: VolumeBarProps) => {
 					(Array.isArray(value) ? value[0] : value) / 1000,
 				);
 			}}
-			className={cn("transition-all duration-200", className)}
+			className={cn("transition-all duration-200 w-24", className)}
 		/>
 	);
 };

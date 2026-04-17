@@ -28,18 +28,24 @@ export const PlayPauseButton = ({
 			onClick={togglePlay}
 			disabled={disabled || isLoading}
 			aria-label={isPlaying ? "Pause audio" : "Play audio"}
-			className={`
-                group
-                size-16
-                rounded-2xl
-            `}
+			className="
+				group
+				size-16
+				rounded-2xl
+				transition-all
+				duration-200
+				hover:scale-110
+				active:scale-95
+				shadow-lg
+				hover:shadow-xl
+			"
 		>
 			{isLoading ? (
-				<Spinner className="size-6" />
+				<Spinner className="size-6 animate-spin" />
 			) : isPlaying ? (
-				<Pause className="size-6" />
+				<Pause className="size-6 transition-transform duration-200" />
 			) : (
-				<Play className="size-6 translate-x-px" />
+				<Play className="size-6 translate-x-px transition-transform duration-200" />
 			)}
 		</Button>
 	);

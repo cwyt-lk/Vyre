@@ -13,12 +13,12 @@ export const TimeDisplay = () => {
 	);
 
 	return (
-		<div className="flex flex-row gap-2 justify-between items-center tabular-nums">
-			<time className="text-xs font-medium text-foreground min-w-10">
+		<div className="flex flex-row justify-between items-center tabular-nums px-0.5">
+			<time className="text-sm font-semibold text-foreground min-w-10 tracking-tight">
 				{formatTime(currentTime)}
 			</time>
 
-			<time className="text-xs font-medium text-muted-foreground min-w-10 text-right">
+			<time className="text-sm font-medium text-muted-foreground min-w-10 text-right tracking-tight">
 				{formatTime(duration)}
 			</time>
 		</div>

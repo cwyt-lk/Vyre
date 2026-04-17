@@ -26,8 +26,17 @@ export const LoopButton = ({ disabled }: LoopButtonProps) => {
 			aria-label={isLooping ? "Disable Looping" : "Enable Looping"}
 			onClick={cycleLoopMode}
 			disabled={disabled}
+			className={`
+                transition-all
+                duration-200
+                hover:scale-110
+                active:scale-95
+                ${isLooping ? "shadow-md" : ""}
+            `}
 		>
-			{loopMode === "track" ? <Repeat1 /> : <Repeat />}
+			<span className="transition-transform duration-200 group-hover:scale-110">
+				{loopMode === "track" ? <Repeat1 /> : <Repeat />}
+			</span>
 		</Button>
 	);
 };

@@ -43,8 +43,17 @@ export const VolumeButton = ({ disabled }: VolumeButtonProps) => {
 			onClick={toggleMute}
 			disabled={disabled || isLoading}
 			aria-label={isMuted ? "Unmute" : "Mute"}
+			className={`
+                transition-all
+                duration-200
+                hover:scale-110
+                active:scale-95
+            `}
 		>
-			<VolumeIcon volume={isMuted ? 0 : volume} className="size-5" />
+			<VolumeIcon
+				volume={isMuted ? 0 : volume}
+				className="size-5 transition-transform duration-200"
+			/>
 		</Button>
 	);
 };

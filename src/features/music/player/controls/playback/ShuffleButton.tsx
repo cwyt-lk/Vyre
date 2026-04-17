@@ -21,11 +21,20 @@ export const ShuffleButton = ({ disabled }: ShuffleButtonProps) => {
 		<Button
 			variant={isShuffling ? "default" : "ghost"}
 			size="icon-lg"
-			aria-label={isShuffling ? "Disable Looping" : "Enable Looping"}
+			aria-label={isShuffling ? "Disable Shuffle" : "Enable Shuffle"}
 			onClick={toggleShuffle}
 			disabled={disabled}
+			className={`
+                transition-all
+                duration-200
+                hover:scale-110
+                active:scale-95
+                ${isShuffling ? "shadow-md" : ""}
+            `}
 		>
-			<Shuffle />
+			<span className="transition-transform duration-200 group-hover:scale-110">
+				<Shuffle />
+			</span>
 		</Button>
 	);
 };

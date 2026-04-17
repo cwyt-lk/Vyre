@@ -17,28 +17,37 @@ import {
 
 export const Player = () => {
 	return (
-		<div className="py-4 w-3/4">
-			<div className="flex flex-col gap-8 justify-center items-center">
-				<div className="flex flex-col gap-4 w-full">
+		<div className="w-full max-w-5xl">
+			<div className="flex flex-col gap-6">
+				{/* Progress Section */}
+				<div className="flex flex-col gap-3 mb-4">
 					<TimeDisplay />
 					<SeekBar />
 				</div>
 
-				<div className="grid grid-cols-3 gap-4 justify-center items-center w-full">
-					<div className="flex flex-row gap-2 items-center w-full">
-						<LoopButton />
-						<ShuffleButton />
-					</div>
+				{/* Main Controls */}
+				<div className="flex flex-col gap-6">
+					{/* Playback Controls - Center Focal Point */}
+					<div className="flex justify-center items-center gap-6">
+						<div className="flex items-center gap-3">
+							<LoopButton />
+							<ShuffleButton />
+						</div>
 
-					<div className="flex flex-row gap-2 items-center w-full">
-						<SkipNextButton reverse />
-						<PlayPauseButton />
-						<SkipNextButton />
-					</div>
+						<div className="flex items-center gap-4">
+							<SkipNextButton reverse />
 
-					<div className="flex flex-row gap-2 items-center w-full">
-						<VolumeButton />
-						<VolumeBar />
+							<div className="scale-110">
+								<PlayPauseButton />
+							</div>
+
+							<SkipNextButton />
+						</div>
+
+						<div className="flex items-center gap-3 flex-1 justify-end max-w-50">
+							<VolumeButton />
+							<VolumeBar />
+						</div>
 					</div>
 				</div>
 			</div>

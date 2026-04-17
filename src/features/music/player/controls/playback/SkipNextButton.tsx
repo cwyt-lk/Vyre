@@ -24,7 +24,7 @@ export const SkipNextButton = ({
 
 	return (
 		<Button
-			variant="default"
+			variant="ghost"
 			size="icon"
 			onClick={reverse ? playPrevious : playNext}
 			disabled={disabled || isLoading}
@@ -32,13 +32,18 @@ export const SkipNextButton = ({
 			className={`
                 group
                 size-12
-                rounded-xl
+                rounded-lg
+                transition-all
+                duration-200
+                hover:bg-accent
+                hover:scale-110
+                active:scale-95
             `}
 		>
 			{reverse ? (
-				<SkipBack className="size-5" />
+				<SkipBack className="size-5 transition-transform duration-200 group-hover:scale-110" />
 			) : (
-				<SkipForward className="size-5" />
+				<SkipForward className="size-5 transition-transform duration-200 group-hover:scale-110" />
 			)}
 		</Button>
 	);
