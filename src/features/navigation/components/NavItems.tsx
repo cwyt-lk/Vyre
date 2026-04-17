@@ -35,10 +35,9 @@ export const AdminListItem = ({
 			render={
 				<Link
 					href={href}
-					className={`block select-none space-y-1 rounded-md p-3 leading-none 
-						no-underline outline-none transition-colors`}
+					className={`select-none flex flex-col gap-1 rounded-md p-3 leading-none transition-colors`}
 				>
-					<div className="text-sm font-medium leading-none">
+					<div className="text-sm leading-none font-medium">
 						{title}
 					</div>
 

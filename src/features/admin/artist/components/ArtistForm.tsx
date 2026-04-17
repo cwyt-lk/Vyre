@@ -34,9 +34,9 @@ export function ArtistForm({ options }: ArtistFormProps) {
 			submittingMessage={isEdit ? "Updating..." : "Creating..."}
 		>
 			{/* Artist Info */}
-			<FieldSet className="space-y-6">
+			<FieldSet className="flex flex-col gap-6">
 				<div>
-					<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+					<h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
 						Artist Details
 					</h3>
 				</div>

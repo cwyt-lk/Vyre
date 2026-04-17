@@ -32,7 +32,7 @@ export const AlbumTrackList = ({ tracks }: AlbumTrackListProps) => {
 	const currentTrack = queue[currentIndex];
 
 	return (
-		<ItemGroup className="space-y-2">
+		<ItemGroup className="flex flex-col gap-2">
 			{tracks.map(({ id, title, artists }, index) => {
 				const artistNames = artists.map((a) => a.name).join(", ");
 				const isSelected = id === currentTrack?.id;

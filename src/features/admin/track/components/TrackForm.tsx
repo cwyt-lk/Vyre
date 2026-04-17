@@ -59,7 +59,7 @@ export function TrackForm({
 			submittingMessage={isEdit ? "Saving..." : "Creating..."}
 		>
 			{/* Track Info */}
-			<FieldSet className="space-y-4">
+			<FieldSet className="flex flex-col gap-4">
 				<div>
 					<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
 						Track Information
@@ -103,7 +103,7 @@ export function TrackForm({
 			<Separator />
 
 			{/* Audio Upload */}
-			<FieldSet className="space-y-4">
+			<FieldSet className="flex flex-col gap-4">
 				<div>
 					<h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
 						Audio File

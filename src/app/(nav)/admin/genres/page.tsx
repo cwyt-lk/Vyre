@@ -55,10 +55,10 @@ export default async function AdminGenresPage({
 	}
 
 	return (
-		<div className="min-h-screen p-6 space-y-2">
-			<h1 className="text-3xl font-bold mb-6">Genres</h1>
+		<div className="flex min-h-screen flex-col gap-2 p-6">
+			<h1 className="mb-6 text-3xl font-bold">Genres</h1>
 
-			<search className="w-1/4 mb-4">
+			<search className="mb-4 w-1/4">
 				<SearchBar placeholder="Search by title" />
 			</search>
 

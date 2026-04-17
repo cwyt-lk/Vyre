@@ -30,7 +30,7 @@ export const AlbumCard = async ({ album }: AlbumCardProps) => {
 				</div>
 			</CardHeader>
 
-			<CardContent className="space-y-2 p-4 pt-0">
+			<CardContent className="flex flex-col gap-2 p-4 pt-0">
 				<CardTitle className="line-clamp-2 text-base font-semibold leading-snug">
 					{album.title}
 				</CardTitle>

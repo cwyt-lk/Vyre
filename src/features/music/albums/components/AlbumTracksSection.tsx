@@ -20,9 +20,9 @@ export const AlbumTracksSection = ({
 	if (trackCount === 0) return;
 
 	return (
-		<Card className="overflow-hidden rounded-3xl border border-border/20 bg-card/30">
+		<Card className="rounded-3xl border border-border/20 bg-card/30">
 			<CardHeader className="flex flex-col gap-4 border-b border-border/50 sm:flex-row sm:items-center sm:justify-between">
-				<div className="space-y-2">
+				<div className="flex flex-col gap-1">
 					<CardTitle className="text-2xl font-semibold">
 						Track list
 					</CardTitle>

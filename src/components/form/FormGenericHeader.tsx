@@ -10,7 +10,7 @@ export function FormGenericHeader({
 	description,
 }: FormGenericHeaderProps) {
 	return (
-		<div className="flex flex-col items-center space-y-2 text-center">
+		<div className="flex flex-col items-center gap-2 text-center">
 			<FieldLegend className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
 				{title}
 			</FieldLegend>

@@ -56,9 +56,9 @@ export default async function AlbumsPage({
 
 	return (
 		<Container>
-			<section className="animate-in fade-in space-y-8 py-8 duration-500">
-				<header className="space-y-6">
-					<div className="space-y-2">
+			<section className="flex animate-in flex-col gap-8 py-8 duration-500 fade-in">
+				<header className="flex flex-col gap-6">
+					<div className="flex flex-col gap-2">
 						<h1 className="text-4xl font-bold tracking-tight">
 							Albums
 						</h1>
