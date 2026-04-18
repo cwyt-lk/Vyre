@@ -52,6 +52,7 @@ export const SignOutButton = () => {
 			<AlertDialogContent size="sm">
 				<AlertDialogHeader>
 					<AlertDialogTitle>Sign Out?</AlertDialogTitle>
+
 					<AlertDialogDescription>
 						You will need to log back in to access Vyre.
 					</AlertDialogDescription>
@@ -60,6 +61,7 @@ export const SignOutButton = () => {
 					<AlertDialogCancel disabled={isLoading}>
 						Cancel
 					</AlertDialogCancel>
+
 					<AlertDialogAction
 						onClick={signOut}
 						disabled={isLoading}

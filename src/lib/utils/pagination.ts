@@ -1,5 +1,7 @@
 /**
- * Input parameters for pagination.
+ * Input parameters for pagination from query strings or user input.
+ * @property page - The page number as a string (will be parsed and validated).
+ * @property pageSize - The number of items per page as a string (will be parsed and validated).
  */
 export interface PaginationInput {
 	page?: string;
@@ -7,7 +9,11 @@ export interface PaginationInput {
 }
 
 /**
- * Result object containing pagination details.
+ * Calculated pagination details with boundaries for data fetching.
+ * @property page - The validated page number (1-indexed).
+ * @property pageSize - The validated number of items per page.
+ * @property from - The starting index for data retrieval (0-indexed).
+ * @property to - The ending index for data retrieval (0-indexed, inclusive).
  */
 export interface PaginationResult {
 	page: number;
@@ -17,10 +23,15 @@ export interface PaginationResult {
 }
 
 /**
- * Calculates pagination details based on input and defaults.
- * @param input - The pagination input parameters.
- * @param defaults - Default values for page and pageSize.
- * @returns The pagination result object.
+ * Calculates pagination details (page number, boundaries) from input parameters.
+ *
+ * @param input - User-provided pagination parameters (typically from query strings).
+ * @param defaults - Default values to use if parameters are missing or invalid.
+ * @returns Validated pagination result with calculated boundaries.
+ *
+ * @example
+ * const pagination = getPagination({ page: "2", pageSize: "20" });
+ * // Returns: { page: 2, pageSize: 20, from: 20, to: 39 }
  */
 export function getPagination(
 	{ page, pageSize }: PaginationInput,
@@ -44,10 +55,15 @@ export function getPagination(
 }
 
 /**
- * Calculates the total number of pages based on page size and total items.
+ * Calculates the total number of pages needed for a dataset.
+ *
  * @param pageSize - The number of items per page.
- * @param totalItems - The total number of items.
- * @returns The total number of pages.
+ * @param totalItems - The total number of items in the dataset.
+ * @returns The total number of pages required (rounded up).
+ *
+ * @example
+ * const pages = getPaginationTotalPages(20, 45);
+ * // Returns: 3 (pages)
  */
 export const getPaginationTotalPages = (
 	pageSize: number,

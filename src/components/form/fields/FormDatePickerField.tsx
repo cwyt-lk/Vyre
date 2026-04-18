@@ -94,10 +94,11 @@ export const FormDatePickerField = ({
 									size="icon-xs"
 									type="button"
 								>
-									<CalendarIcon className="h-4 w-4" />
+									<CalendarIcon className="size-4" />
 								</InputGroupButton>
 							}
 						/>
+
 						<PopoverContent className="w-auto p-0" align="end">
 							<Calendar
 								mode="single"
