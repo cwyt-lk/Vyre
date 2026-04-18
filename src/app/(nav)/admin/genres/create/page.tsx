@@ -1,5 +1,5 @@
-import { Container } from "@/components/layout/Container";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
 import { GenreForm } from "@/features/admin/genre/components/GenreForm";
 
 export default async function AddGenrePage() {
