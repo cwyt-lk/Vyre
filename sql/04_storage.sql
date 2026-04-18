@@ -28,19 +28,6 @@ ON CONFLICT (id) DO NOTHING;
 -- =========================================================
 
 -- ---------------------------------------------------------
--- PUBLIC READ (since buckets are public)
--- ---------------------------------------------------------
-
-CREATE POLICY "Public read cover-art"
-ON storage.objects FOR SELECT
-USING (bucket_id = 'cover-art');
-
-CREATE POLICY "Public read music"
-ON storage.objects FOR SELECT
-USING (bucket_id = 'music');
-
-
--- ---------------------------------------------------------
 -- AUTHENTICATED WRITE ACCESS
 -- ---------------------------------------------------------
 
