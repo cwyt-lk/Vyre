@@ -1,15 +1,13 @@
-import { ErrorState } from "@/components/layout/ErrorState";
+import { Album, Search } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { AlbumTable } from "@/features/admin/album/components";
-import { EmptyAlbumState } from "@/features/music/albums/components/EmptyAlbumState";
 import { PaginationClient } from "@/features/pagination/PaginationClient";
 import { createRepositories } from "@/lib/factories/repository/server";
 import { AlbumMapper, type AlbumWithCover } from "@/lib/mappers/domain";
-import {
-	getPagination,
-	getPaginationTotalPages,
-	type PaginationInput,
-} from "@/lib/utils/pagination";
+import { paginatedSearch } from "@/lib/utils/paginated-search";
+import type { PaginationInput } from "@/lib/utils/pagination";
 
 interface AdminAlbumsPageProps {
 	searchParams?: Promise<{ query?: string } & PaginationInput>;
@@ -25,13 +23,15 @@ export default async function AdminAlbumsPage({
 		return <ErrorState />;
 	}
 
-	const { page, pageSize, from, to } = getPagination(resolvedParams);
-
-	const res = await albums.searchByTitle(resolvedParams.query ?? "", {
-		range: [from, to],
-		order: {
-			field: "title",
-			direction: "asc",
+	const res = await paginatedSearch({
+		query: resolvedParams.query,
+		params: resolvedParams,
+		searchFn: (query, options) => albums.searchByTitle(query, options),
+		queryOptions: {
+			order: {
+				field: "title",
+				direction: "asc",
+			},
 		},
 	});
 
@@ -44,33 +44,44 @@ export default async function AdminAlbumsPage({
 		);
 	}
 
-	const { items, count } = res.data;
-	const totalPages = getPaginationTotalPages(pageSize, count);
+	const { items, page, totalPages } = res;
 
 	const albumList: AlbumWithCover[] = items.map((it) =>
 		AlbumMapper.mapWithCover(it, storage),
 	);
 
-	if (albumList.length === 0) {
-		return <EmptyAlbumState />;
-	}
-
 	return (
 		<div className="flex min-h-screen flex-col gap-2 p-6">
 			<h1 className="mb-6 text-3xl font-bold">Albums</h1>
 
-			<search className="mb-4 w-1/4">
+			<div className="mb-4 w-1/4">
 				<SearchBar placeholder="Search by title" />
-			</search>
-
-			<div className="flex flex-col gap-8">
-				<AlbumTable albumList={albumList} />
-
-				<PaginationClient
-					currentPage={page}
-					totalPages={totalPages}
-				/>
 			</div>
+
+			{albumList.length === 0 ? (
+				resolvedParams.query ? (
+					<EmptyState
+						icon={<Search className="size-16" />}
+						title="No results found"
+						description="Try adjusting your search or filters."
+					/>
+				) : (
+					<EmptyState
+						icon={<Album className="size-16" />}
+						title="No albums yet"
+						description="Start by adding a new album."
+					/>
+				)
+			) : (
+				<div className="flex flex-col gap-8">
+					<AlbumTable albumList={albumList} />
+
+					<PaginationClient
+						currentPage={page}
+						totalPages={totalPages}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

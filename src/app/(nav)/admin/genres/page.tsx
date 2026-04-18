@@ -1,15 +1,12 @@
-import { ErrorState } from "@/components/layout/ErrorState";
+import { Film, Search } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { GenreTable } from "@/features/admin/genre/components/GenreTable";
-import { EmptyAlbumState } from "@/features/music/albums/components/EmptyAlbumState";
 import { PaginationClient } from "@/features/pagination/PaginationClient";
 import { createRepositories } from "@/lib/factories/repository/server";
-import {
-	getPagination,
-	getPaginationTotalPages,
-	type PaginationInput,
-} from "@/lib/utils/pagination";
-import { slugify } from "@/lib/utils/string";
+import { paginatedSearch } from "@/lib/utils/paginated-search";
+import type { PaginationInput } from "@/lib/utils/pagination";
 
 interface AdminGenresPageProps {
 	searchParams?: Promise<{ query?: string } & PaginationInput>;
@@ -25,18 +22,17 @@ export default async function AdminGenresPage({
 		return <ErrorState />;
 	}
 
-	const { page, pageSize, from, to } = getPagination(resolvedParams);
-
-	const res = await genres.searchByKey(
-		slugify(resolvedParams.query ?? ""),
-		{
-			range: [from, to],
+	const res = await paginatedSearch({
+		query: resolvedParams.query,
+		params: resolvedParams,
+		searchFn: (query, options) => genres.searchByKey(query, options),
+		queryOptions: {
 			order: {
-				field: "label",
+				field: "key",
 				direction: "asc",
 			},
 		},
-	);
+	});
 
 	if (!res.success) {
 		return (
@@ -47,12 +43,7 @@ export default async function AdminGenresPage({
 		);
 	}
 
-	const { items: genreList, count } = res.data;
-	const totalPages = getPaginationTotalPages(pageSize, count);
-
-	if (genreList.length === 0) {
-		return <EmptyAlbumState />;
-	}
+	const { items: genreList, page, totalPages } = res;
 
 	return (
 		<div className="flex min-h-screen flex-col gap-2 p-6">
@@ -62,14 +53,30 @@ export default async function AdminGenresPage({
 				<SearchBar placeholder="Search by title" />
 			</search>
 
-			<div className="flex flex-col gap-8">
-				<GenreTable genreList={genreList} />
+			{genreList.length === 0 ? (
+				resolvedParams.query ? (
+					<EmptyState
+						icon={<Search className="size-16" />}
+						title="No results found"
+						description="Try adjusting your search or filters."
+					/>
+				) : (
+					<EmptyState
+						icon={<Film className="size-16" />}
+						title="No genres yet"
+						description="Start by adding a new genre."
+					/>
+				)
+			) : (
+				<div className="flex flex-col gap-8">
+					<GenreTable genreList={genreList} />
 
-				<PaginationClient
-					currentPage={page}
-					totalPages={totalPages}
-				/>
-			</div>
+					<PaginationClient
+						currentPage={page}
+						totalPages={totalPages}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }
