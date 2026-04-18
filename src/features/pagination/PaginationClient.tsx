@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useMemo } from "react";
 import {
 	Pagination,
 	PaginationContent,
@@ -27,34 +28,42 @@ export const PaginationClient = ({
 	const prevPage = Math.max(currentPage - 1, 1);
 	const nextPage = Math.min(currentPage + 1, totalPages);
 
-	const createPageHref = (page: number) => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("page", String(page));
+	const createPageHref = useCallback(
+		(page: number) => {
+			const params = new URLSearchParams(searchParams.toString());
 
-		return `${pathname}?${params.toString()}`;
-	};
+			if (page === 1) params.delete("page");
+			else params.set("page", String(page));
 
-	const getVisiblePages = () => {
+			const query = params.toString();
+			return query ? `${pathname}?${query}` : pathname;
+		},
+		[pathname, searchParams],
+	);
+
+	const visiblePages = useMemo(() => {
 		const start = Math.max(1, currentPage - pageWindowSplit);
 		const end = Math.min(totalPages, currentPage + pageWindowSplit);
 
-		const pages = [];
+		return Array.from(
+			{ length: end - start + 1 },
+			(_, i) => start + i,
+		);
+	}, [currentPage, totalPages, pageWindowSplit]);
 
-		for (let i = start; i <= end; i++) {
-			pages.push(i);
-		}
-
-		return pages;
-	};
+	if (totalPages <= 1) return;
 
 	return (
 		<Pagination>
 			<PaginationContent>
 				<PaginationItem>
-					<PaginationPrevious href={createPageHref(prevPage)} />
+					<PaginationPrevious
+						href={createPageHref(prevPage)}
+						aria-disabled={currentPage === 1}
+					/>
 				</PaginationItem>
 
-				{getVisiblePages().map((page) => (
+				{visiblePages.map((page) => (
 					<PaginationItem key={page}>
 						<PaginationLink
 							href={createPageHref(page)}
@@ -66,7 +75,10 @@ export const PaginationClient = ({
 				))}
 
 				<PaginationItem>
-					<PaginationNext href={createPageHref(nextPage)} />
+					<PaginationNext
+						href={createPageHref(nextPage)}
+						aria-disabled={currentPage === totalPages}
+					/>
 				</PaginationItem>
 			</PaginationContent>
 		</Pagination>
