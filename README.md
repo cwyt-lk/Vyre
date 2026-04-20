@@ -9,7 +9,7 @@ Vyre is a lightweight and scalable music platform that allows users to discover,
 Follow these steps to run **Vyre** locally.
 
 ### Prerequisites
-- Node.js (version 18 or later)
+- Node.js
 - pnpm package manager
 - Git (for cloning the repository)
 - Docker Desktop (required for local Supabase setup)
