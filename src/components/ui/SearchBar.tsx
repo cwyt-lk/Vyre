@@ -36,18 +36,19 @@ export const SearchBar = ({
 	const [isPending, startTransition] = useTransition();
 
 	const [search, setSearch] = useState(
-		searchParams.get(queryField) ?? "",
+		() => searchParams.get(queryField) ?? "",
 	);
 
-	// Sync input with URL query param
+	// Keep input in sync with URL
 	useEffect(() => {
-		setSearch(searchParams.get(queryField) ?? "");
+		const param = searchParams.get(queryField) ?? "";
+
+		setSearch((prev) => (prev !== param ? param : prev));
 	}, [searchParams, queryField]);
 
-	// Update URL query param
 	const updateURL = useCallback(
 		(term: string) => {
-			const params = new URLSearchParams(searchParams.toString());
+			const params = new URLSearchParams(searchParams);
 
 			if (term) {
 				params.set(queryField, term);
@@ -74,26 +75,28 @@ export const SearchBar = ({
 	};
 
 	return (
-		<InputGroup>
-			<InputGroupAddon>
-				{isPending ? (
-					<Spinner />
-				) : (
-					<Search
-						className="text-muted-foreground"
-						aria-hidden="true"
-					/>
-				)}
-			</InputGroupAddon>
+		<search>
+			<InputGroup>
+				<InputGroupAddon>
+					{isPending ? (
+						<Spinner />
+					) : (
+						<Search
+							className="text-muted-foreground"
+							aria-hidden="true"
+						/>
+					)}
+				</InputGroupAddon>
 
-			<InputGroupInput
-				value={search}
-				onChange={handleChange}
-				placeholder={placeholder}
-				aria-label={placeholder ?? "Search"}
-				type="search"
-				autoComplete="off"
-			/>
-		</InputGroup>
+				<InputGroupInput
+					type="search"
+					value={search}
+					onChange={handleChange}
+					placeholder={placeholder}
+					aria-label={placeholder}
+					autoComplete="off"
+				/>
+			</InputGroup>
+		</search>
 	);
 };

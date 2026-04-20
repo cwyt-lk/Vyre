@@ -31,7 +31,7 @@ export function AlbumTracksField({
 	};
 
 	return (
-		<div className="space-y-4">
+		<div className="flex flex-col gap-4">
 			<div className="flex items-center justify-between">
 				<AlbumTracksDialog
 					tracks={tracks}
@@ -56,7 +56,7 @@ export function AlbumTracksField({
 							className="flex items-center justify-between px-4 py-2 text-sm"
 						>
 							<span className="flex items-center gap-2">
-								<span className="text-muted-foreground w-5">
+								<span className="w-5 text-muted-foreground">
 									{index + 1}.
 								</span>
 								{track.title}

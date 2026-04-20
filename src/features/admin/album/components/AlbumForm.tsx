@@ -42,8 +42,8 @@ export function AlbumForm({ tracks, options }: AlbumFormProps) {
 			submitMessage={isEdit ? "Save Changes" : "Create Album"}
 			submittingMessage={isEdit ? "Saving..." : "Creating..."}
 		>
-			<FieldSet className="space-y-4">
-				<div className="space-y-1">
+			<FieldSet className="flex flex-col gap-4">
+				<div className="flex flex-col gap-1">
 					<h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
 						Album Information
 					</h3>
@@ -85,7 +85,7 @@ export function AlbumForm({ tracks, options }: AlbumFormProps) {
 			<Separator />
 
 			{/* Tracks */}
-			<FieldSet className="space-y-4">
+			<FieldSet className="flex flex-col gap-4">
 				<div>
 					<h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
 						Tracks
@@ -106,7 +106,7 @@ export function AlbumForm({ tracks, options }: AlbumFormProps) {
 			<Separator />
 
 			{/* Cover Image */}
-			<FieldSet className="space-y-4">
+			<FieldSet className="flex flex-col gap-4">
 				<div>
 					<h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
 						Cover Image

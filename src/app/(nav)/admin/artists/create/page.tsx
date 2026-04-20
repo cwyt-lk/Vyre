@@ -1,5 +1,5 @@
-import { Container } from "@/components/layout/Container";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
 import { ArtistForm } from "@/features/admin/artist/components/ArtistForm";
 
 export default async function AddArtistPage() {

@@ -1,6 +1,6 @@
-import { Container } from "@/components/layout/Container";
-import { ErrorState } from "@/components/layout/ErrorState";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { AlbumForm } from "@/features/admin/album/components";
 import { createRepositories } from "@/lib/factories/repository/server";
 

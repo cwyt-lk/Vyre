@@ -1,5 +1,5 @@
-import { Container } from "@/components/layout/Container";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
 import { SignInForm } from "@/features/auth/sign-in/components/SignInForm";
 
 export default async function SignInPage() {

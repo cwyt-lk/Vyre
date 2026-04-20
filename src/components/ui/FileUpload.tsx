@@ -183,7 +183,7 @@ export function FileUpload({
 				<Upload className="size-6 text-muted-foreground" />
 			</div>
 
-			<div className="space-y-1 text-sm font-semibold">
+			<div className="flex flex-col gap-1 text-sm font-semibold">
 				{isDragActive ? (
 					<p>Drop files here</p>
 				) : (
@@ -222,7 +222,7 @@ export function FileUpload({
 
 	const Errors = () =>
 		fileRejections.length > 0 ? (
-			<div className="space-y-1 px-1">
+			<div className="flex flex-col gap-1 px-1">
 				{fileRejections.map(({ file, errors }) => (
 					<div
 						key={file.name}

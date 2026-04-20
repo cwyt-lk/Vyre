@@ -33,7 +33,7 @@ export function AdminFormLayout({
 				onSubmit();
 			}}
 		>
-			<FieldGroup className="mx-auto max-w-2xl space-y-6 p-6">
+			<FieldGroup className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
 				<FormGenericHeader
 					title={title}
 					description={description}

@@ -1,10 +1,12 @@
-export const MENU_ITEMS = [
+import type { AdminSections, MenuItem } from "./types";
+
+export const MENU_ITEMS: MenuItem[] = [
 	{ href: "/home", label: "Home" },
 	{ href: "/music/albums", label: "Albums" },
 	{ href: "/credits", label: "Credits" },
-] as const;
+];
 
-export const ADMIN_SECTIONS = {
+export const ADMIN_SECTIONS: AdminSections = {
 	create: [
 		{
 			href: "/admin/albums/create",
@@ -49,4 +51,4 @@ export const ADMIN_SECTIONS = {
 			description: "Manage artist profiles.",
 		},
 	],
-} as const;
+};

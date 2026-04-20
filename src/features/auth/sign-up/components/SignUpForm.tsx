@@ -24,7 +24,7 @@ export function SignUpForm() {
 			<FieldGroup className="p-8">
 				<SignUpHeader />
 
-				<FieldSet className="mt-8 space-y-4">
+				<FieldSet className="mt-8 flex flex-col gap-4">
 					<form.Field name="email">
 						{(field) => (
 							<FormInputField

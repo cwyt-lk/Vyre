@@ -12,9 +12,9 @@ export const AlbumInfo = ({ album }: AlbumInfoProps) => {
 	});
 
 	return (
-		<div className="space-y-4">
-			<header className="space-y-2">
-				<p className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+		<div className="flex flex-col gap-3">
+			<header className="flex flex-col gap-2">
+				<p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
 					Album
 				</p>
 

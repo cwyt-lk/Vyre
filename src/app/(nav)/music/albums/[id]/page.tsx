@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/ui/Container";
 import { AlbumClient } from "@/features/music/albums/container/AlbumClient";
 import { createRepositories } from "@/lib/factories/repository/server";
 import {
