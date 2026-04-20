@@ -49,7 +49,7 @@ export type Database = {
 			};
 			albums: {
 				Row: {
-					cover_path: string | null;
+					cover_path: string;
 					created_at: string;
 					description: string | null;
 					id: string;
@@ -58,7 +58,7 @@ export type Database = {
 					updated_at: string;
 				};
 				Insert: {
-					cover_path?: string | null;
+					cover_path: string;
 					created_at?: string;
 					description?: string | null;
 					id?: string;
@@ -67,7 +67,7 @@ export type Database = {
 					updated_at?: string;
 				};
 				Update: {
-					cover_path?: string | null;
+					cover_path?: string;
 					created_at?: string;
 					description?: string | null;
 					id?: string;
