@@ -1,4 +1,4 @@
-# 🎧 Vyre (WIP)
+# 🎧 Vyre
 
 **Vyre** is a modern music web application built with **Next.js**, designed to deliver a fast, responsive, and immersive listening experience directly in the browser.
 
@@ -98,6 +98,14 @@ To skip email verification for development:
 2. Navigate to **Authentication → Configuration → Auth Settings**.
 3. In **Email Settings**, toggle **Confirm email** to **Off**.
 4. Save changes.
+
+#### (Optional) Admin Privilege Escalation
+If you want to escalate an accounts privileges you will need to do that manually in the Supabase Backend.
+
+1. Open the Supabase Dashboard.
+2. Table Editor
+3. Select the "user_roles" table
+4. Adjust the associated user id and their role to "admin"
 
 ### 4. Configure Environment Variables
 Create a `.env.local` file in the project root with the following:
