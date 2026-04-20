@@ -6,7 +6,11 @@ import { MENU_ITEMS } from "../config";
 import { AdminDropdown } from "./AdminDropdown";
 import { NavLink } from "./NavLink";
 
-export const DesktopNav = () => {
+interface DesktopNavProps {
+	isAdmin?: boolean;
+}
+
+export const DesktopNav = ({ isAdmin = false }: DesktopNavProps) => {
 	const pathname = usePathname();
 
 	return (
@@ -24,9 +28,13 @@ export const DesktopNav = () => {
 				);
 			})}
 
-			<Separator orientation="vertical" />
+			{isAdmin && (
+				<>
+					<Separator orientation="vertical" />
 
-			<AdminDropdown />
+					<AdminDropdown />
+				</>
+			)}
 		</nav>
 	);
 };
