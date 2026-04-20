@@ -68,7 +68,7 @@ CREATE TABLE track_artists (
   artist_id    UUID REFERENCES artists(id) ON DELETE CASCADE,
   artist_order INTEGER NOT NULL CHECK (artist_order > 0),
 
-  PRIMARY KEY (track_id, artist_id)
+  PRIMARY KEY (track_id, artist_id),
   CONSTRAINT unique_track_artist_pos UNIQUE (track_id, artist_order)
 );
 
