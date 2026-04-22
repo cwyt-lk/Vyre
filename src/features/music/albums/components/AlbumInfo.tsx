@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { AlbumWithCover } from "@/lib/mappers/domain";
 
 interface AlbumInfoProps {
@@ -5,11 +6,10 @@ interface AlbumInfoProps {
 }
 
 export const AlbumInfo = ({ album }: AlbumInfoProps) => {
-	const formattedDate = album.releaseDate.toLocaleDateString(undefined, {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
+	const formattedDate = format(
+		new Date(album.releaseDate),
+		"MMMM d, yyyy",
+	);
 
 	return (
 		<div className="flex flex-col gap-3">
