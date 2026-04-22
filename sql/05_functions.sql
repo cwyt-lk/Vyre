@@ -5,74 +5,132 @@ CREATE OR REPLACE FUNCTION _sync_album_tracks(
   p_album_id UUID,
   p_track_ids UUID[]
 )
-RETURNS VOID AS $$
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
-  -- Fast exit for NULL
+  -- Treat NULL as a no-op to avoid unintentionally wiping relationships.
   IF p_track_ids IS NULL THEN
     RETURN;
   END IF;
 
-  WITH input AS (
-    SELECT DISTINCT unnest_id, idx::int AS track_number
-    FROM unnest(p_track_ids) WITH ORDINALITY AS t(unnest_id, idx)
-  )
+  -- Fail fast if the input contains duplicates.
+  -- This protects against violating unique constraints
+  IF EXISTS (
+    SELECT 1
+    FROM unnest(p_track_ids) x
+    GROUP BY x
+    HAVING COUNT(*) > 1
+  ) THEN
+    RAISE EXCEPTION 'Duplicate track IDs are not allowed.';
+  END IF;
 
-  DELETE FROM album_tracks at
-  WHERE at.album_id = p_album_id
-    AND NOT EXISTS (
-      SELECT 1 FROM input i WHERE i.unnest_id = at.track_id
-    );
+  -- Acquire row-level locks for all existing relationships for this album.
+  -- This prevents concurrent sync operations from interleaving and causing
+  -- inconsistent ordering or constraint violations.
+  PERFORM 1
+  FROM album_tracks
+  WHERE album_id = p_album_id
+  FOR UPDATE;
 
-  WITH input AS (
-    SELECT DISTINCT unnest_id, (idx - 1)::int AS track_number
-    FROM unnest(p_track_ids) WITH ORDINALITY AS t(unnest_id, idx)
-  )
+  -- Build the desired final state in a temporary table.
+  -- This allows us to:
+  --   1. Normalize ordering deterministically
+  --   2. Avoid partial updates if something fails mid-operation
+  --   3. Perform a clean delete + insert strategy
+  CREATE TEMP TABLE tmp_album_tracks (
+    track_id UUID,
+    track_number INT
+  ) ON COMMIT DROP;
 
+  -- Populate temp table using WITH ORDINALITY to preserve input order.
+  -- We convert to 0-based indexing for track_number.
+  INSERT INTO tmp_album_tracks (track_id, track_number)
+  SELECT track_id, (idx - 1)::int
+  FROM unnest(p_track_ids) WITH ORDINALITY AS t(track_id, idx);
+
+  -- Remove all existing relationships for this album.
+  -- This ensures we fully replace the set rather than diffing.
+  DELETE FROM album_tracks
+  WHERE album_id = p_album_id;
+
+  -- Insert the new canonical state from the temp table.
   INSERT INTO album_tracks (album_id, track_id, track_number)
-  SELECT p_album_id, i.unnest_id, i.track_number
-  FROM input i
-  ON CONFLICT (album_id, track_id) DO UPDATE
-  SET track_number = EXCLUDED.track_number
-  WHERE album_tracks.track_number IS DISTINCT FROM EXCLUDED.track_number;
-
+  SELECT p_album_id, track_id, track_number
+  FROM tmp_album_tracks;
 END;
-$$ LANGUAGE plpgsql;
+$$;
+
 
 CREATE OR REPLACE FUNCTION _sync_track_artists(
   p_track_id UUID,
   p_artist_ids UUID[]
 )
-RETURNS VOID AS $$
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
-  IF p_artist_ids IS NULL OR array_length(p_artist_ids, 1) = 0 THEN
-    RAISE EXCEPTION 'A track must have at least one artist.';
+  -- Treat NULL as a no-op to avoid unintentionally wiping relationships.
+  IF p_artist_ids IS NULL THEN
+    RETURN;
   END IF;
 
-  WITH input AS (
-    SELECT DISTINCT unnest_id
-    FROM unnest(p_artist_ids) AS t(unnest_id)
-  )
-  
-  DELETE FROM track_artists ta
-  WHERE ta.track_id = p_track_id
-    AND NOT EXISTS (
-      SELECT 1 FROM input i WHERE i.unnest_id = ta.artist_id
-    );
+  -- Fail fast if the input contains duplicates.
+  -- This protects against violating unique constraints
+  IF EXISTS (
+    SELECT 1
+    FROM unnest(p_artist_ids) x
+    GROUP BY x
+    HAVING COUNT(*) > 1
+  ) THEN
+    RAISE EXCEPTION 'Duplicate artist IDs are not allowed.';
+  END IF;
 
-  WITH input AS (
-    SELECT DISTINCT unnest_id, (idx - 1)::int AS artist_order
-    FROM unnest(p_artist_ids) WITH ORDINALITY AS t(unnest_id, idx)
-  )
+  -- Acquire row-level locks for all existing relationships for this track.
+  -- This prevents concurrent sync operations from interleaving and causing
+  -- inconsistent ordering or constraint violations.
+  PERFORM 1
+  FROM track_artists
+  WHERE track_id = p_track_id
+  FOR UPDATE;
 
+  -- Build the desired final state in a temporary table.
+  -- This allows us to:
+  --   1. Normalize ordering deterministically
+  --   2. Avoid partial updates if something fails mid-operation
+  --   3. Perform a clean delete + insert strategy
+  CREATE TEMP TABLE tmp_track_artists (
+    artist_id UUID,
+    artist_order INT
+  ) ON COMMIT DROP;
+
+  -- Populate temp table using WITH ORDINALITY to preserve input order.
+  -- We convert to 0-based indexing for track_number.
+  INSERT INTO tmp_track_artists (artist_id, artist_order)
+  SELECT artist_id, (idx - 1)::int
+  FROM unnest(p_artist_ids) WITH ORDINALITY AS t(artist_id, idx);
+
+  -- Remove all existing relationships for this track.
+  -- This ensures we fully replace the set rather than diffing.
+  DELETE FROM track_artists
+  WHERE track_id = p_track_id;
+
+  -- Insert the new canonical state from the temp table.
   INSERT INTO track_artists (track_id, artist_id, artist_order)
-  SELECT p_track_id, i.unnest_id, i.artist_order
-  FROM input i
-  ON CONFLICT (track_id, artist_id) DO UPDATE
-  SET artist_order = EXCLUDED.artist_order
-  WHERE track_artists.artist_order IS DISTINCT FROM EXCLUDED.artist_order;
-
+  SELECT p_track_id, artist_id, artist_order
+  FROM tmp_track_artists;
 END;
-$$ LANGUAGE plpgsql;
+$$;
+
+-- Make helper functions effectively private.
+-- Only explicitly granted roles (e.g., via API wrapper functions) can execute them.
+REVOKE ALL ON FUNCTION _sync_track_artists FROM PUBLIC;
+REVOKE ALL ON FUNCTION _sync_album_tracks FROM PUBLIC;
+
 
 -- =========================================
 -- Create Album
@@ -112,6 +170,7 @@ EXCEPTION WHEN OTHERS THEN
   RETURN jsonb_build_object('success', false, 'error', SQLERRM);
 END;
 $$ LANGUAGE plpgsql;
+
 
 -- =========================================
 -- Update Album
@@ -200,6 +259,7 @@ EXCEPTION WHEN OTHERS THEN
   RETURN jsonb_build_object('success', false, 'error', SQLERRM);
 END;
 $$ LANGUAGE plpgsql;
+
 
 -- =========================================
 -- Update Track
