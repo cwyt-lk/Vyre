@@ -146,7 +146,7 @@ export class TrackRepository implements TrackRepositoryContract {
 			this.supabase
 				.from("tracks")
 				.select(TRACK_RELATION_SELECT, { count: "exact" })
-				.ilike("title", `${title}%`),
+				.ilike("title", `%${title}%`),
 			options,
 		);
 

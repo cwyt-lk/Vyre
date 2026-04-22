@@ -76,7 +76,7 @@ export class ArtistRepository implements ArtistRepositoryContract {
 			this.supabase
 				.from("artists")
 				.select("*", { count: "exact" })
-				.ilike("name", `${name}%`),
+				.ilike("name", `%${name}%`),
 
 			options,
 		);

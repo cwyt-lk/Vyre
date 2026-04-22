@@ -70,7 +70,7 @@ export class GenreRepository implements GenreRepositoryContract {
 			this.supabase
 				.from("genres")
 				.select("*", { count: "exact" })
-				.ilike("key", `${key}%`),
+				.ilike("key", `%${key}%`),
 
 			options,
 		);
