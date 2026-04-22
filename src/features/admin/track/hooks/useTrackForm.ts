@@ -81,7 +81,7 @@ async function handleCreate(
 	const uploadResult = await uploadAudio(storage, audioFile);
 
 	if (!uploadResult.success) {
-		toast.error("Failed to upload cover image");
+		toast.error("Failed to upload audio file");
 
 		return false;
 	}
@@ -116,7 +116,7 @@ async function handleUpdate(
 		const uploadResult = await uploadAudio(storage, audioFile);
 
 		if (!uploadResult.success) {
-			toast.error("Failed to upload cover image");
+			toast.error("Failed to upload audio file");
 
 			return false;
 		}
