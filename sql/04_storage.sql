@@ -22,60 +22,46 @@ VALUES
   )
 ON CONFLICT (id) DO NOTHING;
 
-
 -- =========================================================
 -- 3. POLICIES
 -- =========================================================
 
 -- ---------------------------------------------------------
--- AUTHENTICATED WRITE ACCESS
+-- ADMIN ACCESS: Cover Art
 -- ---------------------------------------------------------
 
--- Cover Art
-CREATE POLICY "Authenticated upload cover-art"
-ON storage.objects FOR INSERT
-TO AUTHENTICATED
-WITH CHECK (
-  bucket_id = 'cover-art'
-  AND AUTH.ROLE() = 'authenticated'
-  AND check_role('admin')
-);
+CREATE POLICY "Admin Select Cover Art" ON storage.objects 
+FOR SELECT TO authenticated 
+USING (bucket_id = 'cover-art' AND has_role('admin'));
 
-CREATE POLICY "Authenticated update cover-art"
-ON storage.objects FOR UPDATE
-TO AUTHENTICATED
-USING (
-  bucket_id = 'cover-art'
-  AND AUTH.ROLE() = 'authenticated'
-  AND check_role('admin')
-)
-WITH CHECK (
-  bucket_id = 'cover-art'
-  AND AUTH.ROLE() = 'authenticated'
-  AND check_role('admin')
-);
+CREATE POLICY "Admin Update Cover Art" ON storage.objects 
+FOR UPDATE TO authenticated 
+USING (bucket_id = 'cover-art' AND has_role('admin'));
 
+CREATE POLICY "Admin Insert Cover Art" ON storage.objects 
+FOR INSERT TO authenticated 
+WITH CHECK (bucket_id = 'cover-art' AND has_role('admin'));
 
--- Music
-CREATE POLICY "Authenticated upload music"
-ON storage.objects FOR INSERT
-TO AUTHENTICATED
-WITH CHECK (
-  bucket_id = 'music'
-  AND AUTH.ROLE() = 'authenticated'
-  AND check_role('admin')
-);
+CREATE POLICY "Admin Delete Cover Art" ON storage.objects 
+FOR DELETE TO authenticated 
+USING (bucket_id = 'cover-art' AND has_role('admin'));
 
-CREATE POLICY "Authenticated update music"
-ON storage.objects FOR UPDATE
-TO AUTHENTICATED
-USING (
-  bucket_id = 'music'
-  AND AUTH.ROLE() = 'authenticated'
-  AND check_role('admin')
-)
-WITH CHECK (
-  bucket_id = 'music'
-  AND AUTH.ROLE() = 'authenticated'
-  AND check_role('admin')
-);
+-- ---------------------------------------------------------
+-- ADMIN ACCESS: Music
+-- ---------------------------------------------------------
+
+CREATE POLICY "Admin Select Music" ON storage.objects 
+FOR SELECT TO authenticated 
+USING (bucket_id = 'music' AND has_role('admin'));
+
+CREATE POLICY "Admin Update Music" ON storage.objects 
+FOR UPDATE TO authenticated 
+USING (bucket_id = 'music' AND has_role('admin'));
+
+CREATE POLICY "Admin Insert Music" ON storage.objects 
+FOR INSERT TO authenticated 
+WITH CHECK (bucket_id = 'music' AND has_role('admin'));
+
+CREATE POLICY "Admin Delete Music" ON storage.objects 
+FOR DELETE TO authenticated 
+USING (bucket_id = 'music' AND has_role('admin'));

@@ -117,13 +117,35 @@ USING (TRUE);
 -- 5. ROLE CHECK FUNCTION
 -- =========================================================
 
-CREATE OR REPLACE FUNCTION public.check_role(target_role public.app_role)
-RETURNS BOOLEAN
-LANGUAGE SQL
+CREATE OR REPLACE FUNCTION public.jwt_has_role(target_role public.app_role)
+RETURNS boolean
+LANGUAGE sql
 STABLE
 AS $$
-  SELECT COALESCE(
-    (AUTH.JWT() ->> 'user_role') = target_role::text,
-    FALSE
+  SELECT (auth.jwt() ->> 'user_role') = target_role::text;
+$$;
+
+CREATE OR REPLACE FUNCTION public.db_has_role(target_role public.app_role)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.user_roles ur
+    WHERE ur.user_id = auth.uid()
+      AND ur.role = target_role
   );
+$$;
+
+CREATE OR REPLACE FUNCTION public.has_role(target_role public.app_role)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT
+    public.jwt_has_role(target_role)
+    OR public.db_has_role(target_role);
 $$;
