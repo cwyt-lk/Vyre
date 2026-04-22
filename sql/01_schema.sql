@@ -66,7 +66,7 @@ CREATE TABLE tracks (
 CREATE TABLE track_artists (
   track_id     UUID REFERENCES tracks(id) ON DELETE CASCADE,
   artist_id    UUID REFERENCES artists(id) ON DELETE CASCADE,
-  artist_order INTEGER NOT NULL CHECK (artist_order > 0),
+  artist_order INTEGER NOT NULL CHECK (artist_order >= 0),
 
   PRIMARY KEY (track_id, artist_id),
   CONSTRAINT unique_track_artist_pos UNIQUE (track_id, artist_order)
@@ -76,7 +76,7 @@ CREATE TABLE track_artists (
 CREATE TABLE album_tracks (
   album_id     UUID REFERENCES albums(id) ON DELETE CASCADE,
   track_id     UUID REFERENCES tracks(id) ON DELETE CASCADE,
-  track_number INTEGER NOT NULL CHECK (track_number > 0),
+  track_number INTEGER NOT NULL CHECK (track_number >= 0),
 
   PRIMARY KEY (album_id, track_id),
   CONSTRAINT unique_album_track_pos UNIQUE (album_id, track_number)

@@ -24,7 +24,7 @@ BEGIN
     );
 
   WITH input AS (
-    SELECT DISTINCT unnest_id, idx::int AS track_number
+    SELECT DISTINCT unnest_id, (idx - 1)::int AS track_number
     FROM unnest(p_track_ids) WITH ORDINALITY AS t(unnest_id, idx)
   )
 
