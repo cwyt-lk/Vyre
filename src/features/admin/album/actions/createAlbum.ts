@@ -24,9 +24,9 @@ export async function createAlbumAction(
 	const createData = parsed.data as CreateAlbum;
 
 	const { albums } = await createRepositories();
-	const result = await albums.createAlbumWithTracks(createData);
+	const createResult = await albums.createAlbumWithTracks(createData);
 
-	if (!result.success) {
+	if (!createResult.success) {
 		return {
 			success: false,
 			error: "Failed to add album. Please try again.",

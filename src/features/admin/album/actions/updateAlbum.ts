@@ -24,9 +24,9 @@ export async function updateAlbumAction(
 	const updateData = parsed.data as UpdateAlbum;
 
 	const { albums } = await createRepositories();
-	const result = await albums.updateAlbumWithTracks(updateData);
+	const updateResult = await albums.updateAlbumWithTracks(updateData);
 
-	if (!result.success) {
+	if (!updateResult.success) {
 		return {
 			success: false,
 			error: "Failed to update album. Please try again.",

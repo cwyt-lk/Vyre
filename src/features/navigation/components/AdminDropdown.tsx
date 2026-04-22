@@ -24,7 +24,9 @@ export const AdminDropdown = () => {
 		<NavigationMenu>
 			<NavigationMenuList>
 				<NavigationMenuItem>
-					<NavigationMenuTrigger>Admin</NavigationMenuTrigger>
+					<NavigationMenuTrigger className="relative py-2 text-sm text-muted-foreground hover:text-foreground font-medium transition-colors duration-200">
+						Admin
+					</NavigationMenuTrigger>
 
 					<NavigationMenuContent>
 						<div className="grid gap-6 p-6 md:w-150 md:grid-cols-2 lg:w-175">

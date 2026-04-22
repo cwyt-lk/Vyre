@@ -55,9 +55,9 @@ export const AlbumTrackList = ({ tracks }: AlbumTrackListProps) => {
 						<ItemMedia className="flex min-w-8 items-center justify-center px-3 py-2 transition-colors duration-200">
 							{isCurrentPlaying ? (
 								<div className="flex items-center gap-1">
-									<div className="h-4 w-1 animate-pulse rounded-full bg-primary" />
-									<div className="h-3 w-1 animate-pulse rounded-full bg-primary delay-300" />
-									<div className="h-2 w-1 animate-pulse rounded-full bg-primary delay-500" />
+									<div className="h-4 w-1 animate-pulse rounded-full bg-primary delay-100" />
+									<div className="h-3 w-1 animate-pulse rounded-full bg-primary delay-200" />
+									<div className="h-2 w-1 animate-pulse rounded-full bg-primary delay-300" />
 								</div>
 							) : (
 								<>
