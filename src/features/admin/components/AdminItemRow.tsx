@@ -14,14 +14,14 @@ import {
 import { SmartImage } from "@/components/ui/SmartImage";
 import { AdminDeleteButton } from "@/features/admin/components/AdminDeleteButton";
 
-interface AlbumRowProps {
+interface AdminItemRowProps {
 	id: string;
 	title: string;
 	editHref: string;
 	description?: string;
 	imageUrl?: string;
-
-	onDelete?: (id: string) => Promise<void>;
+	isDeleting?: boolean;
+	onDelete?: (id: string) => void;
 }
 
 export const AdminItemRow = ({
@@ -30,8 +30,9 @@ export const AdminItemRow = ({
 	description,
 	editHref,
 	imageUrl,
+	isDeleting,
 	onDelete,
-}: AlbumRowProps) => {
+}: AdminItemRowProps) => {
 	return (
 		<Item
 			variant="card"
@@ -77,6 +78,7 @@ export const AdminItemRow = ({
 				<AdminDeleteButton
 					id={id}
 					title={title}
+					isDeleting={isDeleting}
 					onDelete={onDelete}
 				/>
 			</ItemActions>

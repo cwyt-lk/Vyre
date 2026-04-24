@@ -1,12 +1,12 @@
 "use client";
 
-import { useAction } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { ItemGroup } from "@/components/ui/Item";
 import { AdminItemRow } from "@/features/admin/components/AdminItemRow";
 import { deleteTrackAction } from "@/features/admin/track/actions/deleteTrack";
 import type { TrackAggregate } from "@/types/domain";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface TrackTableProps {
 	trackList: TrackAggregate[];
@@ -49,6 +49,7 @@ export const TrackTable = ({ trackList }: TrackTableProps) => {
 					title={track.title}
 					description={`${track.genre?.label} - ${track.artists.map((it) => it.name).join(", ")}`}
 					onDelete={onDelete}
+					isDeleting={isExecuting}
 					editHref={`/admin/tracks/update/${track.id}`}
 				/>
 			))}

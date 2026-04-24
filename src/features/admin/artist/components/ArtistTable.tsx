@@ -1,11 +1,11 @@
 "use client";
 
-import { useAction } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { ItemGroup } from "@/components/ui/Item";
 import { AdminItemRow } from "@/features/admin/components";
 import type { Artist } from "@/types/domain";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { deleteArtistAction } from "../actions/deleteArtist";
 
 interface ArtistTableProps {
@@ -48,6 +48,7 @@ export const ArtistTable = ({ artistList }: ArtistTableProps) => {
 					id={artist.id}
 					title={artist.name}
 					description={artist.bio ?? ""}
+					isDeleting={isExecuting}
 					onDelete={onDelete}
 					editHref={`/admin/artists/update/${artist.id}`}
 				/>

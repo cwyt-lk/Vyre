@@ -1,13 +1,13 @@
 "use client";
 
-import { useAction } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { ItemGroup } from "@/components/ui/Item";
 import { deleteAlbumAction } from "@/features/admin/album/actions/deleteAlbum";
 import { AdminItemRow } from "@/features/admin/components";
 import type { AlbumWithCover } from "@/lib/mappers/domain";
 import { formatDate } from "@/lib/utils/time";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface AlbumTableProps {
 	albumList: AlbumWithCover[];
@@ -50,6 +50,7 @@ export const AlbumTable = ({ albumList }: AlbumTableProps) => {
 					title={album.title}
 					description={formatDate(album.releaseDate)}
 					onDelete={onDelete}
+					isDeleting={isExecuting}
 					editHref={`/admin/albums/update/${album.id}`}
 					imageUrl={album.coverUrl}
 				/>

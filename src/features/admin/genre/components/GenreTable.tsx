@@ -1,11 +1,11 @@
 "use client";
 
-import { useAction } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { ItemGroup } from "@/components/ui/Item";
 import { AdminItemRow } from "@/features/admin/components";
 import type { Genre } from "@/types/domain";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { deleteGenreAction } from "../actions/deleteGenre";
 
 interface GenreTableProps {
@@ -47,6 +47,7 @@ export const GenreTable = ({ genreList }: GenreTableProps) => {
 					key={genre.id}
 					id={genre.id}
 					title={genre.label}
+					isDeleting={isExecuting}
 					onDelete={onDelete}
 					editHref={`/admin/genres/update/${genre.id}`}
 				/>

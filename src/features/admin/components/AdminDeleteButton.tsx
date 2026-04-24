@@ -1,5 +1,4 @@
 import { AlertCircle, Trash2 } from "lucide-react";
-import { useTransition } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -18,21 +17,19 @@ interface DeleteButtonProps {
 	id: string;
 	title: string;
 	entityName?: string;
-	onDelete?: (id: string) => Promise<void>;
+	isDeleting?: boolean;
+	onDelete?: (id: string) => void;
 }
 
 export const AdminDeleteButton = ({
 	id,
 	title,
 	entityName = "Item",
+	isDeleting = false,
 	onDelete,
 }: DeleteButtonProps) => {
-	const [isDeleting, startDelete] = useTransition();
-
 	const handleDelete = () => {
-		if (!onDelete) return;
-
-		startDelete(() => onDelete(id));
+		onDelete?.(id);
 	};
 
 	return (
