@@ -52,13 +52,19 @@ export const TrackMapper = {
 	 */
 	mapWithRelations(row: TrackAggregateDB): TrackAggregate {
 		const track = TrackMapper.map(row);
+		const trackArtists = row.track_artists ?? [];
+
+		const artists = flatMapList(
+			trackArtists.sort(
+				(a, b) => (a.artist_order ?? 0) - (b.artist_order ?? 0),
+			),
+			(item) => ArtistMapper.map(item.artists),
+		);
 
 		return {
 			...track,
 			genre: GenreMapper.map(row.genres),
-			artists: flatMapList(row.track_artists, (item) =>
-				ArtistMapper.map(item.artists),
-			),
+			artists,
 		};
 	},
 
