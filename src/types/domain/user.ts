@@ -5,3 +5,5 @@ export interface User {
 	avatarUrl?: string | null;
 	createdAt: Date;
 }
+
+export type UserRole = "user" | "admin";

@@ -5,7 +5,7 @@ import type {
 	AuthRepositoryContract,
 	OAuthResult,
 } from "@/lib/repositories/auth";
-import type { User } from "@/types/domain";
+import type { User, UserRole } from "@/types/domain";
 import { VyreError } from "@/types/errors";
 import type { RepoResult } from "@/types/results";
 import type { Database } from "@/types/supabase";
@@ -109,7 +109,7 @@ export class AuthRepository implements AuthRepositoryContract {
 	}
 
 	/** @inheritDoc AuthRepositoryContract.getCurrentRole */
-	async getCurrentRole(): Promise<RepoResult<string>> {
+	async getCurrentRole(): Promise<RepoResult<UserRole>> {
 		const { data, error } = await this.supabase.auth.getClaims();
 
 		if (error || !data) {
