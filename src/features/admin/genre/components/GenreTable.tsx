@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ItemGroup } from "@/components/ui/Item";
@@ -18,17 +19,25 @@ export const GenreTable = ({ genreList }: GenreTableProps) => {
 		setGenres(genreList);
 	}, [genreList]);
 
-	const onDelete = async (id: string) => {
-		const res = await deleteGenreAction(id);
+	const { execute, isExecuting } = useAction(deleteGenreAction, {
+		onSuccess: ({ input, data }) => {
+			if (!data?.success) {
+				toast.error(data?.error);
+				return;
+			}
 
-		if (!res.success) {
-			toast.error(res.error);
-			return;
-		}
+			setGenres((prev) => prev.filter((it) => it.id !== input.id));
 
-		setGenres((prev) => prev.filter((it) => it.id !== id));
+			toast.success("Successfully Deleted");
+		},
 
-		toast.success("Successfully Deleted");
+		onError: () => {
+			toast.error("Something went wrong. Please try again.");
+		},
+	});
+
+	const onDelete = (id: string) => {
+		execute({ id });
 	};
 
 	return (

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ItemGroup } from "@/components/ui/Item";
@@ -18,17 +19,25 @@ export const TrackTable = ({ trackList }: TrackTableProps) => {
 		setTracks(trackList);
 	}, [trackList]);
 
-	const onDelete = async (id: string) => {
-		const res = await deleteTrackAction(id);
+	const { execute, isExecuting } = useAction(deleteTrackAction, {
+		onSuccess: ({ input, data }) => {
+			if (!data?.success) {
+				toast.error(data?.error);
+				return;
+			}
 
-		if (!res.success) {
-			toast.error(res.error);
-			return;
-		}
+			setTracks((prev) => prev.filter((it) => it.id !== input.id));
 
-		setTracks((prev) => prev.filter((it) => it.id !== id));
+			toast.success("Successfully Deleted");
+		},
 
-		toast.success("Successfully Deleted");
+		onError: () => {
+			toast.error("Something went wrong. Please try again.");
+		},
+	});
+
+	const onDelete = (id: string) => {
+		execute({ id });
 	};
 
 	return (
