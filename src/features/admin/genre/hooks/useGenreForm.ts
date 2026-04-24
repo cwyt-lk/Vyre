@@ -62,8 +62,8 @@ export function useGenreForm(options: UseGenreFormOptions) {
 async function handleCreate(value: CreateGenreInput) {
 	const result = await createGenreAction(value);
 
-	if (!result.success) {
-		toast.error(result.error);
+	if (!result?.data?.success) {
+		toast.error(result?.data?.error);
 
 		return false;
 	}
@@ -76,8 +76,8 @@ async function handleCreate(value: CreateGenreInput) {
 async function handleUpdate(value: UpdateGenreInput) {
 	const result = await updateGenreAction(value);
 
-	if (!result.success) {
-		toast.error(result.error);
+	if (!result?.data?.success) {
+		toast.error(result?.data?.error);
 
 		return false;
 	}

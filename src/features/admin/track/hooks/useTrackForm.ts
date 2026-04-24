@@ -93,8 +93,8 @@ async function handleCreate(
 
 	const result = await createTrackAction(serverInput);
 
-	if (!result.success) {
-		toast.error(result.error);
+	if (!result?.data?.success) {
+		toast.error(result?.data?.error);
 
 		return false;
 	}
@@ -131,8 +131,8 @@ async function handleUpdate(
 
 	const result = await updateTrackAction(serverInput);
 
-	if (!result.success) {
-		toast.error(result.error);
+	if (!result?.data?.success) {
+		toast.error(result?.data?.error);
 
 		return false;
 	}

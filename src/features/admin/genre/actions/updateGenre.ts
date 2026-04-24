@@ -1,37 +1,24 @@
 "use server";
 
-import { z } from "zod";
+import { updateGenreSchema } from "@/features/admin/genre/schemas/updateSchema";
 import { createRepositories } from "@/lib/factories/repository/server";
+import { authClient } from "@/lib/safe-action";
 import type { UpdateGenre } from "@/types/domain";
-import type { ActionResult } from "@/types/results";
-import {
-	type UpdateGenreInput,
-	updateGenreSchema,
-} from "../schemas/updateSchema";
 
-export async function updateGenreAction(
-	data: UpdateGenreInput,
-): Promise<ActionResult> {
-	const parsed = updateGenreSchema.safeParse(data);
+export const updateGenreAction = authClient("admin")
+	.inputSchema(updateGenreSchema)
+	.action(async ({ parsedInput }) => {
+		const updateData = parsedInput as UpdateGenre;
 
-	if (!parsed.success) {
-		return {
-			success: false,
-			error: z.flattenError(parsed.error).formErrors.join(", "),
-		};
-	}
+		const { genres } = await createRepositories();
+		const result = await genres.update(updateData);
 
-	const updateData = parsed.data as UpdateGenre;
+		if (!result.success) {
+			return {
+				success: false,
+				error: "Failed to update genre. Please try again.",
+			};
+		}
 
-	const { genres } = await createRepositories();
-	const result = await genres.update(updateData);
-
-	if (!result.success) {
-		return {
-			success: false,
-			error: "Failed to update genre. Please try again.",
-		};
-	}
-
-	return { success: true };
-}
+		return { success: true };
+	});

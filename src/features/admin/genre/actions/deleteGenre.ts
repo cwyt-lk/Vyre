@@ -1,23 +1,24 @@
 "use server";
 
 import { createRepositories } from "@/lib/factories/repository/server";
-import type { ActionResult } from "@/types/results";
+import { authClient } from "@/lib/safe-action";
+import { idSchema } from "@/lib/schemas";
 
-export async function deleteGenreAction(
-	id: string,
-): Promise<ActionResult> {
-	const { genres } = await createRepositories();
+export const deleteGenreAction = authClient("admin")
+	.inputSchema(idSchema)
+	.action(async ({ parsedInput: { id } }) => {
+		const { genres } = await createRepositories();
 
-	const res = await genres.delete(id);
+		const res = await genres.delete(id);
 
-	if (!res.success) {
+		if (!res.success) {
+			return {
+				success: false,
+				error: `Failed to Delete Genre: ${id}`,
+			};
+		}
+
 		return {
-			success: false,
-			error: `Failed to Delete Genre: ${id}`,
+			success: true,
 		};
-	}
-
-	return {
-		success: true,
-	};
-}
+	});

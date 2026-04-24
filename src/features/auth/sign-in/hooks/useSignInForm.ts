@@ -2,6 +2,7 @@
 
 import { useForm, useStore } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { signInAction } from "@/features/auth/sign-in/action";
 import {
@@ -12,23 +13,33 @@ import {
 export function useSignInForm() {
 	const router = useRouter();
 
+	const { executeAsync, isExecuting } = useAction(signInAction, {
+		onSuccess: ({ data }) => {
+			if (!data?.success) {
+				toast.error(data?.error);
+				return;
+			}
+
+			router.replace("/home");
+		},
+
+		onError: () => {
+			toast.error("Sign in failed. Please try again.");
+		},
+	});
+
 	const form = useForm({
 		defaultValues: signInDefaultValues,
 		validators: {
 			onSubmit: signInSchema,
 		},
 		onSubmit: async ({ value }) => {
-			const res = await signInAction(value);
-
-			if (!res.success) {
-				toast.error(res.error);
-			} else {
-				router.replace("/home");
-			}
+			await executeAsync(value);
 		},
 	});
 
-	const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
+	const isSubmitting =
+		useStore(form.store, (s) => s.isSubmitting) || isExecuting;
 
 	return { form, isSubmitting };
 }

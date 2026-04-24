@@ -62,8 +62,8 @@ export function useArtistForm(options: UseArtistFormOptions) {
 async function handleCreate(value: CreateArtistInput) {
 	const result = await createArtistAction(value);
 
-	if (!result.success) {
-		toast.error(result.error);
+	if (!result?.data?.success) {
+		toast.error(result?.data?.error);
 
 		return false;
 	}
@@ -76,8 +76,8 @@ async function handleCreate(value: CreateArtistInput) {
 async function handleUpdate(value: UpdateArtistInput) {
 	const result = await updateArtistAction(value);
 
-	if (!result.success) {
-		toast.error(result.error);
+	if (!result?.data?.success) {
+		toast.error(result?.data?.error);
 
 		return false;
 	}

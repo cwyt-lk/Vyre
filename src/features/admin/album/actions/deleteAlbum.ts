@@ -1,23 +1,24 @@
 "use server";
 
 import { createRepositories } from "@/lib/factories/repository/server";
-import type { ActionResult } from "@/types/results";
+import { authClient } from "@/lib/safe-action";
+import { idSchema } from "@/lib/schemas";
 
-export async function deleteAlbumAction(
-	id: string,
-): Promise<ActionResult> {
-	const { albums } = await createRepositories();
+export const deleteAlbumAction = authClient("admin")
+	.inputSchema(idSchema)
+	.action(async ({ parsedInput: { id } }) => {
+		const { albums } = await createRepositories();
 
-	const res = await albums.delete(id);
+		const res = await albums.delete(id);
 
-	if (!res.success) {
+		if (!res.success) {
+			return {
+				success: false,
+				error: `Failed to Delete Album: ${id}`,
+			};
+		}
+
 		return {
-			success: false,
-			error: `Failed to Delete Album: ${id}`,
+			success: true,
 		};
-	}
-
-	return {
-		success: true,
-	};
-}
+	});

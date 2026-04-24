@@ -1,40 +1,25 @@
 "use server";
 
-import { z } from "zod";
-import {
-	type CreateTrackServerInput,
-	createTrackServerSchema,
-} from "@/features/admin/track/schemas/createSchema";
+import { createTrackServerSchema } from "@/features/admin/track/schemas/createSchema";
 import { createRepositories } from "@/lib/factories/repository/server";
+import { authClient } from "@/lib/safe-action";
 import type { CreateTrack } from "@/types/domain";
-import type { ActionResult } from "@/types/results";
 
-/**
- * Adds a track and associates artists
- */
-export async function createTrackAction(
-	data: CreateTrackServerInput,
-): Promise<ActionResult> {
-	const parsed = createTrackServerSchema.safeParse(data);
+export const createTrackAction = authClient("admin")
+	.inputSchema(createTrackServerSchema)
+	.action(async ({ parsedInput }) => {
+		const createData = parsedInput as CreateTrack;
 
-	if (!parsed.success) {
-		return {
-			success: false,
-			error: z.flattenError(parsed.error).formErrors.join(", "),
-		};
-	}
+		const { tracks } = await createRepositories();
+		const createResult =
+			await tracks.createTrackWithArtists(createData);
 
-	const createData = parsed.data as CreateTrack;
+		if (!createResult.success) {
+			return {
+				success: false,
+				error: "Failed to add track. Please try again.",
+			};
+		}
 
-	const { tracks } = await createRepositories();
-	const createResult = await tracks.createTrackWithArtists(createData);
-
-	if (!createResult.success) {
-		return {
-			success: false,
-			error: "Failed to add track. Please try again.",
-		};
-	}
-
-	return { success: true };
-}
+		return { success: true };
+	});

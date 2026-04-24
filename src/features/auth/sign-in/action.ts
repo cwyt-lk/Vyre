@@ -1,37 +1,18 @@
 "use server";
 
-import { z } from "zod";
-import {
-	type SignInInput,
-	signInSchema,
-} from "@/features/auth/sign-in/schema";
+import { signInSchema } from "@/features/auth/sign-in/schema";
 import { createRepositories } from "@/lib/factories/repository/server";
-import type { ActionResult } from "@/types/results";
+import { actionClient } from "@/lib/safe-action";
 
-export async function signInAction(
-	input: SignInInput,
-): Promise<ActionResult> {
-	const parsed = signInSchema.safeParse(input);
+export const signInAction = actionClient
+	.inputSchema(signInSchema)
+	.action(async ({ parsedInput: { email, password } }) => {
+		const { auth } = await createRepositories();
+		const result = await auth.signIn(email, password);
 
-	if (!parsed.success) {
-		const errorMsg = z
-			.flattenError(parsed.error)
-			.formErrors.join(", ");
+		if (!result.success) {
+			return { success: false, error: result.error.message };
+		}
 
-		return { success: false, error: errorMsg || "Invalid input" };
-	}
-
-	const { email, password } = parsed.data;
-
-	const { auth } = await createRepositories();
-	const result = await auth.signIn(email, password);
-
-	if (!result.success) {
-		return {
-			success: false,
-			error: result.error.message,
-		};
-	}
-
-	return { success: true };
-}
+		return { success: true };
+	});

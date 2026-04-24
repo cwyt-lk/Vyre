@@ -1,37 +1,25 @@
 "use server";
 
-import { z } from "zod";
+import { updateTrackServerSchema } from "@/features/admin/track/schemas/updateSchema";
 import { createRepositories } from "@/lib/factories/repository/server";
+import { authClient } from "@/lib/safe-action";
 import type { UpdateTrack } from "@/types/domain";
-import type { ActionResult } from "@/types/results";
-import {
-	type UpdateTrackServerInput,
-	updateTrackServerSchema,
-} from "../schemas/updateSchema";
 
-export async function updateTrackAction(
-	data: UpdateTrackServerInput,
-): Promise<ActionResult> {
-	const parsed = updateTrackServerSchema.safeParse(data);
+export const updateTrackAction = authClient("admin")
+	.inputSchema(updateTrackServerSchema)
+	.action(async ({ parsedInput }) => {
+		const updateData = parsedInput as UpdateTrack;
 
-	if (!parsed.success) {
-		return {
-			success: false,
-			error: z.flattenError(parsed.error).formErrors.join(", "),
-		};
-	}
+		const { tracks } = await createRepositories();
+		const updateResult =
+			await tracks.updateTrackWithArtists(updateData);
 
-	const updateData = parsed.data as UpdateTrack;
+		if (!updateResult.success) {
+			return {
+				success: false,
+				error: "Failed to update track. Please try again.",
+			};
+		}
 
-	const { tracks } = await createRepositories();
-	const updateResult = await tracks.updateTrackWithArtists(updateData);
-
-	if (!updateResult.success) {
-		return {
-			success: false,
-			error: "Failed to update track. Please try again.",
-		};
-	}
-
-	return { success: true };
-}
+		return { success: true };
+	});

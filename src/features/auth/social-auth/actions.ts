@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { createRepositories } from "@/lib/factories/repository/server";
-import type { ActionResult } from "@/types/results";
+import { actionClient } from "@/lib/safe-action";
 
-export async function signInWithGithubAction(): Promise<ActionResult> {
+export const signInWithGithubAction = actionClient.action(async () => {
 	const { auth } = await createRepositories();
 	const result = await auth.signInWithOAuth(
 		"github",
@@ -16,11 +16,9 @@ export async function signInWithGithubAction(): Promise<ActionResult> {
 	}
 
 	redirect(result.data.url);
+});
 
-	return { success: true };
-}
-
-export async function signInWithGoogleAction(): Promise<ActionResult> {
+export const signInWithGoogleAction = actionClient.action(async () => {
 	const { auth } = await createRepositories();
 	const result = await auth.signInWithOAuth(
 		"google",
@@ -32,6 +30,4 @@ export async function signInWithGoogleAction(): Promise<ActionResult> {
 	}
 
 	redirect(result.data.url);
-
-	return { success: true };
-}
+});

@@ -1,37 +1,25 @@
 "use server";
 
-import { z } from "zod";
-import {
-	type UpdateAlbumServerInput,
-	updateAlbumServerSchema,
-} from "@/features/admin/album/schemas/updateSchema";
+import { updateAlbumServerSchema } from "@/features/admin/album/schemas/updateSchema";
 import { createRepositories } from "@/lib/factories/repository/server";
+import { authClient } from "@/lib/safe-action";
 import type { UpdateAlbum } from "@/types/domain";
-import type { ActionResult } from "@/types/results";
 
-export async function updateAlbumAction(
-	data: UpdateAlbumServerInput,
-): Promise<ActionResult> {
-	const parsed = updateAlbumServerSchema.safeParse(data);
+export const updateAlbumAction = authClient("admin")
+	.inputSchema(updateAlbumServerSchema)
+	.action(async ({ parsedInput }) => {
+		const updateData = parsedInput as UpdateAlbum;
 
-	if (!parsed.success) {
-		return {
-			success: false,
-			error: z.flattenError(parsed.error).formErrors.join(", "),
-		};
-	}
+		const { albums } = await createRepositories();
+		const updateResult =
+			await albums.updateAlbumWithTracks(updateData);
 
-	const updateData = parsed.data as UpdateAlbum;
+		if (!updateResult.success) {
+			return {
+				success: false,
+				error: "Failed to update album. Please try again.",
+			};
+		}
 
-	const { albums } = await createRepositories();
-	const updateResult = await albums.updateAlbumWithTracks(updateData);
-
-	if (!updateResult.success) {
-		return {
-			success: false,
-			error: "Failed to update album. Please try again.",
-		};
-	}
-
-	return { success: true };
-}
+		return { success: true };
+	});

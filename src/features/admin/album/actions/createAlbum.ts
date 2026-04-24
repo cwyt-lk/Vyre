@@ -1,37 +1,25 @@
 "use server";
 
-import { z } from "zod";
-import {
-	type CreateAlbumServerInput,
-	createAlbumServerSchema,
-} from "@/features/admin/album/schemas/createSchema";
+import { createAlbumServerSchema } from "@/features/admin/album/schemas/createSchema";
 import { createRepositories } from "@/lib/factories/repository/server";
+import { authClient } from "@/lib/safe-action";
 import type { CreateAlbum } from "@/types/domain";
-import type { ActionResult } from "@/types/results";
 
-export async function createAlbumAction(
-	data: CreateAlbumServerInput,
-): Promise<ActionResult> {
-	const parsed = createAlbumServerSchema.safeParse(data);
+export const createAlbumAction = authClient("admin")
+	.inputSchema(createAlbumServerSchema)
+	.action(async ({ parsedInput }) => {
+		const createData = parsedInput as CreateAlbum;
 
-	if (!parsed.success) {
-		return {
-			success: false,
-			error: z.flattenError(parsed.error).formErrors.join(", "),
-		};
-	}
+		const { albums } = await createRepositories();
+		const createResult =
+			await albums.createAlbumWithTracks(createData);
 
-	const createData = parsed.data as CreateAlbum;
+		if (!createResult.success) {
+			return {
+				success: false,
+				error: "Failed to add album. Please try again.",
+			};
+		}
 
-	const { albums } = await createRepositories();
-	const createResult = await albums.createAlbumWithTracks(createData);
-
-	if (!createResult.success) {
-		return {
-			success: false,
-			error: "Failed to add album. Please try again.",
-		};
-	}
-
-	return { success: true };
-}
+		return { success: true };
+	});

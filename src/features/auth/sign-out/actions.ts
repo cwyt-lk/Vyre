@@ -1,9 +1,9 @@
 "use server";
 
 import { createRepositories } from "@/lib/factories/repository/server";
-import type { ActionResult } from "@/types/results";
+import { actionClient } from "@/lib/safe-action";
 
-export async function signOutAction(): Promise<ActionResult> {
+export const signOutAction = actionClient.action(async () => {
 	const { auth } = await createRepositories();
 	const result = await auth.signOut();
 
@@ -12,4 +12,4 @@ export async function signOutAction(): Promise<ActionResult> {
 	}
 
 	return { success: true };
-}
+});
