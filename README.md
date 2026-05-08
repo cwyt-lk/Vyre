@@ -2,8 +2,6 @@
 
 **Vyre** is a modern music web application built with **Next.js**, designed to deliver a fast, responsive, and immersive listening experience directly in the browser.
 
-Vyre is a lightweight and scalable music platform that allows users to discover, stream, and enjoy music seamlessly. Built with the power of **Next.js**, it focuses on performance, smooth UI interactions, and a clean developer-friendly architecture.
-
 ## 🛠️ Setup Instructions
 
 Follow these steps to run **Vyre** locally.
@@ -11,16 +9,11 @@ Follow these steps to run **Vyre** locally.
 ### Prerequisites
 - Node.js
 - pnpm package manager
-- Git (for cloning the repository)
+- Git
 - Docker Desktop (required for local Supabase setup)
 
-### 1. Clone the Repository
-Clone the repository and navigate to the project directory:
-
-```bash
-git clone https://github.com/your-username/vyre.git
-cd vyre
-```
+### 1. Clone / Download the Repository
+Download or Clone the repository and navigate to the project's root directory.
 
 ### 2. Install Dependencies
 Install the project dependencies using pnpm:
@@ -72,7 +65,7 @@ Vyre uses a `custom_access_token_hook` to inject custom claims into user tokens.
   ```
 
 #### (Optional) Set Up OAuth Providers
-Enable social login (Google, GitHub, Discord, etc.) for passwordless signup.
+Enable social login (Google, GitHub, etc.) for passwordless signup.
 
 - **Cloud Setup:**
   1. Go to **Authentication → Providers**.
