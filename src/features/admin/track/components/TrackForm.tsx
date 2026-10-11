@@ -116,7 +116,9 @@ export function TrackForm({
 							field={field}
 							label="Upload Audio"
 							description={`Max size: ${getHumanSize(MAX_AUDIO_SIZE)}`}
-							accept={{ "audio/*": [] }}
+							accept={{
+								"audio/*": [],
+							}}
 						/>
 					)}
 				</form.Field>
